@@ -1,8 +1,8 @@
-import { Geist, Geist_Mono, Noto_Sans } from "next/font/google";
+import { Geist_Mono, Noto_Sans } from "next/font/google";
 
 import "@workspace/ui/globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@workspace/ui/lib/utils";
+import { LayoutWrapper } from "@/components/layout/wrapper";
 
 const notoSans = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -22,7 +22,7 @@ export default function RootLayout({
             suppressHydrationWarning
             className={cn("antialiased", fontMono.variable, "font-sans", notoSans.variable)}>
             <body>
-                <ThemeProvider>{children}</ThemeProvider>
+                <LayoutWrapper>{children}</LayoutWrapper>
             </body>
         </html>
     );

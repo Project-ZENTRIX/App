@@ -20,6 +20,13 @@
             "options": {
                 "tabWidth": 2
             }
+        },
+        {
+            "files": "**/components.json",
+            "options": {
+                "tabWidth": 2
+            }
         }
     ]
 }
+
