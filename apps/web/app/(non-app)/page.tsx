@@ -1,5 +1,4 @@
-import { NavBar } from "@/components/layout/nav-bar";
-import { Button } from "@workspace/ui/components/button";
+    import { Button } from "@workspace/ui/components/button";
 import Lightfall from "@workspace/ui/components/Lightfall";
 import RotatingText from "@workspace/ui/components/RotatingText";
 
@@ -28,14 +27,10 @@ export default function Page() {
                 />
             </section>
 
-            <section id="_zentrix.comp-nav" className="absolute top-4 z-3 w-full px-16">
-                <NavBar />
-            </section>
-
             <section
                 id="_zentrix.comp-content"
                 className="absolute z-2 flex h-full w-full flex-col items-start justify-center px-32">
-                <h1 className="text-5xl font-mono">Project ZENTRIX</h1>
+                <h1 className="font-mono text-5xl">Project ZENTRIX</h1>
                 <div className="mt-8 flex items-center gap-4">
                     <h2 className="text-3xl">Learning Coding</h2>
                     <RotatingText
@@ -55,7 +50,7 @@ export default function Page() {
                     />
                 </div>
                 <div className="mt-8 flex items-center gap-4">
-                    <Button className="pointer-events-auto p-6 text-lg">Get Started</Button>
+                    <Button variant="outline" className="pointer-events-auto p-6 text-lg">Get Started</Button>
                 </div>
             </section>
         </div>

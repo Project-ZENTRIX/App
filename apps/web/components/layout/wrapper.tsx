@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { ShadcnWrapper } from "./wrappers/shadcn-wrapper";
 import { HeroWrapper } from "./wrappers/hero-wrapper";
+import NonAppWrapper from "./wrappers/non-app-wrapper";
 
 type WrapperComponent = React.ComponentType<{ children: React.ReactNode }>;
 
@@ -15,6 +16,10 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
 
     if (pathname === "/") {
         wrappers.push(HeroWrapper);
+    }
+
+    if (!["/app", "/account"].includes(pathname)) {
+        wrappers.push(NonAppWrapper);
     }
 
     wrappers.push(ShadcnWrapper);
