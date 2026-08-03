@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-// @ts-expect-error 安全地忽略 ogl 导出的内容
+// @ts-expect-error 安全地忽略 ogl 模块导出名字错误
 import { Renderer, Program, Mesh, Triangle } from "ogl";
 
 export interface LightfallProps {
@@ -152,7 +152,7 @@ void mainImage(out vec4 o, vec2 C) {
   C = c0;
 
   vec2 P = vec2(2.0, 1.0) * uv0 - (r / r.x) * vec2(0.0, 1.0);
-  vec4 O = vec4(uBgColor * 90.0 * uBgGlow / (1e3 * dot(P, P) + 6.0), 0.0);
+  vec4 O = vec4(uBgColor * 90.0 * uBgGlow / (1e3 * dot(P, P) + 6.0) * 0.05, 0.0);
 
   float mGlow = 0.0;
   if (uMouseEnabled > 0.5) {
@@ -183,7 +183,8 @@ void mainImage(out vec4 o, vec2 C) {
   }
 
   vec3 colr = sqrt(tanhv(max(O.rgb * uGlow - vec3(0.04, 0.08, 0.02), 0.0)));
-  o = vec4(colr, uOpacity);
+  float alpha = clamp(dot(colr, vec3(0.333333)), 0.0, 1.0) * uOpacity;
+  o = vec4(colr, alpha);
 }
 
 void main() {

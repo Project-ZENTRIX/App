@@ -14,11 +14,11 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     // push node into it with same layout order
     const wrappers: WrapperComponent[] = [];
 
-    if (pathname === "/") {
+    if (pathname === "/" || pathname === "/pricing") {
         wrappers.push(HeroWrapper);
     }
 
-    if (!["/app", "/account"].includes(pathname)) {
+    if (!(pathname.includes("/app") || pathname.includes("/account"))) {
         wrappers.push(NonAppWrapper);
     }
 

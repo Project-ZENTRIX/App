@@ -1,19 +1,18 @@
 import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
+import { useRouter } from "next/navigation";
 
 export function HomeNavBar() {
+    const { push } = useRouter();
+
     const NavBarItems = [
         {
             label: "Home",
             href: "/",
         },
         {
-            label: "About",
-            href: "/about",
-        },
-        {
-            label: "Contact",
-            href: "/contact",
+            label: "Pricing",
+            href: "/pricing",
         },
     ];
 
@@ -24,7 +23,7 @@ export function HomeNavBar() {
 
                 <section className="ml-auto flex items-center gap-4">
                     {NavBarItems.map((item) => (
-                        <Button key={item.href} variant="ghost" className="text-foreground/75">
+                        <Button key={item.href} variant="ghost" className="text-foreground/75" onClick={() => push(item.href)}>
                             {item.label}
                         </Button>
                     ))}
@@ -33,8 +32,10 @@ export function HomeNavBar() {
                 <Separator className="mx-4 my-3" orientation="vertical" />
 
                 <section className="flex items-center gap-4">
-                    <Button variant="secondary">Login</Button>
-                    <Button>Sign Up</Button>
+                    <Button variant="secondary" onClick={() => push("/account/login")}>
+                        Login
+                    </Button>
+                    <Button onClick={() => push("/account/register")}>Sign Up</Button>
                 </section>
             </nav>
         </div>
