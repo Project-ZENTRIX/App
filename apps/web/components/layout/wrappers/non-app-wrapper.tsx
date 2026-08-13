@@ -25,7 +25,7 @@ export default function NonAppWrapper({ children }: { children: ReactNode }) {
                 />
             </section>
 
-            <section id="_zentrix.comp-nav" className="sticky top-4 z-3 w-full px-16">
+            <section id="_zentrix.comp-nav" className="sticky top-4 z-3 w-full px-8">
                 <HomeNavBar />
             </section>
 
@@ -33,4 +33,3 @@ export default function NonAppWrapper({ children }: { children: ReactNode }) {
         </div>
     );
 }
-

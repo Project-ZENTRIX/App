@@ -1,6 +1,7 @@
 import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
 import { useRouter } from "next/navigation";
+import { AccountNavModule } from "./account-in-nav";
 
 export function HomeNavBar() {
     const { push } = useRouter();
@@ -32,13 +33,9 @@ export function HomeNavBar() {
                 <Separator className="mx-4 my-3" orientation="vertical" />
 
                 <section className="flex items-center gap-4">
-                    <Button variant="secondary" onClick={() => push("/account/login")}>
-                        Login
-                    </Button>
-                    <Button onClick={() => push("/account/register")}>Sign Up</Button>
+                    <AccountNavModule />
                 </section>
             </nav>
         </div>
     );
 }
-

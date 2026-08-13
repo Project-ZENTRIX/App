@@ -12,11 +12,11 @@
 
 | 层级        | 技术选型                               | 备注                         |
 | ----------- | -------------------------------------- | ---------------------------- |
-| API         | Bun（开发） + Node.js（生产） + Elysia | 高性能、TypeScript 友好      |
+| API         | NestJS                                 | TypeScript 友好、工程化成熟 |
 | Web         | Next.js                                | App Router 优先              |
 | Desktop     | Tauri + React                          | 轻量、接近原生体验           |
-| 数据库      | Supabase（自带 PostgreSQL）            | 托管 PostgreSQL 实例         |
-| 认证        | Supabase Auth                          | 与数据库统一由 Supabase 提供 |
+| 数据库      | PostgreSQL + Prisma                   | 通过 Prisma 连接 PostgreSQL  |
+| 认证        | 项目自实现 Auth                        | 使用 `user` / `session` / `account` / `verification` |
 | 单体仓库    | Turborepo                              | 统一管理多端代码             |
 | 部署（Web） | Vercel                                 | 与 Next.js 高度契合          |
 | AI 辅助     | BYOK（用户自带 Key）                   | 第二期实现                   |
@@ -30,8 +30,8 @@
 
 ### 2.1 API
 
-- **运行时**：开发阶段使用 Bun，生产环境使用 Node.js。
-- **框架**：Elysia（基于 Bun/Node 的高性能 TypeScript 框架）。
+- **框架**：NestJS。
+- **运行时**：基于 Node.js 运行。
 - **职责对应**：承载全部业务规则、数据权威、代码沙箱执行、判题、进度计算等（详见 [Responsibility.md](responsibility.md)）。
 
 ### 2.2 Web
@@ -67,9 +67,10 @@
 
 ### 3.2 认证与数据库
 
-- 认证与数据库统一由 **Supabase** 提供。
-- Supabase 自带托管 PostgreSQL 实现，作为项目主数据库，用于存储用户、课包、进度、订单、成就等核心业务数据。
-- 认证采用 Supabase Auth，与数据库服务保持一致，降低维护复杂度。
+- 数据库采用 **PostgreSQL + Prisma** 连接。
+- PostgreSQL 作为项目主数据库，用于存储用户、课包、进度、订单、成就等核心业务数据。
+- 认证方案采用 **项目自实现 Auth**，其核心数据结构为 `user`、`session`、`account`、`verification`。
+- 认证域数据与业务域数据分离，便于登录态、第三方绑定与验证流程独立演进。
 
 ### 3.3 AI 辅助（第二期）
 
@@ -87,8 +88,8 @@
 ## 4. 部署与基础设施（当前倾向）
 
 - **Web**：Vercel。
-- **API**：生产环境运行于 Node.js，具体托管平台待进一步确认（需与 Elysia + 沙箱执行需求匹配）。
-- **数据库与认证**：Supabase（托管 PostgreSQL + Auth）。
+- **API**：生产环境运行于 Node.js，具体托管平台待进一步确认（需与 NestJS + 沙箱执行需求匹配）。
+- **数据库**：PostgreSQL，应用层通过 pg 直连。
 - **收款**：爱发电（业务侧接入，技术实现细节后续补充）。
 
 ---
@@ -121,7 +122,7 @@
 - 后端沙箱的具体技术实现选型（语言支持范围、隔离级别、资源限制等）
 - Desktop 端 IDE 集成的具体功能清单与深度
 - Turborepo 内部 package 划分细节
-- Supabase 在项目中的具体使用边界（例如 Row Level Security 策略、与 API 的协作方式等）
+- 是否需要在自实现 Auth 之外补充设备表、登录审计表或 refresh token 持久化策略
 
 ---
 

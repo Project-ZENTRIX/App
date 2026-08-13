@@ -18,7 +18,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         wrappers.push(HeroWrapper);
     }
 
-    if (!(pathname.includes("/app") || pathname.includes("/account"))) {
+    if (!pathname.includes("/app") || pathname.includes("/account")) {
         wrappers.push(NonAppWrapper);
     }
 

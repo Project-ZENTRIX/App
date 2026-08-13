@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17
+    container_name: zentrix-pg17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: zentrix
+    ports:
+      - "127.20.0.1:5432:5432"
+    volumes:
+      - pg17_data:/var/lib/postgresql/data
+
+volumes:
+  pg17_data:

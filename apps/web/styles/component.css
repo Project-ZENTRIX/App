@@ -1,8 +1,0 @@
-@layer components {
-    .zentrix-logo {
-        --svg-fg: var(--color-foreground);
-        --svg-bg: var(--color-background);
-        --svg-ring-1: var(--color-primary);
-        --svg-ring-2: var(--color-chart-2);
-    }
-}

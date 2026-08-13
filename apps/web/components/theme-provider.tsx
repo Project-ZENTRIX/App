@@ -27,8 +27,6 @@ function ThemeHotkey() {
 
     React.useEffect(() => {
         function onKeyDown(event: KeyboardEvent) {
-            console.debug(event.key);
-
             if (event.defaultPrevented || event.repeat) {
                 return;
             }

@@ -1,9 +1,16 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Button } from "@workspace/ui/components/button";
 import RotatingText from "@workspace/ui/components/RotatingText";
 
 export default function Page() {
+    const router = useRouter();
+
     return (
-        <section id="_zentrix.comp-content" className="flex min-h-screen w-full flex-col items-start justify-center px-32 py-16">
+        <section
+            id="_zentrix.comp-content"
+            className="flex min-h-[calc(100svh-64px)] w-full flex-col items-start justify-center px-32 py-16">
             <h1 className="font-mono text-5xl">Project ZENTRIX</h1>
             <div className="mt-8 flex items-center gap-4">
                 <h2 className="text-3xl">Learning Coding</h2>
@@ -24,7 +31,7 @@ export default function Page() {
                 />
             </div>
             <div className="mt-8 flex items-center gap-4">
-                <Button variant="outline" className="p-6 text-lg">
+                <Button variant="outline" className="p-6 text-lg" onClick={() => router.push("/account/login")}>
                     Get Started
                 </Button>
             </div>

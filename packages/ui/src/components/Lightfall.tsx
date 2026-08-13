@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-// @ts-expect-error 安全地忽略 ogl 模块导出名字错误
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore 安全地忽略 ogl 模块导出名字错误
 import { Renderer, Program, Mesh, Triangle } from "ogl";
 
 export interface LightfallProps {
@@ -389,4 +390,3 @@ const Lightfall: React.FC<LightfallProps> = ({
 };
 
 export default Lightfall;
-

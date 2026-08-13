@@ -4,7 +4,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import { LayoutWrapper } from "@/components/layout/wrapper";
 
 import "@workspace/ui/globals.css";
-import "@/styles/page.css";
+import "@/styles/custom.css";
 
 const notoSans = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
