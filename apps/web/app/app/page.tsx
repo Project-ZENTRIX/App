@@ -17,27 +17,42 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { getAuditRecords, getCurrentAccount, type AuditRecord, type UserProfile } from "@/lib/api/endpoints/auth-api";
+import { useDictionary, useLocale } from "@/lib/i18n";
 
 const quickLinks = [
-    { href: "/account/login", label: "Login Entry", icon: LayoutDashboard },
-    { href: "/app/settings/profile", label: "Profile", icon: BadgeCheck },
-    { href: "/app/settings/security", label: "Security", icon: ShieldCheck },
-    { href: "/app/settings/notifications", label: "Notifications Preferences", icon: Sparkles },
+    { href: "/account/login", labelKey: "loginEntry", icon: LayoutDashboard },
+    { href: "/app/settings/profile", labelKey: "profile", icon: BadgeCheck },
+    { href: "/app/settings/security", labelKey: "security", icon: ShieldCheck },
+    { href: "/app/settings/notifications", labelKey: "notifications", icon: Sparkles },
 ];
 
-const progressItems = [
-    { label: "Course completion", value: "68%" },
-    { label: "This week active", value: "5 days" },
-    { label: "Current streak", value: "12 days" },
-];
+const progressItemsByLocale = {
+    "zh-CN": [
+        { labelKey: "courseCompletion", value: "68%" },
+        { labelKey: "thisWeekActive", value: "5 天" },
+        { labelKey: "currentStreak", value: "12 天" },
+    ],
+    "en-GB": [
+        { labelKey: "courseCompletion", value: "68%" },
+        { labelKey: "thisWeekActive", value: "5 days" },
+        { labelKey: "currentStreak", value: "12 days" },
+    ],
+} as const;
 
-const achievementItems = [
-    { label: "Steady streak", detail: "Kept access for 7 consecutive days", tone: "bg-emerald-500/10 text-emerald-600" },
-    { label: "Fast progress", detail: "Completed 3 core modules", tone: "bg-sky-500/10 text-sky-600" },
-    { label: "Security aware", detail: "Session and notification checks enabled", tone: "bg-amber-500/10 text-amber-600" },
-];
+const achievementItemsByLocale = {
+    "zh-CN": [
+        { label: "稳定连续", detail: "连续 7 天保持访问", tone: "bg-emerald-500/10 text-emerald-600" },
+        { label: "进展迅速", detail: "完成了 3 个核心模块", tone: "bg-sky-500/10 text-sky-600" },
+        { label: "安全意识", detail: "已开启会话与通知检查", tone: "bg-amber-500/10 text-amber-600" },
+    ],
+    "en-GB": [
+        { label: "Steady streak", detail: "Kept access for 7 consecutive days", tone: "bg-emerald-500/10 text-emerald-600" },
+        { label: "Fast progress", detail: "Completed 3 core modules", tone: "bg-sky-500/10 text-sky-600" },
+        { label: "Security aware", detail: "Session and notification checks enabled", tone: "bg-amber-500/10 text-amber-600" },
+    ],
+} as const;
 
-function formatDateTime(value?: string | null) {
+function formatDateTime(value?: string | null, locale = "en-GB") {
     if (!value) {
         return "-";
     }
@@ -47,14 +62,14 @@ function formatDateTime(value?: string | null) {
         return value;
     }
 
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat(locale, {
         dateStyle: "medium",
         timeStyle: "short",
     }).format(date);
 }
 
-function getUserName(user?: UserProfile | null) {
-    return user?.name?.trim() || user?.email || "Untitled user";
+function getUserName(fallbackLabel: string, user?: UserProfile | null) {
+    return user?.name?.trim() || user?.email || fallbackLabel;
 }
 
 function getInitial(user?: UserProfile | null) {
@@ -63,6 +78,8 @@ function getInitial(user?: UserProfile | null) {
 }
 
 export default function AppIndexPage() {
+    const t = useDictionary();
+    const locale = useLocale();
     const [user, setUser] = useState<UserProfile | null>(null);
     const [recentActivity, setRecentActivity] = useState<AuditRecord[]>([]);
     const [loading, setLoading] = useState(true);
@@ -85,7 +102,7 @@ export default function AppIndexPage() {
                     return;
                 }
 
-                setError(err instanceof Error ? err.message : "Unable to load dashboard data");
+                setError(err instanceof Error ? err.message : t.common.dashboardLoadFailed);
             } finally {
                 if (active) {
                     setLoading(false);
@@ -102,24 +119,38 @@ export default function AppIndexPage() {
 
     const summaryItems = useMemo(
         () => [
-            { label: "Account email", value: user?.email ?? "-" },
-            { label: "Profile status", value: user?.userProfile?.bio ? "Profile complete" : "Profile incomplete" },
-            { label: "Last updated", value: formatDateTime(user?.updatedAt) },
+            { label: t.portal.accountEmail, value: user?.email ?? "-" },
+            {
+                label: t.portal.profileStatus,
+                value: user?.userProfile?.bio ? t.portal.profileComplete : t.portal.profileIncomplete,
+            },
+            { label: t.portal.lastUpdated, value: formatDateTime(user?.updatedAt, locale) },
         ],
-        [user]
+        [
+            locale,
+            t.portal.accountEmail,
+            t.portal.lastUpdated,
+            t.portal.profileComplete,
+            t.portal.profileIncomplete,
+            t.portal.profileStatus,
+            user,
+        ]
     );
+
+    const achievementItems = achievementItemsByLocale[locale];
+    const progressItems = progressItemsByLocale[locale];
 
     return (
         <section className="flex min-h-full flex-col gap-4">
             <header className="border-border/60 bg-muted/20 flex flex-wrap items-center justify-between gap-4 rounded-xl border p-5">
                 <div className="min-w-0">
-                    <div className="text-muted-foreground text-xs tracking-wide uppercase">Dashboard</div>
+                    <div className="text-muted-foreground text-xs tracking-wide uppercase">{t.portal.dashboardTitle}</div>
                     <h1 className="mt-1 text-2xl font-semibold">
-                        {loading ? "Loading dashboard" : `Welcome back, ${getUserName(user)}`}
+                        {loading
+                            ? t.portal.loadingDashboard
+                            : t.portal.welcomeBack.replace("{name}", getUserName(t.common.untitledUser, user))}
                     </h1>
-                    <p className="text-muted-foreground mt-1 text-sm">
-                        Recent activity, progress, and personal center access are summarized here.
-                    </p>
+                    <p className="text-muted-foreground mt-1 text-sm">{t.portal.dashboardDescription}</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm font-medium">
@@ -127,7 +158,7 @@ export default function AppIndexPage() {
                     </div>
                     <Button asChild variant="outline">
                         <Link href="/app/settings/profile">
-                            Go to personal center
+                            {t.portal.goToCenter}
                             <ArrowRight className="size-4" />
                         </Link>
                     </Button>
@@ -143,15 +174,15 @@ export default function AppIndexPage() {
             <div className="grid gap-4 lg:grid-cols-12">
                 <Card className="lg:col-span-5">
                     <CardHeader>
-                        <CardTitle>Quick access</CardTitle>
-                        <CardDescription>Fast links to key settings.</CardDescription>
+                        <CardTitle>{t.portal.quickAccess}</CardTitle>
+                        <CardDescription>{t.portal.quickAccessDescription}</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-3 sm:grid-cols-2">
                         {quickLinks.map((item) => (
                             <Button key={item.href} asChild variant="outline" className="h-auto justify-start p-4 text-left">
                                 <Link href={item.href} className="flex w-full items-center gap-3">
                                     <item.icon className="size-4 shrink-0" />
-                                    <span className="flex-1">{item.label}</span>
+                                    <span className="flex-1">{t.portal[item.labelKey as keyof typeof t.portal]}</span>
                                 </Link>
                             </Button>
                         ))}
@@ -160,15 +191,17 @@ export default function AppIndexPage() {
 
                 <Card className="lg:col-span-4">
                     <CardHeader>
-                        <CardTitle>Progress</CardTitle>
-                        <CardDescription>Key progress at a glance.</CardDescription>
+                        <CardTitle>{t.portal.progress}</CardTitle>
+                        <CardDescription>{t.portal.progressDescription}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         {progressItems.map((item) => (
                             <div
-                                key={item.label}
+                                key={item.labelKey}
                                 className="border-border/60 bg-background flex items-center justify-between rounded-lg border px-3 py-2">
-                                <span className="text-muted-foreground text-sm">{item.label}</span>
+                                <span className="text-muted-foreground text-sm">
+                                    {t.portal[item.labelKey as keyof typeof t.portal]}
+                                </span>
                                 <span className="text-sm font-medium">{item.value}</span>
                             </div>
                         ))}
@@ -177,8 +210,8 @@ export default function AppIndexPage() {
 
                 <Card className="lg:col-span-3">
                     <CardHeader>
-                        <CardTitle>Achievements</CardTitle>
-                        <CardDescription>Small cues to track momentum.</CardDescription>
+                        <CardTitle>{t.portal.achievements}</CardTitle>
+                        <CardDescription>{t.portal.achievementsDescription}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         {achievementItems.map((item) => (
@@ -196,8 +229,8 @@ export default function AppIndexPage() {
             <div className="grid gap-4 lg:grid-cols-12">
                 <Card className="lg:col-span-7">
                     <CardHeader>
-                        <CardTitle>Recent activity</CardTitle>
-                        <CardDescription>Latest audit records, shown briefly.</CardDescription>
+                        <CardTitle>{t.portal.recentActivity}</CardTitle>
+                        <CardDescription>{t.portal.recentActivityDescription}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         {recentActivity.length ? (
@@ -209,7 +242,7 @@ export default function AppIndexPage() {
                                             {record.action}
                                         </div>
                                         <span className="text-muted-foreground text-xs">
-                                            {formatDateTime(record.createdAt)}
+                                            {formatDateTime(record.createdAt, locale)}
                                         </span>
                                     </div>
                                 </div>
@@ -217,7 +250,7 @@ export default function AppIndexPage() {
                         ) : (
                             <div className="text-muted-foreground flex items-center gap-2 rounded-lg border border-dashed p-4 text-sm">
                                 <Clock3 className="size-4" />
-                                No recent activity yet.
+                                {t.portal.noRecentActivity}
                             </div>
                         )}
                     </CardContent>
@@ -225,8 +258,8 @@ export default function AppIndexPage() {
 
                 <Card className="lg:col-span-5">
                     <CardHeader>
-                        <CardTitle>Account</CardTitle>
-                        <CardDescription>Profile and status at a glance.</CardDescription>
+                        <CardTitle>{t.portal.account}</CardTitle>
+                        <CardDescription>{t.portal.accountDescription}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         {summaryItems.map((item) => (
@@ -238,13 +271,13 @@ export default function AppIndexPage() {
                         <Button asChild variant="secondary" className="w-full">
                             <Link href="/app/settings/security">
                                 <TrendingUp className="size-4" />
-                                Security
+                                {t.portal.security}
                             </Link>
                         </Button>
                         <Button asChild variant="outline" className="w-full">
                             <Link href="/app/settings/notifications">
                                 <Flame className="size-4" />
-                                Notifications
+                                {t.portal.notifications}
                             </Link>
                         </Button>
                     </CardContent>

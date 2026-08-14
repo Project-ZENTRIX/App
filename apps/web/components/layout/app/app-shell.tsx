@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { HomeNavBar } from "../nav-bar";
 import { LeftRail } from "./left-rail";
-import { RightRail } from "./right-rail";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
     const [isLeftRailCollapsed, setIsLeftRailCollapsed] = useState(false);
@@ -24,10 +23,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <section className="border-border/70 bg-background min-h-0 flex-1 overflow-hidden rounded-xl border">
                         <div className="h-full min-h-0 overflow-y-auto p-4">{children}</div>
                     </section>
-
-                    <div className="h-full w-80 shrink-0 overflow-hidden">
-                        <RightRail />
-                    </div>
                 </div>
             </main>
         </div>

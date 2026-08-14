@@ -9,9 +9,6 @@ type WrapperComponent = React.ComponentType<{ children: React.ReactNode }>;
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-
-    // compiled wrapper list
-    // push node into it with same layout order
     const wrappers: WrapperComponent[] = [];
 
     if (pathname === "/" || pathname === "/pricing") {
@@ -24,6 +21,5 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
 
     wrappers.push(ShadcnWrapper);
 
-    // wrap children
     return wrappers.reduceRight((acc, Wrapper) => <Wrapper>{acc}</Wrapper>, children);
 }

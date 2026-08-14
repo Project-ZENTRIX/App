@@ -1,4 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from "@nestjs/common";
+import { errorKeys, toErrorKey } from "../errors/error-keys.js";
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -15,17 +16,18 @@ export class HttpExceptionFilter implements ExceptionFilter {
                 ? exceptionResponse
                 : exceptionResponse && typeof exceptionResponse === "object" && "message" in exceptionResponse
                   ? Array.isArray((exceptionResponse as { message?: string | string[] }).message)
-                      ? ((exceptionResponse as { message?: string[] }).message?.join(", ") ?? "Internal server error")
-                      : ((exceptionResponse as { message?: string }).message ?? "Internal server error")
+                      ? ((exceptionResponse as { message?: string[] }).message?.join(", ") ?? errorKeys.internalServerError)
+                      : ((exceptionResponse as { message?: string }).message ?? errorKeys.internalServerError)
                   : exception instanceof Error
                     ? exception.message
-                    : "Internal server error";
+                    : errorKeys.internalServerError;
+        const key = toErrorKey(message);
 
         this.logger.error(`${status} ${message}`, exception instanceof Error ? exception.stack : undefined);
 
         response.status(status).json({
             success: false,
-            message,
+            message: key,
             data: null,
         });
     }

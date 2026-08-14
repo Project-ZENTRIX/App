@@ -10,12 +10,14 @@ import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from 
 import { Input } from "@workspace/ui/components/input";
 import { IconifyIcon } from "@/components/iconify-icon";
 import { setAuthToken, signIn } from "@/lib/api/endpoints/auth-api";
+import { useDictionary } from "@/lib/i18n";
 import { toast } from "sonner";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const t = useDictionary();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [pending, setPending] = useState(false);
@@ -34,18 +36,14 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         try {
             const account = await signIn({ email, password });
             setAuthToken(account.token);
-            toast.success("Logged in successfully");
+            toast.success(t.auth.signInSuccess);
             router.replace(redirectTo);
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Login failed");
+            toast.error(error instanceof Error ? error.message : t.auth.signInFailed);
         } finally {
             setPending(false);
         }
     };
-
-    if (searchParams.get("redirect")) {
-        toast.info("Please login first");
-    }
 
     return (
         <div className={cn("flex flex-col gap-6", className)} data-pathname={pathname} {...props}>
@@ -54,8 +52,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     <form className="p-6 md:p-8" onSubmit={handleSubmit}>
                         <FieldGroup>
                             <div className="flex flex-col items-center gap-2 text-center">
-                                <h1 className="text-2xl font-bold">Welcome back</h1>
-                                <p className="text-muted-foreground text-balance">Login to your Project ZENTRIX account</p>
+                                <h1 className="text-2xl font-bold">{t.auth.signInTitle}</h1>
+                                <p className="text-muted-foreground text-balance">{t.auth.signInDescription}</p>
                             </div>
                             <Field>
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -73,7 +71,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                                 <div className="flex items-center">
                                     <FieldLabel htmlFor="password">Password</FieldLabel>
                                     <a href="#" className="ms-auto text-sm underline-offset-2 hover:underline">
-                                        Forgot your password?
+                                        {t.auth.forgotPassword}
                                     </a>
                                 </div>
                                 <Input
@@ -87,32 +85,32 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                             </Field>
                             <Field>
                                 <Button type="submit" disabled={pending}>
-                                    {pending ? "Logging in..." : "Login"}
+                                    {pending ? t.auth.loading : t.auth.signInButton}
                                 </Button>
                             </Field>
                             <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                                or continue with
+                                {t.auth.continueWith}
                             </FieldSeparator>
                             <Field className="grid grid-cols-4 gap-4">
                                 <Button variant="outline" type="button" disabled>
                                     <IconifyIcon icon="fa6-brands:apple" className="size-4.25 -translate-y-px" />
-                                    <span className="sr-only">Login with Apple</span>
+                                    <span className="sr-only">{t.auth.continueWith} Apple</span>
                                 </Button>
                                 <Button variant="outline" type="button">
                                     <IconifyIcon icon="fa6-brands:google" className="size-3.5" />
-                                    <span className="sr-only">Login with Google</span>
+                                    <span className="sr-only">{t.auth.continueWith} Google</span>
                                 </Button>
                                 <Button variant="outline" type="button">
                                     <IconifyIcon icon="fa6-brands:github" />
-                                    <span className="sr-only">Login with GitHub</span>
+                                    <span className="sr-only">{t.auth.continueWith} GitHub</span>
                                 </Button>
                                 <Button variant="outline" type="button">
                                     <IconifyIcon icon="fa6-brands:meta" />
-                                    <span className="sr-only">Login with Meta</span>
+                                    <span className="sr-only">{t.auth.continueWith} Meta</span>
                                 </Button>
                             </Field>
                             <FieldDescription className="text-center">
-                                Don&apos;t have an account? <Link href="/account/signup">Sign up</Link>
+                                Don&apos;t have an account? <Link href="/account/signup">{t.navigation.signup}</Link>
                             </FieldDescription>
                         </FieldGroup>
                     </form>
@@ -129,7 +127,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 </CardContent>
             </Card>
             <FieldDescription className="px-6 text-center">
-                By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                By clicking continue, you agree to our <a href="#">{t.auth.footerTerms}</a> and{" "}
+                <a href="#">{t.auth.footerPolicy}</a>.
             </FieldDescription>
         </div>
     );

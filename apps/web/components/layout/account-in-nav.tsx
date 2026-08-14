@@ -16,6 +16,7 @@ import {
     DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { setAuthToken, getCurrentAccount, type UserProfile } from "@/lib/api/endpoints/auth-api";
+import { useDictionary } from "@/lib/i18n";
 
 function getDisplayName(user: UserProfile | null) {
     return user?.name?.trim() || user?.email || "User";
@@ -33,6 +34,7 @@ function getInitials(user: UserProfile | null) {
 
 export function AccountNavModule() {
     const { push } = useRouter();
+    const t = useDictionary();
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -84,9 +86,9 @@ export function AccountNavModule() {
         return (
             <div className="flex items-center gap-4">
                 <Button variant="secondary" onClick={() => push("/account/login")}>
-                    Login
+                    {t.navigation.login}
                 </Button>
-                <Button onClick={() => push("/account/signup")}>Sign up</Button>
+                <Button onClick={() => push("/account/signup")}>{t.navigation.signup}</Button>
             </div>
         );
     }
@@ -114,12 +116,12 @@ export function AccountNavModule() {
                 <DropdownMenuItem asChild>
                     <Link href="/app/settings/profile">
                         <Settings2 className="size-4" />
-                        Settings
+                        {t.navigation.settings}
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout} variant="destructive">
                     <LogOut className="size-4" />
-                    Sign out
+                    {t.navigation.logout}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

@@ -23,6 +23,7 @@ type CourseItem = {
     chapterCount: number;
     taskCount: number;
     version: string;
+    supportedLanguages: string[];
 };
 
 type CourseChapter = {
@@ -88,6 +89,7 @@ const courses: CourseItem[] = [
         chapterCount: 2,
         taskCount: 4,
         version: "v1.3.0",
+        supportedLanguages: ["zh-CN", "en-GB"],
     },
     {
         id: "course-api-design",
@@ -109,6 +111,7 @@ const courses: CourseItem[] = [
         chapterCount: 3,
         taskCount: 6,
         version: "v2.1.0",
+        supportedLanguages: ["zh-CN", "en-GB"],
     },
     {
         id: "course-creative-workflows",
@@ -130,6 +133,7 @@ const courses: CourseItem[] = [
         chapterCount: 2,
         taskCount: 3,
         version: "v1.0.0",
+        supportedLanguages: ["zh-CN", "en-GB"],
     },
 ];
 
@@ -360,6 +364,7 @@ export class CoursesController {
             ...course,
             statusLabel: course.status === "published" ? "已发布" : course.status === "draft" ? "草稿" : "已归档",
             purchaseState: course.isPurchased ? "owned" : "available",
+            supportedLanguages: [course.language],
         };
     }
 

@@ -10,6 +10,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from 
 import { Input } from "@workspace/ui/components/input";
 import { IconifyIcon } from "@/components/iconify-icon";
 import { signUp } from "@/lib/api/endpoints/auth-api";
+import { useDictionary } from "@/lib/i18n";
 import { toast } from "sonner";
 
 export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
@@ -18,6 +19,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
     const [confirmPassword, setConfirmPassword] = useState("");
     const [pending, setPending] = useState(false);
     const router = useRouter();
+    const t = useDictionary();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -25,13 +27,13 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
 
         try {
             await signUp({ email, password, confirmPassword });
-            toast.success("Account created successfully");
+            toast.success(t.auth.createAccountSuccess);
             setEmail("");
             setPassword("");
             setConfirmPassword("");
             router.push("/account/login");
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Signup failed");
+            toast.error(error instanceof Error ? error.message : t.auth.createAccountFailed);
         } finally {
             setPending(false);
         }
@@ -44,10 +46,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                     <form className="p-6 md:p-8" onSubmit={handleSubmit}>
                         <FieldGroup>
                             <div className="flex flex-col items-center gap-2 text-center">
-                                <h1 className="text-2xl font-bold">Create your account</h1>
-                                <p className="text-muted-foreground text-sm text-balance">
-                                    Enter your email below to create your account
-                                </p>
+                                <h1 className="text-2xl font-bold">{t.auth.createAccountTitle}</h1>
+                                <p className="text-muted-foreground text-sm text-balance">{t.auth.createAccountDescription}</p>
                             </div>
                             <Field>
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -94,11 +94,11 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                             </Field>
                             <Field>
                                 <Button type="submit" disabled={pending}>
-                                    {pending ? "Creating..." : "Create Account"}
+                                    {pending ? t.auth.loading : t.auth.createAccountButton}
                                 </Button>
                             </Field>
                             <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                                or continue with
+                                {t.auth.continueWith}
                             </FieldSeparator>
                             <Field className="grid grid-cols-4 gap-4">
                                 <Button variant="outline" type="button" disabled>
@@ -119,7 +119,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                 </Button>
                             </Field>
                             <FieldDescription className="text-center">
-                                Already have an account? <Link href="/account/login">Sign in</Link>
+                                Already have an account? <Link href="/account/login">{t.navigation.login}</Link>
                             </FieldDescription>
                         </FieldGroup>
                     </form>

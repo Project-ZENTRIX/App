@@ -1,20 +1,28 @@
 import { expect, test } from "@playwright/test";
-import { createTestEmail, createTestPassword, expectApiOk, apiUrl } from "./helpers/api";
+import { apiUrl, createTestEmail, createTestPassword, expectApiOk } from "./helpers/api";
 
 test.describe("Web pages end to end", () => {
     test("renders the landing and pricing pages", async ({ page }) => {
         await page.goto("/");
         await expect(page.getByRole("heading", { name: "Project ZENTRIX" })).toBeVisible();
         await expect(page.getByRole("button", { name: "Get Started" })).toBeVisible();
+        await expect(page.getByRole("link", { name: "Read FAQ" })).toBeVisible();
 
         await page.goto("/pricing");
-        await expect(page.getByRole("heading", { name: "View Our Affordable Pricing" })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "View our affordable pricing" })).toBeVisible();
         await expect(page.getByRole("button", { name: "Choose Cyrum" })).toBeVisible();
         await expect(page.getByRole("columnheader", { name: "Cyrum" })).toBeVisible();
-        await expect(page.getByText("Comparing Plans")).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Comparing plans" })).toBeVisible();
     });
 
-    test("allows a learner to create an account and sign in through the UI", async ({ page, request }) => {
+    test("renders the FAQ page", async ({ page }) => {
+        await page.goto("/faq");
+        await expect(page.getByRole("heading", { name: "FAQ and support basics" })).toBeVisible();
+        await expect(page.getByText("How do purchases work?")).toBeVisible();
+        await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+    });
+
+    test("allows a learner to create an account and sign in through the UI", async ({ page }) => {
         const email = createTestEmail("ui");
         const password = createTestPassword();
 
@@ -55,7 +63,7 @@ test.describe("Web pages end to end", () => {
         await expect(page.getByRole("link", { name: "Notifications", exact: true }).first()).toBeVisible();
 
         await page.goto("/app/settings/profile");
-        await expect(page.getByRole("heading", { name: "Personal Settings" })).toBeVisible();
+        await expect(page.locator('[data-slot="card-title"]').filter({ hasText: "Profile" }).first()).toBeVisible();
         await expect(page.getByRole("tab", { name: "Profile" })).toBeVisible();
         await page.getByLabel("Name").fill("UI Test Learner");
         await page.getByLabel("Avatar URL").fill("https://example.com/avatar.png");
@@ -89,5 +97,69 @@ test.describe("Web pages end to end", () => {
             await revokeButtons.first().click();
             await expect(revokeButtons).toHaveCount(buttonCount - 1);
         }
+    });
+
+    test("renders the catalog, details, and owned course surfaces", async ({ page, request }) => {
+        const email = createTestEmail("catalog");
+        const password = createTestPassword();
+
+        const signup = await expectApiOk<{ token: string }>(
+            request.post(apiUrl("/auth/signup"), {
+                data: { email, password, confirmPassword: password },
+            }),
+            "seed account should be created"
+        );
+
+        await page.addInitScript((token) => {
+            window.localStorage.setItem("zentrix-auth-token", token);
+        }, signup.token);
+
+        await page.goto("/app/courses");
+        await expect(page.locator("h1").filter({ hasText: "Course market" })).toBeVisible();
+        await expect(page.getByRole("link", { name: /View details/ }).first()).toBeVisible();
+        await expect(page.getByRole("button", { name: "Popular" })).toBeVisible();
+
+        await page.goto("/app/courses/course-api-design");
+        await expect(page.getByRole("heading", { name: "API 设计与后端契约课包" })).toBeVisible();
+        await expect(page.getByText("Learning status")).toBeVisible();
+        await expect(page.getByText("Chapter preview")).toBeVisible();
+        await expect(page.getByRole("link", { name: "Continue learning" })).toBeVisible();
+
+        await page.goto("/app/library");
+        await expect(page.locator("h1").filter({ hasText: "My Courses" })).toBeVisible();
+        await expect(page.getByText("Owned and learnable packages")).toBeVisible();
+        await expect(page.getByRole("link", { name: "Open details" }).first()).toBeVisible();
+    });
+
+    test("renders commerce, license, and progress surfaces", async ({ page, request }) => {
+        const email = createTestEmail("commerce");
+        const password = createTestPassword();
+
+        const signup = await expectApiOk<{ token: string }>(
+            request.post(apiUrl("/auth/signup"), {
+                data: { email, password, confirmPassword: password },
+            }),
+            "seed account should be created"
+        );
+
+        await page.addInitScript((token) => {
+            window.localStorage.setItem("zentrix-auth-token", token);
+        }, signup.token);
+
+        await page.goto("/app/membership");
+        await expect(page.locator("h1").filter({ hasText: "Membership centre" })).toBeVisible();
+        await expect(page.getByRole("button", { name: "Refresh status" })).toBeVisible();
+
+        await page.goto("/app/orders");
+        await expect(page.locator("h1").filter({ hasText: "Order centre" })).toBeVisible();
+        await expect(page.getByText("No orders yet")).toBeVisible();
+
+        await page.goto("/app/devices");
+        await expect(page.locator("h1").filter({ hasText: "Device & licence" })).toBeVisible();
+        await expect(page.getByRole("button", { name: "Reload devices" })).toBeVisible();
+
+        await page.goto("/app/progress");
+        await expect(page.locator("h1").filter({ hasText: "Achievements & progress" })).toBeVisible();
+        await expect(page.getByText("Learning summary")).toBeVisible();
     });
 });

@@ -7,9 +7,43 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { Input } from "@workspace/ui/components/input";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { getCurrentAccount, updateProfile, type UserProfile } from "@/lib/api/endpoints/auth-api";
+import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 
+const copy = {
+    "zh-CN": {
+        title: "资料",
+        description: "编辑你的公开名称、头像和简介。",
+        name: "名称",
+        avatarUrl: "头像 URL",
+        bio: "简介",
+        save: "保存资料",
+        saving: "正在保存...",
+        loadError: "无法加载资料",
+        updateError: "无法更新资料",
+        placeholder: "输入名称",
+        bioPlaceholder: "简单介绍一下你最近在做什么",
+        updated: "资料已更新",
+    },
+    "en-GB": {
+        title: "Profile",
+        description: "Edit your public name, avatar, and bio.",
+        name: "Name",
+        avatarUrl: "Avatar URL",
+        bio: "Bio",
+        save: "Save profile",
+        saving: "Saving...",
+        loadError: "Unable to load profile",
+        updateError: "Failed to update profile",
+        placeholder: "Enter a name",
+        bioPlaceholder: "Write a short bio about what you're doing now",
+        updated: "Profile updated",
+    },
+} as const;
+
 export default function ProfileSettingsPage() {
+    const locale = useLocale();
+    const text = copy[locale];
     const [user, setUser] = useState<UserProfile | null>(null);
     const [name, setName] = useState("");
     const [image, setImage] = useState("");
@@ -31,7 +65,7 @@ export default function ProfileSettingsPage() {
                 setImage(account.user.image ?? "");
                 setBio(account.user.userProfile?.bio ?? "");
             } catch (error) {
-                toast.error(error instanceof Error ? error.message : "Unable to load profile");
+                toast.error(error instanceof Error ? error.message : text.loadError);
             }
         };
 
@@ -53,9 +87,9 @@ export default function ProfileSettingsPage() {
                 bio: bio.trim() || null,
             });
             setUser(result.user);
-            toast.success("Profile updated");
+            toast.success(text.updated);
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Failed to update profile");
+            toast.error(error instanceof Error ? error.message : text.updateError);
         } finally {
             setPending(false);
         }
@@ -64,34 +98,34 @@ export default function ProfileSettingsPage() {
     return (
         <Card className="border-0 shadow-none">
             <CardHeader>
-                <CardTitle>Profile</CardTitle>
-                <CardDescription>Edit your public name, avatar, and bio.</CardDescription>
+                <CardTitle>{text.title}</CardTitle>
+                <CardDescription>{text.description}</CardDescription>
             </CardHeader>
             <CardContent>
                 <form className="grid gap-4 md:max-w-2xl" onSubmit={handleSubmit}>
                     <label className="grid gap-2">
-                        <span className="text-sm font-medium">Name</span>
+                        <span className="text-sm font-medium">{text.name}</span>
                         <Input
                             value={name}
                             onChange={(event) => setName(event.target.value)}
-                            placeholder={user?.email ?? "Enter a name"}
+                            placeholder={user?.email ?? text.placeholder}
                         />
                     </label>
                     <label className="grid gap-2">
-                        <span className="text-sm font-medium">Avatar URL</span>
+                        <span className="text-sm font-medium">{text.avatarUrl}</span>
                         <Input value={image} onChange={(event) => setImage(event.target.value)} placeholder="https://" />
                     </label>
                     <label className="grid gap-2">
-                        <span className="text-sm font-medium">Bio</span>
+                        <span className="text-sm font-medium">{text.bio}</span>
                         <Textarea
                             value={bio}
                             onChange={(event) => setBio(event.target.value)}
-                            placeholder="Write a short bio about what you're doing now"
+                            placeholder={text.bioPlaceholder}
                         />
                     </label>
                     <div>
                         <Button type="submit" disabled={pending}>
-                            {pending ? "Saving..." : "Save profile"}
+                            {pending ? text.saving : text.save}
                         </Button>
                     </div>
                 </form>

@@ -47,6 +47,9 @@ importers:
       '@scalar/nestjs-api-reference':
         specifier: ^1.2.13
         version: 1.2.13
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
