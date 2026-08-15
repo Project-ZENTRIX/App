@@ -113,6 +113,7 @@ export default function NotificationSettingsPage() {
                                 </div>
                             </div>
                             <Switch
+                                disabled={item.key === "sms"}
                                 checked={preferences[item.key]}
                                 onCheckedChange={(checked) =>
                                     setPreferences((current) => ({ ...current, [item.key]: checked }))

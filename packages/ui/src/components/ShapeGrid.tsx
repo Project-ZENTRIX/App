@@ -263,7 +263,7 @@ const ShapeGrid: React.FC<ShapeGridProps> = ({
             if (hoverTrailAmount > 0) {
                 for (let i = 0; i < trailCells.current.length; i++) {
                     const t = trailCells.current[i];
-                    const key = `${t.x},${t.y}`;
+                    const key = `${t!.x},${t!.y}`;
                     if (!targets.has(key)) {
                         targets.set(key, (trailCells.current.length - i) / (trailCells.current.length + 1));
                     }

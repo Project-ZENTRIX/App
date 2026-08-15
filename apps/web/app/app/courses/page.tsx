@@ -147,31 +147,30 @@ export default function CoursesPage() {
             </header>
 
             <Card>
-                <CardContent className="grid gap-4 p-5 lg:grid-cols-[1fr_280px] lg:items-end">
-                    <FieldGroup className="gap-4">
-                        <Field>
-                            <FieldLabel htmlFor="course-search">{t.portal.searchCourses}</FieldLabel>
-                            <div className="relative">
-                                <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 -translate-y-1/2" />
-                                <Input
-                                    id="course-search"
-                                    value={keyword}
-                                    onChange={(event) => setKeyword(event.target.value)}
-                                    placeholder={t.portal.searchPlaceholder}
-                                    className="pl-9"
-                                />
-                            </div>
-                        </Field>
-                    </FieldGroup>
+                <CardHeader>{t.portal.searchCourses}</CardHeader>
+                <CardContent className="grid gap-4 px-5 lg:grid-cols-[1fr_280px] lg:items-end">
+                    <Field>
+                        <div className="relative">
+                            <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                            <Input
+                                id="course-search"
+                                value={keyword}
+                                onChange={(event) => setKeyword(event.target.value)}
+                                placeholder={t.portal.searchPlaceholder}
+                                className="pl-9"
+                            />
+                        </div>
+                    </Field>
 
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="grid h-full w-full grid-cols-3 flex-wrap items-center gap-4">
                         {sortOptions.map((option) => (
                             <Button
                                 key={option.value}
                                 type="button"
                                 variant={sort === option.value ? "default" : "outline"}
                                 size="sm"
-                                onClick={() => setSort(option.value)}>
+                                onClick={() => setSort(option.value)}
+                                className="h-full">
                                 {t.portal[option.labelKey]}
                             </Button>
                         ))}

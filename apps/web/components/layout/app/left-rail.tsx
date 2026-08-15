@@ -23,6 +23,7 @@ import { useDictionary } from "@/lib/i18n";
 type MenuItem = {
     label: string;
     href: string;
+    match?: (path: string) => boolean;
     icon: React.ComponentType<{ className?: string }>;
     detail: string;
     disabled?: boolean;
@@ -147,6 +148,7 @@ export function LeftRail({ collapsed, onToggleAction }: LeftRailProps) {
                 {
                     label: t.portal.settingsTitle,
                     href: "/app/settings/profile",
+                    match: (path) => path.startsWith("/app/settings"),
                     icon: Settings2,
                     detail: t.shell.profilePasswordAndSessions,
                 },
@@ -193,7 +195,7 @@ export function LeftRail({ collapsed, onToggleAction }: LeftRailProps) {
                         </div>
                         <div className="flex flex-col gap-2">
                             {group.items.map((item) => {
-                                const active = pathname === item.href;
+                                const active = item.match ? item.match(pathname) : pathname === item.href;
                                 return (
                                     <MenuRow
                                         key={item.label}

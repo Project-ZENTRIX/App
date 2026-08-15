@@ -7,7 +7,7 @@
         "dev": "nest start --watch",
         "start": "nest start",
         "start:prod": "node dist/main",
-        "test": "nest build && node --test test/auth-crypto.test.js test/auth-core-service.test.js test/auth-license-service.test.js test/licenses-devices-controller.test.js test/achievements-service.test.js test/admin-service.test.js test/admin-controller.test.js test/commerce-service.test.js test/courses-controller.test.js test/progress-service.test.js test/runs-service.test.js test/submissions-service.test.js test/submissions-controller.test.js test/webhooks-service.test.js test/webhooks-controller.test.js",
+        "test": "nest build && node --test test/auth-crypto.test.js test/auth-core-service.test.js test/auth-license-service.test.js test/licenses-devices-controller.test.js test/achievements-service.test.js test/admin-service.test.js test/admin-controller.test.js test/commerce-service.test.js test/courses-seed.test.js test/courses-service.test.js test/progress-service.test.js test/runs-service.test.js test/submissions-service.test.js test/submissions-controller.test.js test/webhooks-service.test.js test/webhooks-controller.test.js",
         "lint": "eslint \"{src,test}/**/*.ts\"",
         "format": "prettier --write \"src/**/*.ts\"",
         "db:generate": "prisma generate",

@@ -282,8 +282,24 @@ model Course {
   slug           String          @unique
   title          String
   summary        String?
+  cover         String?
+  category      String?
+  language      String?
+  difficulty    String?
+  tags          String[]        @default([])
+  price         Decimal         @db.Decimal(12, 2) @default(0)
+  currency      String          @default("CNY")
   status         ContentStatus   @default(draft)
   version        Int             @default(1)
+  versionLabel   String?
+  unlockScope    String          @default("none")
+  isPurchased    Boolean         @default(false)
+  isLearnable    Boolean         @default(false)
+  isOffline      Boolean         @default(false)
+  supportedLanguages String[]     @default([])
+  chapterCount   Int             @default(0)
+  lessonCount    Int             @default(0)
+  taskCount      Int             @default(0)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   chapters       Chapter[]
@@ -299,6 +315,7 @@ model Chapter {
   id        String        @id @default(cuid())
   courseId  String
   title     String
+  summary   String?
   sortOrder Int           @default(0)
   status    ContentStatus @default(draft)
   createdAt DateTime      @default(now())
@@ -316,6 +333,7 @@ model Lesson {
   chapterId String?
   title     String
   summary   String?
+  durationMinutes Int     @default(0)
   sortOrder Int           @default(0)
   status    ContentStatus @default(draft)
   createdAt DateTime      @default(now())
@@ -338,6 +356,8 @@ model Task {
   lessonId    String?
   title       String
   description String?
+  type        String?
+  points      Int           @default(0)
   sortOrder   Int           @default(0)
   status      ContentStatus @default(draft)
   createdAt   DateTime      @default(now())

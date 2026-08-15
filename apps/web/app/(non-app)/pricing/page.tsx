@@ -19,18 +19,22 @@ function PricingCards() {
             {
                 text: "text-emerald-500",
                 button: "text-emerald-600 hover:text-emerald-500 dark:text-emerald-500 dark:hover:text-emerald-400",
+                buttonHighlight: "bg-emerald-600! border-emerald-600/25! text-white hover:text-white/90",
             },
             {
                 text: "text-blue-500",
                 button: "text-blue-600 hover:text-blue-500 dark:text-blue-500 dark:hover:text-blue-400",
+                buttonHighlight: "bg-blue-600! border-blue-600/25! text-white hover:text-white/90",
             },
             {
                 text: "text-violet-500",
                 button: "text-violet-600 hover:text-violet-500 dark:text-violet-500 dark:hover:text-violet-400",
+                buttonHighlight: "bg-violet-600! border-violet-600/25! text-white hover:text-white/90",
             },
             {
                 text: "text-amber-500",
                 button: "text-amber-600 hover:text-amber-500 dark:text-amber-500 dark:hover:text-amber-400",
+                buttonHighlight: "bg-amber-600! border-amber-600/25! text-white hover:text-white/90",
             },
         ][index] ?? {
             text: "text-muted-foreground",
@@ -66,7 +70,7 @@ function PricingCards() {
                     </ul>
                 </CardContent>
                 <CardFooter>
-                    <Button className={cn("w-full", plan.style.button)} variant={plan.highlighted ? "default" : "outline"}>
+                    <Button className={cn("w-full", plan.highlighted ? plan.style.buttonHighlight : plan.style.button)} variant="outline">
                         {plan.buttonText}
                     </Button>
                 </CardFooter>
