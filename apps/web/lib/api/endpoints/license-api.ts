@@ -35,6 +35,32 @@ export type LicenseOverview = {
     } | null;
 };
 
+export type DeviceItem = {
+    id: string;
+    deviceKey?: string;
+    name: string;
+    platform: string;
+    bindingCount: number;
+    lastSeenAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+    bindings: Array<{
+        id: string;
+        bindingKey: string;
+        deviceSlot: number;
+        isPrimary: boolean;
+        boundAt: string;
+        revokedAt: string | null;
+        deviceFingerprint: string | null;
+        desktopLicense: {
+            id: string;
+            licenseKey: string;
+            status: string;
+            expiresAt: string | null;
+        } | null;
+    }>;
+};
+
 export function getLicenseOverview() {
     return apiRequest<LicenseOverview>("/auth/me/license", {
         method: "GET",
@@ -51,28 +77,44 @@ export function getLicenseHistory() {
 
 export function listDevices() {
     return apiRequest<{
-        devices: Array<{
-            id: string;
-            name: string;
-            platform: string;
-            bindingCount: number;
-            lastSeenAt: string | null;
-            createdAt: string;
-            deviceBindings: Array<{
-                id: string;
-                bindingKey: string;
-                boundAt: string;
-                revokedAt: string | null;
-                isPrimary: boolean;
-                deviceSlot: number;
-                desktopLicense: {
-                    id: string;
-                    licenseKey: string;
-                } | null;
-            }>;
-        }>;
+        devices: DeviceItem[];
     }>("/auth/me/license/devices", {
         method: "GET",
+        headers: getAuthorizedHeaders(),
+    });
+}
+
+export function getDevice(deviceId: string) {
+    return apiRequest<{ device: DeviceItem | null }>(`/auth/me/license/devices/${deviceId}`, {
+        method: "GET",
+        headers: getAuthorizedHeaders(),
+    });
+}
+
+export function generateBindingCode(deviceId: string) {
+    return apiRequest<{ bindingCode: string; deviceId: string }>(`/auth/me/license/devices/${deviceId}/binding-code`, {
+        method: "POST",
+        headers: getAuthorizedHeaders(),
+    });
+}
+
+export function bindDevice(input: {
+    deviceId: string;
+    bindingCode: string;
+    deviceFingerprint?: string | null;
+    deviceSlot?: number;
+    isPrimary?: boolean;
+}) {
+    return apiRequest<{ binding: unknown }>("/auth/me/license/bindings", {
+        method: "POST",
+        headers: getAuthorizedHeaders(),
+        body: input,
+    });
+}
+
+export function unbindDevice(bindingId: string) {
+    return apiRequest<{ success: true }>(`/auth/me/license/bindings/${bindingId}`, {
+        method: "DELETE",
         headers: getAuthorizedHeaders(),
     });
 }

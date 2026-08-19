@@ -111,7 +111,7 @@ export function LeftRail({ collapsed, onToggleAction }: LeftRailProps) {
                     detail: t.shell.browseAndBuyCourses,
                 },
                 {
-                    label: t.portal.owned,
+                    label: t.portal.library,
                     href: "/app/library",
                     icon: LibraryBig,
                     detail: t.shell.ownedContentAndAccess,

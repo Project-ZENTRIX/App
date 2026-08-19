@@ -8,8 +8,14 @@ import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { getCurrentSubscription, listSubscriptions, type SubscriptionItem } from "@/lib/api/endpoints/commerce-api";
-import { formatCurrency, formatDateTime } from "@/lib/format";
+import {
+    cancelAutoRenew,
+    getCurrentSubscription,
+    listSubscriptions,
+    renewSubscription,
+    type SubscriptionItem,
+} from "@/lib/api/endpoints/commerce-api";
+import { formatDateTime } from "@/lib/format";
 import { useDictionary, useLocale } from "@/lib/i18n";
 
 const copy = {
@@ -28,6 +34,7 @@ export default function MembershipPage() {
     const [current, setCurrent] = useState<SubscriptionItem | null>(null);
     const [history, setHistory] = useState<SubscriptionItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [pending, setPending] = useState<"renew" | "cancel" | null>(null);
 
     useEffect(() => {
         let active = true;
@@ -57,6 +64,12 @@ export default function MembershipPage() {
         };
     }, []);
 
+    const refresh = async () => {
+        const [currentSubscription, subscriptionHistory] = await Promise.all([getCurrentSubscription(), listSubscriptions()]);
+        setCurrent(currentSubscription);
+        setHistory(subscriptionHistory.items);
+    };
+
     return (
         <section className="flex flex-col gap-5">
             <header className="border-border/60 bg-muted/20 flex flex-wrap items-center justify-between gap-4 rounded-2xl border p-5">
@@ -70,12 +83,7 @@ export default function MembershipPage() {
                     onClick={() => {
                         setLoading(true);
                         void (async () => {
-                            const [currentSubscription, subscriptionHistory] = await Promise.all([
-                                getCurrentSubscription(),
-                                listSubscriptions(),
-                            ]);
-                            setCurrent(currentSubscription);
-                            setHistory(subscriptionHistory.items);
+                            await refresh();
                             setLoading(false);
                         })();
                     }}>
@@ -121,10 +129,47 @@ export default function MembershipPage() {
                                         </div>
                                     </div>
                                 </div>
-                                <Button className="w-full" variant="outline">
-                                    {current.product
-                                        ? `${t.portal.renewPlan} ${formatCurrency(current.product.price, current.product.currency, locale)}`
-                                        : t.portal.renewPlan}
+                                <Button
+                                    className="w-full"
+                                    variant="secondary"
+                                    onClick={() => {
+                                        if (!current) {
+                                            return;
+                                        }
+
+                                        setPending("renew");
+                                        void (async () => {
+                                            try {
+                                                await renewSubscription(current.id);
+                                                await refresh();
+                                            } finally {
+                                                setPending(null);
+                                            }
+                                        })();
+                                    }}
+                                    disabled={!current || pending !== null}>
+                                    {pending === "renew" ? t.auth.loading : t.portal.renewPlan}
+                                </Button>
+                                <Button
+                                    className="w-full"
+                                    variant="outline"
+                                    onClick={() => {
+                                        if (!current) {
+                                            return;
+                                        }
+
+                                        setPending("cancel");
+                                        void (async () => {
+                                            try {
+                                                await cancelAutoRenew(current.id);
+                                                await refresh();
+                                            } finally {
+                                                setPending(null);
+                                            }
+                                        })();
+                                    }}
+                                    disabled={!current || pending !== null || !current.autoRenew}>
+                                    {pending === "cancel" ? t.auth.loading : locale === "zh-CN" ? "关闭自动续费" : "Turn off auto-renew"}
                                 </Button>
                             </>
                         ) : (

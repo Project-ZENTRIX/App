@@ -16,7 +16,7 @@ export default defineConfig({
     webServer: [
         {
             name: "API",
-            command: "pnpm --filter @workspace-app/api start",
+            command: ".\\node_modules\\.bin\\nest.CMD start",
             cwd: "D:/projects-code/Org.NEXORA-Studios/Project ZENTRIX/apps/api",
             env: {
                 HOST: "127.20.0.1",

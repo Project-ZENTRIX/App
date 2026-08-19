@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MonitorSmartphone } from "lucide-react";
 
@@ -9,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Separator } from "@workspace/ui/components/separator";
-import { getLicenseOverview, listDevices } from "@/lib/api/endpoints/license-api";
+import { getLicenseOverview, listDevices, type DeviceItem } from "@/lib/api/endpoints/license-api";
 import { formatDateTime } from "@/lib/format";
 import { useDictionary, useLocale } from "@/lib/i18n";
 
@@ -18,9 +19,7 @@ export default function DevicesPage() {
     const locale = useLocale();
     const [deviceCount, setDeviceCount] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [devices, setDevices] = useState<
-        Array<{ id: string; name: string; platform: string; bindingCount: number; createdAt: string }>
-    >([]);
+    const [devices, setDevices] = useState<DeviceItem[]>([]);
 
     useEffect(() => {
         let active = true;
@@ -97,7 +96,9 @@ export default function DevicesPage() {
                             <div key={device.id} className="rounded-xl border p-4">
                                 <div className="flex items-center justify-between gap-3">
                                     <div>
-                                        <div className="font-medium">{device.name}</div>
+                                        <Link href={`/app/devices/${device.id}`} className="font-medium underline-offset-4 hover:underline">
+                                            {device.name}
+                                        </Link>
                                         <div className="text-muted-foreground text-sm">{device.platform}</div>
                                     </div>
                                     <Badge variant="outline">
@@ -106,6 +107,11 @@ export default function DevicesPage() {
                                 </div>
                                 <div className="text-muted-foreground mt-2 text-sm">
                                     {t.portal.created} {formatDateTime(device.createdAt, locale)}
+                                </div>
+                                <div className="mt-3">
+                                    <Link href={`/app/devices/${device.id}`} className="text-sm underline-offset-4 hover:underline">
+                                        {t.portal.viewDetails}
+                                    </Link>
                                 </div>
                             </div>
                         ))

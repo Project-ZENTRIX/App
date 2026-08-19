@@ -19,7 +19,7 @@ export default function Page() {
             <div className="mt-8 flex flex-wrap items-center gap-4">
                 <h2 className="text-3xl">{t.landing.tagline}</h2>
                 <RotatingText
-                    texts={[t.landing.accent, t.landing.getStarted, t.landing.readFaq]}
+                    texts={t.landing.rotatingPhrases}
                     mainClassName="px-2 sm:px-2 md:px-3 bg-primary text-foreground text-3xl overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg"
                     staggerFrom="last"
                     initial={{ y: "100%" }}

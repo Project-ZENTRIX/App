@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Check, Crown, Leaf, Sparkles, X, Zap } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
-import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@workspace/ui/components/table";
 import { cn } from "@workspace/ui/lib/utils";
 import { useDictionary } from "@/lib/i18n";
@@ -146,6 +146,40 @@ function PricingComparisonTable() {
 
 export default function Page() {
     const t = useDictionary();
+    const learnerQuotes = [
+        {
+            name: "Mina",
+            role: "Frontend learner",
+            quote: "The plan comparison made it easy to understand where to start without guessing.",
+        },
+        {
+            name: "Leo",
+            role: "Desktop builder",
+            quote: "The package and membership split helped me map what I needed for each stage.",
+        },
+        {
+            name: "Ada",
+            role: "Project mentor",
+            quote: "It feels clear enough to recommend to new learners who want a practical path.",
+        },
+    ];
+    const featuredAuthors = [
+        {
+            name: "Nexa Lab",
+            role: "Systems tutorials",
+            note: "Backend contracts and workflow design.",
+        },
+        {
+            name: "Orbit Studio",
+            role: "UI walkthroughs",
+            note: "Interface patterns and product thinking.",
+        },
+        {
+            name: "Zentrix Team",
+            role: "Core curriculum",
+            note: "Structured lessons for the main portal journey.",
+        },
+    ];
 
     return (
         <div className="w-full">
@@ -159,6 +193,41 @@ export default function Page() {
 
                 <h3 className="mt-12 text-3xl">{t.pricing.comparisonTitle}</h3>
                 <PricingComparisonTable />
+
+                <div className="grid w-full gap-4 xl:grid-cols-2">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>{t.pricing.socialProofTitle}</CardTitle>
+                            <CardDescription>{t.pricing.socialProofDescription}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid gap-3 md:grid-cols-3">
+                            {learnerQuotes.map((item) => (
+                                <div key={item.name} className="rounded-xl border p-4">
+                                    <div className="font-medium">{item.name}</div>
+                                    <div className="text-muted-foreground text-xs">{item.role}</div>
+                                    <p className="text-muted-foreground mt-3 text-sm">{item.quote}</p>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>{t.pricing.featuredAuthorsTitle}</CardTitle>
+                            <CardDescription>{t.pricing.featuredAuthorsDescription}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid gap-3 md:grid-cols-3">
+                            {featuredAuthors.map((item) => (
+                                <div key={item.name} className="rounded-xl border p-4">
+                                    <div className="font-medium">{item.name}</div>
+                                    <div className="text-muted-foreground text-xs">{item.role}</div>
+                                    <p className="text-muted-foreground mt-3 text-sm">{item.note}</p>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </div>
+
                 <Button asChild variant="ghost">
                     <Link href="/account/login">
                         {t.landing.getStarted}

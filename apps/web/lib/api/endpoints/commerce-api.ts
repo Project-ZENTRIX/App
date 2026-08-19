@@ -33,6 +33,7 @@ export type OrderItem = {
         name: string;
         quantity: number;
         unitPrice: string;
+        subtotal: string;
     }>;
     payments: Array<{
         id: string;
@@ -43,6 +44,8 @@ export type OrderItem = {
         createdAt: string;
     }>;
 };
+
+export type OrderDetail = OrderItem;
 
 export type SubscriptionItem = {
     id: string;
@@ -74,6 +77,50 @@ export function listOrders() {
     });
 }
 
+export function getOrder(orderId: string) {
+    return apiRequest<OrderDetail | null>(`/orders/${orderId}`, {
+        method: "GET",
+        headers: getAuthorizedHeaders(),
+    });
+}
+
+export function createOrder(input: { items: Array<{ productId: string; quantity?: number }> }) {
+    return apiRequest<OrderDetail>("/orders", {
+        method: "POST",
+        headers: getAuthorizedHeaders(),
+        body: input,
+    });
+}
+
+export function cancelOrder(orderId: string) {
+    return apiRequest<{ success: true }>(`/orders/${orderId}/cancel`, {
+        method: "POST",
+        headers: getAuthorizedHeaders(),
+    });
+}
+
+export function payOrder(orderId: string) {
+    return apiRequest<{ id: string; paymentNo: string; status: string; amount: string; currency: string }>(
+        `/orders/${orderId}/pay`,
+        {
+            method: "POST",
+            headers: getAuthorizedHeaders(),
+        }
+    );
+}
+
+export function getPaymentStatus(orderId: string) {
+    return apiRequest<{
+        orderId: string;
+        orderStatus: string;
+        paymentStatus: string;
+        paymentId: string | null;
+    }>(`/orders/${orderId}/payment-status`, {
+        method: "GET",
+        headers: getAuthorizedHeaders(),
+    });
+}
+
 export function getCurrentSubscription() {
     return apiRequest<SubscriptionItem | null>("/subscriptions/current", {
         method: "GET",
@@ -84,6 +131,27 @@ export function getCurrentSubscription() {
 export function listSubscriptions() {
     return apiRequest<{ items: SubscriptionItem[] }>("/subscriptions", {
         method: "GET",
+        headers: getAuthorizedHeaders(),
+    });
+}
+
+export function getSubscription(subscriptionId: string) {
+    return apiRequest<SubscriptionItem | null>(`/subscriptions/${subscriptionId}`, {
+        method: "GET",
+        headers: getAuthorizedHeaders(),
+    });
+}
+
+export function renewSubscription(subscriptionId: string) {
+    return apiRequest<SubscriptionItem>(`/subscriptions/${subscriptionId}/renew`, {
+        method: "PATCH",
+        headers: getAuthorizedHeaders(),
+    });
+}
+
+export function cancelAutoRenew(subscriptionId: string) {
+    return apiRequest<{ success: true; subscription: SubscriptionItem }>(`/subscriptions/${subscriptionId}/cancel-autorenew`, {
+        method: "POST",
         headers: getAuthorizedHeaders(),
     });
 }

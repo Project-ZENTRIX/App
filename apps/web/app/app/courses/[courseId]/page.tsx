@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRight, BookOpenText, Layers3, Sparkles } from "lucide-react";
 
@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { Separator } from "@workspace/ui/components/separator";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { createOrder, listProducts, type ProductItem } from "@/lib/api/endpoints/commerce-api";
 import { getCourse, type CourseDetail } from "@/lib/api/endpoints/catalog-api";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
@@ -43,6 +44,11 @@ const copy = {
         nextStepDescription: "可以直接使用该课包，也可以继续回到门户。",
         continueLearning: "继续学习",
         backToMarket: "返回市场",
+        purchaseTitle: "可购买方案",
+        purchaseDescription: "如果该课包已经上架，可以直接创建订单并前往结账页。",
+        purchaseButton: "购买课包",
+        purchasePending: "正在创建订单...",
+        purchaseUnavailable: "当前没有可购买的商品。",
         chapterPreview: "章节预览",
         chapterPreviewDescription: "预览章节和其下课程。",
         noChapterPreviewTitle: "暂无章节预览",
@@ -79,6 +85,11 @@ const copy = {
         nextStepDescription: "Use the package directly or continue from the portal.",
         continueLearning: "Continue learning",
         backToMarket: "Back to market",
+        purchaseTitle: "Purchase options",
+        purchaseDescription: "If this package is live, you can create an order and go to checkout immediately.",
+        purchaseButton: "Buy package",
+        purchasePending: "Creating order...",
+        purchaseUnavailable: "No purchasable product is available right now.",
         chapterPreview: "Chapter preview",
         chapterPreviewDescription: "Preview chapters and the lessons underneath each group.",
         noChapterPreviewTitle: "No chapter preview",
@@ -101,9 +112,12 @@ function SectionLabel({ title, description }: { title: string; description: stri
 
 export default function CourseDetailPage() {
     const locale = useLocale();
+    const router = useRouter();
     const text = copy[locale];
     const [course, setCourse] = useState<CourseDetail | null>(null);
+    const [product, setProduct] = useState<ProductItem | null>(null);
     const [loading, setLoading] = useState(true);
+    const [ordering, setOrdering] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const params = useParams<{ courseId: string }>();
     const courseId = params.courseId;
@@ -113,12 +127,13 @@ export default function CourseDetailPage() {
 
         const loadCourse = async () => {
             try {
-                const detail = await getCourse(courseId);
+                const [detail, products] = await Promise.all([getCourse(courseId), listProducts({ courseId })]);
                 if (!active) {
                     return;
                 }
 
                 setCourse(detail);
+                setProduct(products.items[0] ?? null);
                 setError(null);
             } catch (loadError) {
                 if (!active) {
@@ -144,6 +159,29 @@ export default function CourseDetailPage() {
             active = false;
         };
     }, [courseId, locale]);
+
+    const handleBuyNow = async () => {
+        if (!product) {
+            return;
+        }
+
+        setOrdering(true);
+        try {
+            const order = await createOrder({
+                items: [
+                    {
+                        productId: product.id,
+                    },
+                ],
+            });
+
+            router.push(`/app/orders/${order.id}`);
+        } catch (buyError) {
+            setError(buyError instanceof Error ? buyError.message : locale === "zh-CN" ? "无法创建订单" : "Unable to create order");
+        } finally {
+            setOrdering(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -252,6 +290,27 @@ export default function CourseDetailPage() {
                         <CardDescription>{text.nextStepDescription}</CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-3">
+                        <div className="rounded-xl border p-4">
+                            <div className="text-sm font-medium">{text.purchaseTitle}</div>
+                            <div className="text-muted-foreground mt-1 text-sm">{text.purchaseDescription}</div>
+                            <div className="mt-4 flex items-center justify-between gap-3">
+                                <div className="text-sm">
+                                    {product ? (
+                                        <>
+                                            <div className="font-medium">{product.name}</div>
+                                            <div className="text-muted-foreground">
+                                                {formatCurrency(Number(product.price), product.currency, locale)}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="text-muted-foreground">{text.purchaseUnavailable}</div>
+                                    )}
+                                </div>
+                                <Button type="button" variant="secondary" disabled={!product || ordering} onClick={handleBuyNow}>
+                                    {ordering ? text.purchasePending : text.purchaseButton}
+                                </Button>
+                            </div>
+                        </div>
                         <Button asChild className="w-full justify-between">
                             <Link href="/app/library">
                                 {text.continueLearning}

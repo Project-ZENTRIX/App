@@ -32,13 +32,14 @@ export type Translations = {
     landing: {
         title: string;
         tagline: string;
-        accent: string;
+        rotatingPhrases: string[];
         getStarted: string;
         readFaq: string;
     };
     portal: {
         catalog: string;
         courseMarket: string;
+        library: string;
         browseDescription: string;
         searchCourses: string;
         searchPlaceholder: string;
@@ -123,6 +124,10 @@ export type Translations = {
         recentEvents: string;
         noBadgesUnlockedYet: string;
         noProgressEventsYet: string;
+        lastSyncAt: string;
+        relatedCourses: string;
+        relatedCoursesDescription: string;
+        noRelatedCourses: string;
         devicesTitle: string;
         devicesDescription: string;
         licenseSummary: string;
@@ -163,6 +168,10 @@ export type Translations = {
     pricing: {
         heroTitle: string;
         comparisonTitle: string;
+        socialProofTitle: string;
+        socialProofDescription: string;
+        featuredAuthorsTitle: string;
+        featuredAuthorsDescription: string;
         plans: Array<{
             name: string;
             price: string;
@@ -180,14 +189,23 @@ export type Translations = {
         signInSuccess: string;
         signInFailed: string;
         forgotPassword: string;
+        emailLabel: string;
+        passwordLabel: string;
+        signInPromptPrefix: string;
         createAccountTitle: string;
         createAccountDescription: string;
         createAccountButton: string;
         createAccountSuccess: string;
         createAccountFailed: string;
+        emailHint: string;
+        confirmPasswordLabel: string;
+        passwordHint: string;
+        signupPromptPrefix: string;
         continueWith: string;
         footerTerms: string;
         footerPolicy: string;
+        agreementPrefix: string;
+        agreementAnd: string;
         loading: string;
     };
     dashboard: {

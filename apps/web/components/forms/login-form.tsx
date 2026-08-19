@@ -56,7 +56,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                                 <p className="text-muted-foreground text-balance">{t.auth.signInDescription}</p>
                             </div>
                             <Field>
-                                <FieldLabel htmlFor="email">Email</FieldLabel>
+                                <FieldLabel htmlFor="email">{t.auth.emailLabel}</FieldLabel>
                                 <Input
                                     id="email"
                                     type="email"
@@ -69,10 +69,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                             </Field>
                             <Field>
                                 <div className="flex items-center">
-                                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                                    <a href="#" className="ms-auto text-sm underline-offset-2 hover:underline">
+                                    <FieldLabel htmlFor="password">{t.auth.passwordLabel}</FieldLabel>
+                                    <Link href="/account/forgot-password" className="ms-auto text-sm underline-offset-2 hover:underline">
                                         {t.auth.forgotPassword}
-                                    </a>
+                                    </Link>
                                 </div>
                                 <Input
                                     id="password"
@@ -110,7 +110,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                                 </Button>
                             </Field>
                             <FieldDescription className="text-center">
-                                Don&apos;t have an account? <Link href="/account/signup">{t.navigation.signup}</Link>
+                                {t.auth.signInPromptPrefix} <Link href="/account/signup">{t.navigation.signup}</Link>
                             </FieldDescription>
                         </FieldGroup>
                     </form>
@@ -127,7 +127,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 </CardContent>
             </Card>
             <FieldDescription className="px-6 text-center">
-                By clicking continue, you agree to our <a href="#">{t.auth.footerTerms}</a> and{" "}
+                {t.auth.agreementPrefix} <a href="#">{t.auth.footerTerms}</a> {t.auth.agreementAnd}{" "}
                 <a href="#">{t.auth.footerPolicy}</a>.
             </FieldDescription>
         </div>

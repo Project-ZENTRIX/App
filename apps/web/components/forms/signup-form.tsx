@@ -50,7 +50,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                 <p className="text-muted-foreground text-sm text-balance">{t.auth.createAccountDescription}</p>
                             </div>
                             <Field>
-                                <FieldLabel htmlFor="email">Email</FieldLabel>
+                                <FieldLabel htmlFor="email">{t.auth.emailLabel}</FieldLabel>
                                 <Input
                                     id="email"
                                     type="email"
@@ -60,15 +60,12 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     value={email}
                                     onChange={(event) => setEmail(event.target.value)}
                                 />
-                                <FieldDescription>
-                                    We&apos;ll use this to contact you. <br />
-                                    We will not share your email with anyone else.
-                                </FieldDescription>
+                                <FieldDescription>{t.auth.emailHint}</FieldDescription>
                             </Field>
                             <Field>
                                 <Field className="grid grid-cols-2 gap-4">
                                     <Field>
-                                        <FieldLabel htmlFor="password">Password</FieldLabel>
+                                        <FieldLabel htmlFor="password">{t.auth.passwordLabel}</FieldLabel>
                                         <Input
                                             id="password"
                                             type="password"
@@ -79,7 +76,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                         />
                                     </Field>
                                     <Field>
-                                        <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
+                                        <FieldLabel htmlFor="confirm-password">{t.auth.confirmPasswordLabel}</FieldLabel>
                                         <Input
                                             id="confirm-password"
                                             type="password"
@@ -90,7 +87,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                         />
                                     </Field>
                                 </Field>
-                                <FieldDescription>Must be at least 8 characters long.</FieldDescription>
+                                <FieldDescription>{t.auth.passwordHint}</FieldDescription>
                             </Field>
                             <Field>
                                 <Button type="submit" disabled={pending}>
@@ -119,7 +116,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                 </Button>
                             </Field>
                             <FieldDescription className="text-center">
-                                Already have an account? <Link href="/account/login">{t.navigation.login}</Link>
+                                {t.auth.signupPromptPrefix} <Link href="/account/login">{t.navigation.login}</Link>
                             </FieldDescription>
                         </FieldGroup>
                     </form>
@@ -136,7 +133,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                 </CardContent>
             </Card>
             <FieldDescription className="px-6 text-center">
-                By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                {t.auth.agreementPrefix} <a href="#">{t.auth.footerTerms}</a> {t.auth.agreementAnd}{" "}
+                <a href="#">{t.auth.footerPolicy}</a>.
             </FieldDescription>
         </div>
     );

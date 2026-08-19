@@ -13,6 +13,61 @@ test.describe("Web pages end to end", () => {
         await expect(page.getByRole("button", { name: "Choose Cyrum" })).toBeVisible();
         await expect(page.getByRole("columnheader", { name: "Cyrum" })).toBeVisible();
         await expect(page.getByRole("heading", { name: "Comparing plans" })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Recommended by learners" })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Featured authors" })).toBeVisible();
+    });
+
+    test("renders the forgot password page", async ({ page }) => {
+        await page.goto("/account/forgot-password");
+        await expect(page.getByRole("heading", { name: "Reset your password" })).toBeVisible();
+        await expect(page.getByLabel("Email")).toBeVisible();
+        await expect(page.getByRole("button", { name: "Send reset link" })).toBeVisible();
+        await expect(page.getByRole("link", { name: "Back to sign in" })).toBeVisible();
+    });
+
+    test("renders the Chinese landing and auth copy", async ({ page }) => {
+        const email = createTestEmail("zh");
+        const password = createTestPassword();
+
+        await page.context().addCookies([
+            {
+                name: "zentrix-locale",
+                value: "zh-CN",
+                url: "http://127.20.0.1:3000",
+            },
+        ]);
+
+        await page.goto("/");
+        await expect(page.getByRole("button", { name: "立即开始" })).toBeVisible();
+        await expect(page.getByRole("link", { name: "查看 FAQ" })).toBeVisible();
+        const hero = page.locator('section[id="_zentrix.comp-content"]');
+        await expect(hero).toContainText("学编程");
+        await expect(hero).toContainText("讲实战");
+
+        await page.goto("/account/signup");
+        await expect(page.getByLabel("邮箱")).toBeVisible();
+        await expect(page.getByLabel("密码", { exact: true })).toBeVisible();
+        await expect(page.getByLabel("确认密码")).toBeVisible();
+        await expect(page.getByText("我们会用这个邮箱联系你，不会向其他人公开。")).toBeVisible();
+        await expect(page.getByText("密码至少需要 8 个字符。")).toBeVisible();
+        await expect(page.getByText("已经有账号了？")).toBeVisible();
+        await expect(page.getByText("点击继续，即表示你同意我们的")).toBeVisible();
+
+        await page.getByLabel("邮箱").fill(email);
+        await page.getByLabel("密码", { exact: true }).fill(password);
+        await page.getByLabel("确认密码").fill(password);
+        await page.getByRole("button", { name: "创建账号" }).click();
+        await expect(page).toHaveURL(/\/account\/login$/);
+
+        await expect(page.getByLabel("邮箱")).toBeVisible();
+        await expect(page.getByLabel("密码", { exact: true })).toBeVisible();
+        await expect(page.getByText("还没有账号？")).toBeVisible();
+
+        await page.getByLabel("邮箱").fill(email);
+        await page.getByLabel("密码", { exact: true }).fill(password);
+        await page.locator('section[id="_zentrix.comp-content"] button[type="submit"]').click();
+        await expect(page).toHaveURL(/\/app$/);
+        await expect(page.getByRole("link", { name: "课程库" }).first()).toBeVisible();
     });
 
     test("renders the FAQ page", async ({ page }) => {
@@ -77,7 +132,7 @@ test.describe("Web pages end to end", () => {
 
         await page.goto("/app/settings/notifications");
         await expect(page.getByRole("tab", { name: "Notifications" })).toBeVisible();
-        await page.getByLabel("SMS notifications").click();
+        await page.getByLabel("Email notifications").click();
         await page.getByRole("button", { name: "Save settings" }).click();
         await expect(page.getByRole("button", { name: "Save settings" })).toBeVisible();
 
@@ -131,6 +186,32 @@ test.describe("Web pages end to end", () => {
         await expect(page.getByRole("link", { name: "Open details" }).first()).toBeVisible();
     });
 
+    test("lets a learner buy a course package and review the created order", async ({ page, request }) => {
+        const email = createTestEmail("buy");
+        const password = createTestPassword();
+
+        const signup = await expectApiOk<{ token: string }>(
+            request.post(apiUrl("/auth/signup"), {
+                data: { email, password, confirmPassword: password },
+            }),
+            "seed account should be created"
+        );
+
+        await page.addInitScript((token) => {
+            window.localStorage.setItem("zentrix-auth-token", token);
+        }, signup.token);
+
+        await page.goto("/app/courses/course-api-design");
+        const buyButton = page.getByRole("button", { name: "Buy package" });
+        await expect(buyButton).toBeVisible();
+        await buyButton.click();
+
+        await expect(page).toHaveURL(/\/app\/orders\/.+/);
+        await expect(page.getByRole("heading", { name: "Order detail" })).toBeVisible();
+        await expect(page.getByRole("button", { name: "Pay now" })).toBeVisible();
+        await expect(page.getByRole("button", { name: "Cancel order" })).toBeVisible();
+    });
+
     test("renders commerce, license, and progress surfaces", async ({ page, request }) => {
         const email = createTestEmail("commerce");
         const password = createTestPassword();
@@ -161,5 +242,9 @@ test.describe("Web pages end to end", () => {
         await page.goto("/app/progress");
         await expect(page.locator("h1").filter({ hasText: "Achievements & progress" })).toBeVisible();
         await expect(page.getByText("Learning summary")).toBeVisible();
+        await expect(page.getByText("Achievements")).toBeVisible();
+        await expect(page.getByText("Levels")).toBeVisible();
+        await expect(page.getByText("Last sync")).toBeVisible();
+        await expect(page.getByText("Related courses")).toBeVisible();
     });
 });

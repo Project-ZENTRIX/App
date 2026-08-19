@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ReceiptText } from "lucide-react";
+import { ArrowRight, ReceiptText } from "lucide-react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
@@ -15,9 +16,11 @@ import { useDictionary, useLocale } from "@/lib/i18n";
 const copy = {
     "zh-CN": {
         paymentInitiated: "已发起",
+        details: "详情",
     },
     "en-GB": {
         paymentInitiated: "initiated",
+        details: "Details",
     },
 } as const;
 
@@ -81,6 +84,7 @@ export default function OrdersPage() {
                                     <TableHead>{t.portal.total}</TableHead>
                                     <TableHead>{t.portal.created}</TableHead>
                                     <TableHead>{t.portal.payment}</TableHead>
+                                    <TableHead>{text.details}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -95,6 +99,12 @@ export default function OrdersPage() {
                                         <TableCell>{formatCurrency(order.totalAmount, order.currency, locale)}</TableCell>
                                         <TableCell>{formatDateTime(order.createdAt, locale)}</TableCell>
                                         <TableCell>{order.payments[0]?.status ?? text.paymentInitiated}</TableCell>
+                                        <TableCell>
+                                            <Link className="inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline" href={`/app/orders/${order.id}`}>
+                                                {t.portal.viewDetails}
+                                                <ArrowRight className="size-3.5" />
+                                            </Link>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
