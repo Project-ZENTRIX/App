@@ -1,21 +1,40 @@
-# shadcn/ui monorepo template
+# Project ZENTRIX
 
-This is a Next.js monorepo template with shadcn/ui.
+Project ZENTRIX is a learning platform for coding practice and project-based study.
 
-## Adding components
+This repository contains:
 
-To add components to your app, run the following command at the root of your `web` app:
+- `apps/web` for the user-facing web app
+- `apps/api` for the backend API
+- shared packages for UI, TypeScript, and linting setup
+
+## Requirements
+
+- Node.js 24 or newer
+- pnpm 11
+
+## Quick Start
 
 ```bash
-pnpm dlx shadcn@latest add button -c apps/web
+pnpm install
+pnpm dev
 ```
 
-This will place the ui components in the `packages/ui/src/components` directory.
+## Available Scripts
 
-## Using components
+- `pnpm dev` starts the development environment
+- `pnpm build` builds all apps and packages
+- `pnpm lint` runs lint checks
+- `pnpm format` formats the codebase
+- `pnpm typecheck` runs TypeScript checks
+- `pnpm test:e2e` runs the web end-to-end tests
 
-To use the components in your app, import them from the `ui` package.
+## Project Status
 
-```tsx
-import { Button } from "@workspace/ui/components/button";
-```
+ZENTRIX is under active development. The current focus is the core learning flow, account pages, and backend support for the platform.
+
+## Notes
+
+- The web app is built with Next.js.
+- The API service is built with NestJS.
+- Shared UI components live in `packages/ui`.
