@@ -15,7 +15,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { setAuthToken, getCurrentAccount, type UserProfile } from "@/lib/api/endpoints/auth-api";
+import { setAuthToken } from "@/lib/auth/auth-token";
+import { getCurrentAccount, type UserProfile } from "@/lib/supabase/auth-queries";
 import { useDictionary } from "@/lib/i18n";
 
 function getDisplayName(user: UserProfile | null) {

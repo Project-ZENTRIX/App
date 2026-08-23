@@ -9,8 +9,9 @@
         "allowSyntheticDefaultImports": true,
         "target": "ES2022",
         "sourceMap": true,
-        "outDir": "./dist",
-        "incremental": true,
+        "outDir": "dist",
+        "rootDir": "src",
+        "incremental": false,
         "skipLibCheck": true,
         "strictNullChecks": true,
         "noImplicitAny": true,
@@ -18,7 +19,8 @@
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "esModuleInterop": true,
-        "resolveJsonModule": true,
+        "resolveJsonModule": true
     },
     "include": ["src/**/*"]
 }
+

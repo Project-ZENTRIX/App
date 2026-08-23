@@ -10,12 +10,8 @@ import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import {
-    cancelOrder,
-    getOrder,
-    payOrder,
-    type OrderDetail,
-} from "@/lib/api/endpoints/commerce-api";
+import { getOrder, getPaymentStatus, type OrderDetail, type PaymentStatus } from "@/lib/supabase/commerce-queries";
+import { cancelOrder, payOrder } from "@/lib/api/endpoints/commerce-api";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 
@@ -38,6 +34,8 @@ const copy = {
         createdAt: "创建时间",
         updatedAt: "更新时间",
         orderNo: "订单号",
+        paymentStatus: "支付状态",
+        paymentId: "支付编号",
         backToOrders: "返回订单列表",
     },
     "en-GB": {
@@ -58,6 +56,8 @@ const copy = {
         createdAt: "Created at",
         updatedAt: "Updated at",
         orderNo: "Order no.",
+        paymentStatus: "Payment status",
+        paymentId: "Payment ID",
         backToOrders: "Back to orders",
     },
 } as const;
@@ -68,6 +68,7 @@ export default function OrderDetailPage() {
     const params = useParams<{ orderId: string }>();
     const orderId = params.orderId;
     const [order, setOrder] = useState<OrderDetail | null>(null);
+    const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState<"pay" | "cancel" | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -77,9 +78,23 @@ export default function OrderDetailPage() {
         try {
             const detail = await getOrder(orderId);
             setOrder(detail);
+            if (!detail) {
+                setPaymentStatus(null);
+                setError(null);
+                return;
+            }
+
+            const status = await getPaymentStatus(detail.id);
+            setPaymentStatus(status);
             setError(null);
         } catch (loadError) {
-            setError(loadError instanceof Error ? loadError.message : locale === "zh-CN" ? "无法加载订单详情" : "Unable to load order detail");
+            setError(
+                loadError instanceof Error
+                    ? loadError.message
+                    : locale === "zh-CN"
+                      ? "无法加载订单详情"
+                      : "Unable to load order detail"
+            );
         } finally {
             setLoading(false);
         }
@@ -101,7 +116,13 @@ export default function OrderDetailPage() {
             await payOrder(order.id);
             await loadOrder();
         } catch (payError) {
-            setError(payError instanceof Error ? payError.message : locale === "zh-CN" ? "无法继续支付" : "Unable to continue payment");
+            setError(
+                payError instanceof Error
+                    ? payError.message
+                    : locale === "zh-CN"
+                      ? "无法继续支付"
+                      : "Unable to continue payment"
+            );
         } finally {
             setSubmitting(null);
         }
@@ -117,7 +138,13 @@ export default function OrderDetailPage() {
             await cancelOrder(order.id);
             await loadOrder();
         } catch (cancelError) {
-            setError(cancelError instanceof Error ? cancelError.message : locale === "zh-CN" ? "无法取消订单" : "Unable to cancel order");
+            setError(
+                cancelError instanceof Error
+                    ? cancelError.message
+                    : locale === "zh-CN"
+                      ? "无法取消订单"
+                      : "Unable to cancel order"
+            );
         } finally {
             setSubmitting(null);
         }
@@ -133,7 +160,11 @@ export default function OrderDetailPage() {
     }
 
     if (error) {
-        return <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm">{error}</div>;
+        return (
+            <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm">
+                {error}
+            </div>
+        );
     }
 
     if (!order) {
@@ -145,7 +176,9 @@ export default function OrderDetailPage() {
                     </EmptyMedia>
                     <EmptyTitle>{text.title}</EmptyTitle>
                     <EmptyContent>
-                        <EmptyDescription>{locale === "zh-CN" ? "未找到订单。" : "The order could not be found."}</EmptyDescription>
+                        <EmptyDescription>
+                            {locale === "zh-CN" ? "未找到订单。" : "The order could not be found."}
+                        </EmptyDescription>
                     </EmptyContent>
                 </EmptyHeader>
             </Empty>
@@ -196,10 +229,28 @@ export default function OrderDetailPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>{text.orderSummary}</CardTitle>
-                        <CardDescription>{locale === "zh-CN" ? "在这里继续处理付款或取消。" : "Use these actions to finish or cancel the order."}</CardDescription>
+                        <CardDescription>
+                            {locale === "zh-CN"
+                                ? "在这里继续处理付款或取消。"
+                                : "Use these actions to finish or cancel the order."}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                        <Button className="w-full justify-between" disabled={!order.canPay || submitting !== null} onClick={handlePay}>
+                        <div className="rounded-xl border p-4">
+                            <CardTitle className="text-base">{text.paymentStatus}</CardTitle>
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                                <Badge variant={paymentStatus?.paymentStatus === "succeeded" ? "secondary" : "outline"}>
+                                    {paymentStatus?.paymentStatus ?? "initiated"}
+                                </Badge>
+                                <span className="text-muted-foreground text-sm">
+                                    {text.paymentId}: {paymentStatus?.paymentId ?? "-"}
+                                </span>
+                            </div>
+                        </div>
+                        <Button
+                            className="w-full justify-between"
+                            disabled={!order.canPay || submitting !== null}
+                            onClick={handlePay}>
                             {submitting === "pay" ? text.payPending : text.payNow}
                             <ArrowRight />
                         </Button>
@@ -225,7 +276,9 @@ export default function OrderDetailPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>{text.orderItems}</CardTitle>
-                        <CardDescription>{locale === "zh-CN" ? "订单中包含的商品。" : "Products included in this order."}</CardDescription>
+                        <CardDescription>
+                            {locale === "zh-CN" ? "订单中包含的商品。" : "Products included in this order."}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         {order.items.length ? (
@@ -238,7 +291,9 @@ export default function OrderDetailPage() {
                                                 {item.quantity} × {formatCurrency(item.unitPrice, order.currency, locale)}
                                             </div>
                                         </div>
-                                        <div className="font-medium">{formatCurrency(item.subtotal, order.currency, locale)}</div>
+                                        <div className="font-medium">
+                                            {formatCurrency(item.subtotal, order.currency, locale)}
+                                        </div>
                                     </div>
                                 </div>
                             ))
@@ -247,7 +302,9 @@ export default function OrderDetailPage() {
                                 <EmptyHeader>
                                     <EmptyTitle>{text.noItems}</EmptyTitle>
                                     <EmptyContent>
-                                        <EmptyDescription>{locale === "zh-CN" ? "订单没有明细。" : "This order has no items."}</EmptyDescription>
+                                        <EmptyDescription>
+                                            {locale === "zh-CN" ? "订单没有明细。" : "This order has no items."}
+                                        </EmptyDescription>
                                     </EmptyContent>
                                 </EmptyHeader>
                             </Empty>
@@ -258,7 +315,9 @@ export default function OrderDetailPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>{text.paymentHistory}</CardTitle>
-                        <CardDescription>{locale === "zh-CN" ? "支付记录和状态。" : "Payments attached to this order."}</CardDescription>
+                        <CardDescription>
+                            {locale === "zh-CN" ? "支付记录和状态。" : "Payments attached to this order."}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         {order.payments.length ? (
@@ -267,9 +326,13 @@ export default function OrderDetailPage() {
                                     <div className="flex items-center justify-between gap-3">
                                         <div>
                                             <div className="font-medium">{payment.paymentNo}</div>
-                                            <div className="text-muted-foreground text-sm">{formatDateTime(payment.createdAt, locale)}</div>
+                                            <div className="text-muted-foreground text-sm">
+                                                {formatDateTime(payment.createdAt, locale)}
+                                            </div>
                                         </div>
-                                        <Badge variant={payment.status === "succeeded" ? "secondary" : "outline"}>{payment.status}</Badge>
+                                        <Badge variant={payment.status === "succeeded" ? "secondary" : "outline"}>
+                                            {payment.status}
+                                        </Badge>
                                     </div>
                                     <div className="text-muted-foreground mt-2 text-sm">
                                         {formatCurrency(payment.amount, payment.currency, locale)}

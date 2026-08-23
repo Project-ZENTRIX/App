@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
-import { updatePassword } from "@/lib/api/endpoints/auth-api";
+import { updatePassword } from "@/lib/supabase/auth-queries";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 

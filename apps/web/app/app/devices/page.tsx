@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Separator } from "@workspace/ui/components/separator";
-import { getLicenseOverview, listDevices, type DeviceItem } from "@/lib/api/endpoints/license-api";
+import { getLicenseOverview, listDevices, type DeviceItem } from "@/lib/supabase/license-queries";
 import { formatDateTime } from "@/lib/format";
 import { useDictionary, useLocale } from "@/lib/i18n";
 
@@ -96,7 +96,9 @@ export default function DevicesPage() {
                             <div key={device.id} className="rounded-xl border p-4">
                                 <div className="flex items-center justify-between gap-3">
                                     <div>
-                                        <Link href={`/app/devices/${device.id}`} className="font-medium underline-offset-4 hover:underline">
+                                        <Link
+                                            href={`/app/devices/${device.id}`}
+                                            className="font-medium underline-offset-4 hover:underline">
                                             {device.name}
                                         </Link>
                                         <div className="text-muted-foreground text-sm">{device.platform}</div>
@@ -109,7 +111,9 @@ export default function DevicesPage() {
                                     {t.portal.created} {formatDateTime(device.createdAt, locale)}
                                 </div>
                                 <div className="mt-3">
-                                    <Link href={`/app/devices/${device.id}`} className="text-sm underline-offset-4 hover:underline">
+                                    <Link
+                                        href={`/app/devices/${device.id}`}
+                                        className="text-sm underline-offset-4 hover:underline">
                                         {t.portal.viewDetails}
                                     </Link>
                                 </div>

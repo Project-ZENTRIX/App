@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { getCurrentAccount } from "@/lib/api/endpoints/auth-api";
+import { getCurrentAccount } from "@/lib/supabase/auth-queries";
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
     const router = useRouter();

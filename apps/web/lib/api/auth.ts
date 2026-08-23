@@ -1,4 +1,4 @@
-import { getStoredAuthToken } from "./endpoints/auth-api";
+import { getAuthToken as getStoredAuthToken } from "@/lib/auth/auth-token";
 
 export function getAuthorizedHeaders() {
     const token = getStoredAuthToken();

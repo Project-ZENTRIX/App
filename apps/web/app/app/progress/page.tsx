@@ -10,9 +10,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { Progress } from "@workspace/ui/components/progress";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { listCourses } from "@/lib/api/endpoints/catalog-api";
-import { getProgressOverview } from "@/lib/api/endpoints/progress-api";
-import { getLevelProgress, listAchievements, listLevels, listUserAchievements } from "@/lib/api/endpoints/achievement-api";
+import { listCourses } from "@/lib/supabase/catalog-queries";
+import { getProgressOverview } from "@/lib/supabase/progress-queries";
+import { getLevelProgress, listAchievements, listLevels, listUserAchievements } from "@/lib/supabase/achievement-queries";
 import { formatDateTime } from "@/lib/format";
 import { useDictionary, useLocale } from "@/lib/i18n";
 
@@ -26,14 +26,34 @@ export default function ProgressPage() {
     const [completionRate, setCompletionRate] = useState(0);
     const [lastSyncAt, setLastSyncAt] = useState<string | null>(null);
     const [recentEvents, setRecentEvents] = useState<Array<{ id: string; eventType: string; createdAt: string }>>([]);
-    const [achievements, setAchievements] = useState<Array<{ id: string; code: string; name: string; description: string | null }>>([]);
-    const [earnedAchievements, setEarnedAchievements] = useState<Array<{ id: string; achievedAt: string; achievement: { id: string; code: string; name: string; description: string | null } | null }>>([]);
+    const [achievements, setAchievements] = useState<
+        Array<{ id: string; code: string; name: string; description: string | null }>
+    >([]);
+    const [earnedAchievements, setEarnedAchievements] = useState<
+        Array<{
+            id: string;
+            achievedAt: string;
+            achievement: { id: string; code: string; name: string; description: string | null } | null;
+        }>
+    >([]);
     const [levels, setLevels] = useState<Array<{ id: string; code: string; name: string; rank: number }>>([]);
     const [relatedCourses, setRelatedCourses] = useState<Array<{ id: string; title: string; summary: string }>>([]);
     const [levelProgress, setLevelProgress] = useState<{
-        currentLevel: { id: string; progress: number; level: { id: string; code: string; name: string; rank: number } | null; createdAt: string; updatedAt: string } | null;
+        currentLevel: {
+            id: string;
+            progress: number;
+            level: { id: string; code: string; name: string; rank: number } | null;
+            createdAt: string;
+            updatedAt: string;
+        } | null;
         nextLevel: { id: string; code: string; name: string; rank: number } | null;
-        items: Array<{ id: string; progress: number; level: { id: string; code: string; name: string; rank: number } | null; createdAt: string; updatedAt: string }>;
+        items: Array<{
+            id: string;
+            progress: number;
+            level: { id: string; code: string; name: string; rank: number } | null;
+            createdAt: string;
+            updatedAt: string;
+        }>;
     } | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -272,7 +292,7 @@ export default function ProgressPage() {
                                         <Badge variant="secondary">{t.portal.achievements}</Badge>
                                     </div>
                                     <div className="text-muted-foreground mt-2 text-sm">
-                                        {item.achievement?.description ?? (item.achievement?.code ?? item.id)}
+                                        {item.achievement?.description ?? item.achievement?.code ?? item.id}
                                     </div>
                                 </div>
                             ))
@@ -310,7 +330,9 @@ export default function ProgressPage() {
                         ) : levelProgress?.currentLevel ? (
                             <div className="space-y-3">
                                 <div className="rounded-xl border p-4">
-                                    <div className="text-sm font-medium">{levelProgress.currentLevel.level?.name ?? levelsTitle}</div>
+                                    <div className="text-sm font-medium">
+                                        {levelProgress.currentLevel.level?.name ?? levelsTitle}
+                                    </div>
                                     <div className="text-muted-foreground mt-1 text-sm">
                                         {Math.round(levelProgress.currentLevel.progress * 100)}%
                                     </div>

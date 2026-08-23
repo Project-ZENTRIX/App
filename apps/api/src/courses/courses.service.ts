@@ -1,5 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { Inject, Injectable } from "@nestjs/common";
+import { SUPABASE_CLIENT } from "../common/supabase/supabase.module.js";
+import { SupabaseClient } from "../common/supabase/supabase.client.js";
 import { CourseQueryDto } from "./dto/course-query.dto.js";
 import {
     buildCourseReleases,
@@ -16,11 +17,86 @@ import {
     type CourseItem,
     type CourseListResponse,
     type CourseRecord,
-    type CourseRelease,
-    type CourseVersion,
     type LessonRecord,
     type TaskRecord,
 } from "./courses.mappers.js";
+
+type CourseRow = {
+    id: string;
+    slug: string;
+    title: string;
+    summary: string | null;
+    cover: string | null;
+    category: string | null;
+    language: string | null;
+    difficulty: string | null;
+    tags: string[];
+    price: string | number;
+    currency: string;
+    status: CourseRecord["status"];
+    version: number;
+    version_label: string | null;
+    unlock_scope: string;
+    is_purchased: boolean;
+    is_learnable: boolean;
+    is_offline: boolean;
+    supported_languages: string[];
+    chapter_count: number;
+    lesson_count: number;
+    task_count: number;
+    created_at: string;
+    updated_at: string;
+};
+
+type ChapterRow = {
+    id: string;
+    course_id: string;
+    title: string;
+    summary: string | null;
+    sort_order: number;
+    status: ChapterRecord["status"];
+    created_at: string;
+    updated_at: string;
+};
+
+type LessonRow = {
+    id: string;
+    course_id: string;
+    chapter_id: string | null;
+    title: string;
+    summary: string | null;
+    duration_minutes: number;
+    sort_order: number;
+    status: LessonRecord["status"];
+    created_at: string;
+    updated_at: string;
+};
+
+type TaskRow = {
+    id: string;
+    course_id: string;
+    lesson_id: string | null;
+    title: string;
+    description: string | null;
+    type: string | null;
+    points: number;
+    sort_order: number;
+    status: TaskRecord["status"];
+    created_at: string;
+    updated_at: string;
+};
+
+type ContentAssetRow = {
+    id: string;
+    course_id: string | null;
+    lesson_id: string | null;
+    task_id: string | null;
+    file_name: string;
+    mime_type: string | null;
+    url: string;
+    metadata: unknown;
+    created_at: string;
+};
 
 type CourseCatalog = {
     courses: CourseRecord[];
@@ -30,29 +106,119 @@ type CourseCatalog = {
     contentAssets: ContentAssetRecord[];
 };
 
-function toDate(value: Date | string) {
+function toDate(value: string | Date) {
     return value instanceof Date ? value : new Date(value);
+}
+
+function toCourseRecord(row: CourseRow): CourseRecord {
+    return {
+        id: row.id,
+        slug: row.slug,
+        title: row.title,
+        summary: row.summary,
+        cover: row.cover,
+        category: row.category,
+        language: row.language,
+        difficulty: row.difficulty,
+        tags: row.tags,
+        price: row.price,
+        currency: row.currency,
+        status: row.status,
+        version: row.version,
+        versionLabel: row.version_label,
+        unlockScope: row.unlock_scope,
+        isPurchased: row.is_purchased,
+        isLearnable: row.is_learnable,
+        isOffline: row.is_offline,
+        supportedLanguages: row.supported_languages,
+        chapterCount: row.chapter_count,
+        lessonCount: row.lesson_count,
+        taskCount: row.task_count,
+        createdAt: toDate(row.created_at),
+        updatedAt: toDate(row.updated_at),
+    };
+}
+
+function toChapterRecord(row: ChapterRow): ChapterRecord {
+    return {
+        id: row.id,
+        courseId: row.course_id,
+        title: row.title,
+        summary: row.summary,
+        sortOrder: row.sort_order,
+        status: row.status,
+        createdAt: toDate(row.created_at),
+        updatedAt: toDate(row.updated_at),
+    };
+}
+
+function toLessonRecord(row: LessonRow): LessonRecord {
+    return {
+        id: row.id,
+        courseId: row.course_id,
+        chapterId: row.chapter_id,
+        title: row.title,
+        summary: row.summary,
+        durationMinutes: row.duration_minutes,
+        sortOrder: row.sort_order,
+        status: row.status,
+        createdAt: toDate(row.created_at),
+        updatedAt: toDate(row.updated_at),
+    };
+}
+
+function toTaskRecord(row: TaskRow): TaskRecord {
+    return {
+        id: row.id,
+        courseId: row.course_id,
+        lessonId: row.lesson_id,
+        title: row.title,
+        description: row.description,
+        type: row.type,
+        points: row.points,
+        sortOrder: row.sort_order,
+        status: row.status,
+        createdAt: toDate(row.created_at),
+        updatedAt: toDate(row.updated_at),
+    };
+}
+
+function toAssetRecord(row: ContentAssetRow): ContentAssetRecord {
+    return {
+        id: row.id,
+        courseId: row.course_id,
+        lessonId: row.lesson_id,
+        taskId: row.task_id,
+        fileName: row.file_name,
+        mimeType: row.mime_type,
+        url: row.url,
+        metadata: row.metadata,
+        createdAt: toDate(row.created_at),
+    };
 }
 
 @Injectable()
 export class CoursesService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(@Inject(SUPABASE_CLIENT) private readonly supabase: SupabaseClient) {}
 
     private async loadCatalog(): Promise<CourseCatalog> {
         const [courses, chapters, lessons, tasks, contentAssets] = await Promise.all([
-            this.prisma.course.findMany({ orderBy: { createdAt: "asc" } }),
-            this.prisma.chapter.findMany({ orderBy: { sortOrder: "asc" } }),
-            this.prisma.lesson.findMany({ orderBy: { sortOrder: "asc" } }),
-            this.prisma.task.findMany({ orderBy: { sortOrder: "asc" } }),
-            this.prisma.contentAsset.findMany({ orderBy: { createdAt: "asc" } }),
+            this.supabase.selectRows<CourseRow>("public", "courses", {}, "*", { column: "created_at", ascending: true }),
+            this.supabase.selectRows<ChapterRow>("public", "chapters", {}, "*", { column: "sort_order", ascending: true }),
+            this.supabase.selectRows<LessonRow>("public", "lessons", {}, "*", { column: "sort_order", ascending: true }),
+            this.supabase.selectRows<TaskRow>("public", "tasks", {}, "*", { column: "sort_order", ascending: true }),
+            this.supabase.selectRows<ContentAssetRow>("public", "content_assets", {}, "*", {
+                column: "created_at",
+                ascending: true,
+            }),
         ]);
 
         return {
-            courses,
-            chapters,
-            lessons,
-            tasks,
-            contentAssets,
+            courses: courses.map(toCourseRecord),
+            chapters: chapters.map(toChapterRecord),
+            lessons: lessons.map(toLessonRecord),
+            tasks: tasks.map(toTaskRecord),
+            contentAssets: contentAssets.map(toAssetRecord),
         };
     }
 
@@ -135,7 +301,12 @@ export class CoursesService {
         });
     }
 
-    private mapChapterLessons(chapterId: string, lessons: LessonRecord[], tasks: TaskRecord[], contentAssets: ContentAssetRecord[]) {
+    private mapChapterLessons(
+        chapterId: string,
+        lessons: LessonRecord[],
+        tasks: TaskRecord[],
+        contentAssets: ContentAssetRecord[]
+    ) {
         const chapterLessons = lessons.filter((lesson) => lesson.chapterId === chapterId);
         return chapterLessons.map((lesson) => this.mapLessonWithRelations(lesson, tasks, contentAssets));
     }
@@ -164,7 +335,11 @@ export class CoursesService {
         const ids = new Set<string>();
 
         contentAssets.forEach((asset) => {
-            if (asset.courseId === courseId || lessonIds.includes(asset.lessonId ?? "") || taskIds.includes(asset.taskId ?? "")) {
+            if (
+                asset.courseId === courseId ||
+                lessonIds.includes(asset.lessonId ?? "") ||
+                taskIds.includes(asset.taskId ?? "")
+            ) {
                 ids.add(asset.id);
             }
         });
@@ -179,7 +354,9 @@ export class CoursesService {
         const chapters = catalog.chapters
             .filter((chapter) => chapter.courseId === course.id)
             .map((chapter) => {
-                const lessonIds = catalog.lessons.filter((lesson) => lesson.chapterId === chapter.id).map((lesson) => lesson.id);
+                const lessonIds = catalog.lessons
+                    .filter((lesson) => lesson.chapterId === chapter.id)
+                    .map((lesson) => lesson.id);
                 return mapChapterItem(chapter, lessonIds);
             });
 
@@ -192,7 +369,9 @@ export class CoursesService {
         );
     }
 
-    async listCourses(query: CourseQueryDto = {}): Promise<{ items: CourseItem[]; pagination: CourseListResponse["pagination"] }> {
+    async listCourses(
+        query: CourseQueryDto = {}
+    ): Promise<{ items: CourseItem[]; pagination: CourseListResponse["pagination"] }> {
         const catalog = await this.loadCatalog();
         const filtered = this.filterCourses(catalog.courses, query);
         const sorted = this.sortCourses(filtered, query.sort);
@@ -233,7 +412,9 @@ export class CoursesService {
             items: catalog.chapters
                 .filter((chapter) => chapter.courseId === courseId)
                 .map((chapter) => {
-                    const lessonIds = catalog.lessons.filter((lesson) => lesson.chapterId === chapter.id).map((lesson) => lesson.id);
+                    const lessonIds = catalog.lessons
+                        .filter((lesson) => lesson.chapterId === chapter.id)
+                        .map((lesson) => lesson.id);
                     return mapChapterItem(chapter, lessonIds);
                 }),
         };

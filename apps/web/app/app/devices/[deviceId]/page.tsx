@@ -12,13 +12,7 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import {
-    bindDevice,
-    generateBindingCode,
-    getDevice,
-    unbindDevice,
-    type DeviceItem,
-} from "@/lib/api/endpoints/license-api";
+import { bindDevice, generateBindingCode, getDevice, unbindDevice, type DeviceItem } from "@/lib/api/endpoints/license-api";
 import { formatDateTime } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 
@@ -84,7 +78,13 @@ export default function DeviceDetailPage() {
             setDevice(response.device);
             setError(null);
         } catch (loadError) {
-            setError(loadError instanceof Error ? loadError.message : locale === "zh-CN" ? "无法加载设备详情" : "Unable to load device detail");
+            setError(
+                loadError instanceof Error
+                    ? loadError.message
+                    : locale === "zh-CN"
+                      ? "无法加载设备详情"
+                      : "Unable to load device detail"
+            );
         } finally {
             setLoading(false);
         }
@@ -108,7 +108,13 @@ export default function DeviceDetailPage() {
             setBindingCode(result.bindingCode);
             setError(null);
         } catch (generateError) {
-            setError(generateError instanceof Error ? generateError.message : locale === "zh-CN" ? "无法生成绑定码" : "Unable to generate binding code");
+            setError(
+                generateError instanceof Error
+                    ? generateError.message
+                    : locale === "zh-CN"
+                      ? "无法生成绑定码"
+                      : "Unable to generate binding code"
+            );
         } finally {
             setPending(null);
         }
@@ -133,7 +139,9 @@ export default function DeviceDetailPage() {
             setGeneratedCode(null);
             await loadDevice();
         } catch (bindError) {
-            setError(bindError instanceof Error ? bindError.message : locale === "zh-CN" ? "无法绑定设备" : "Unable to bind device");
+            setError(
+                bindError instanceof Error ? bindError.message : locale === "zh-CN" ? "无法绑定设备" : "Unable to bind device"
+            );
         } finally {
             setPending(null);
         }
@@ -145,7 +153,13 @@ export default function DeviceDetailPage() {
             await unbindDevice(bindingId);
             await loadDevice();
         } catch (unbindError) {
-            setError(unbindError instanceof Error ? unbindError.message : locale === "zh-CN" ? "无法解绑设备" : "Unable to unbind device");
+            setError(
+                unbindError instanceof Error
+                    ? unbindError.message
+                    : locale === "zh-CN"
+                      ? "无法解绑设备"
+                      : "Unable to unbind device"
+            );
         } finally {
             setPending(null);
         }
@@ -161,7 +175,11 @@ export default function DeviceDetailPage() {
     }
 
     if (error) {
-        return <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm">{error}</div>;
+        return (
+            <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm">
+                {error}
+            </div>
+        );
     }
 
     if (!device) {
@@ -173,7 +191,11 @@ export default function DeviceDetailPage() {
                     </EmptyMedia>
                     <EmptyTitle>{text.noDevice}</EmptyTitle>
                     <EmptyContent>
-                        <EmptyDescription>{locale === "zh-CN" ? "该设备不存在或已被移除。" : "This device is unavailable or has been removed."}</EmptyDescription>
+                        <EmptyDescription>
+                            {locale === "zh-CN"
+                                ? "该设备不存在或已被移除。"
+                                : "This device is unavailable or has been removed."}
+                        </EmptyDescription>
                     </EmptyContent>
                 </EmptyHeader>
             </Empty>
@@ -198,7 +220,11 @@ export default function DeviceDetailPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>{text.details}</CardTitle>
-                        <CardDescription>{locale === "zh-CN" ? "设备基本信息和最近更新时间。" : "Basic device metadata and the latest timestamps."}</CardDescription>
+                        <CardDescription>
+                            {locale === "zh-CN"
+                                ? "设备基本信息和最近更新时间。"
+                                : "Basic device metadata and the latest timestamps."}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         <div className="rounded-xl border p-4">
@@ -206,11 +232,15 @@ export default function DeviceDetailPage() {
                             <div className="mt-1 font-medium">{device.id}</div>
                         </div>
                         <div className="rounded-xl border p-4">
-                            <div className="text-muted-foreground text-sm">{locale === "zh-CN" ? "创建时间" : "Created at"}</div>
+                            <div className="text-muted-foreground text-sm">
+                                {locale === "zh-CN" ? "创建时间" : "Created at"}
+                            </div>
                             <div className="mt-1 font-medium">{formatDateTime(device.createdAt, locale)}</div>
                         </div>
                         <div className="rounded-xl border p-4">
-                            <div className="text-muted-foreground text-sm">{locale === "zh-CN" ? "最近更新时间" : "Updated at"}</div>
+                            <div className="text-muted-foreground text-sm">
+                                {locale === "zh-CN" ? "最近更新时间" : "Updated at"}
+                            </div>
                             <div className="mt-1 font-medium">{formatDateTime(device.updatedAt, locale)}</div>
                         </div>
                         <Button asChild variant="outline" className="w-full justify-between">
@@ -225,31 +255,60 @@ export default function DeviceDetailPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>{text.bindings}</CardTitle>
-                        <CardDescription>{locale === "zh-CN" ? "生成绑定码并查看历史绑定。" : "Generate a binding code and review the binding history."}</CardDescription>
+                        <CardDescription>
+                            {locale === "zh-CN"
+                                ? "生成绑定码并查看历史绑定。"
+                                : "Generate a binding code and review the binding history."}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
                             <FieldGroup>
                                 <Field>
                                     <FieldLabel htmlFor="binding-code">{text.bindingCode}</FieldLabel>
-                                    <Input id="binding-code" value={bindingCode} onChange={(event) => setBindingCode(event.target.value)} />
+                                    <Input
+                                        id="binding-code"
+                                        value={bindingCode}
+                                        onChange={(event) => setBindingCode(event.target.value)}
+                                    />
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor="slot">{text.slot}</FieldLabel>
-                                    <Input id="slot" inputMode="numeric" value={slot} onChange={(event) => setSlot(event.target.value)} />
+                                    <Input
+                                        id="slot"
+                                        inputMode="numeric"
+                                        value={slot}
+                                        onChange={(event) => setSlot(event.target.value)}
+                                    />
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor="fingerprint">{text.fingerprint}</FieldLabel>
-                                    <Input id="fingerprint" value={fingerprint} onChange={(event) => setFingerprint(event.target.value)} />
+                                    <Input
+                                        id="fingerprint"
+                                        value={fingerprint}
+                                        onChange={(event) => setFingerprint(event.target.value)}
+                                    />
                                 </Field>
                             </FieldGroup>
-                            <Button type="button" variant="secondary" onClick={handleGenerateCode} disabled={pending === "generate"}>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={handleGenerateCode}
+                                disabled={pending === "generate"}>
                                 <RefreshCcw />
                                 {pending === "generate" ? text.refresh : text.generateCode}
                             </Button>
                         </div>
-                        {generatedCode ? <div className="rounded-xl border bg-muted/20 p-3 text-sm">{text.generated}: {generatedCode}</div> : null}
-                        <Button type="button" className="w-full justify-between" onClick={handleBind} disabled={pending === "bind" || !bindingCode.trim()}>
+                        {generatedCode ? (
+                            <div className="bg-muted/20 rounded-xl border p-3 text-sm">
+                                {text.generated}: {generatedCode}
+                            </div>
+                        ) : null}
+                        <Button
+                            type="button"
+                            className="w-full justify-between"
+                            onClick={handleBind}
+                            disabled={pending === "bind" || !bindingCode.trim()}>
                             {pending === "bind" ? text.bindingPending : text.bindDevice}
                             <ArrowRight />
                         </Button>
@@ -260,9 +319,13 @@ export default function DeviceDetailPage() {
                                         <div className="flex items-center justify-between gap-3">
                                             <div>
                                                 <div className="font-medium">{binding.bindingKey}</div>
-                                                <div className="text-muted-foreground text-sm">{formatDateTime(binding.boundAt, locale)}</div>
+                                                <div className="text-muted-foreground text-sm">
+                                                    {formatDateTime(binding.boundAt, locale)}
+                                                </div>
                                             </div>
-                                            <Badge variant={binding.revokedAt ? "outline" : "secondary"}>{binding.revokedAt ? "revoked" : "active"}</Badge>
+                                            <Badge variant={binding.revokedAt ? "outline" : "secondary"}>
+                                                {binding.revokedAt ? "revoked" : "active"}
+                                            </Badge>
                                         </div>
                                         <div className="mt-3 flex items-center justify-between gap-3">
                                             <div className="text-muted-foreground text-sm">
@@ -289,7 +352,11 @@ export default function DeviceDetailPage() {
                                         </EmptyMedia>
                                         <EmptyTitle>{text.noBindings}</EmptyTitle>
                                         <EmptyContent>
-                                            <EmptyDescription>{locale === "zh-CN" ? "该设备还没有绑定记录。" : "This device has not been bound yet."}</EmptyDescription>
+                                            <EmptyDescription>
+                                                {locale === "zh-CN"
+                                                    ? "该设备还没有绑定记录。"
+                                                    : "This device has not been bound yet."}
+                                            </EmptyDescription>
                                         </EmptyContent>
                                     </EmptyHeader>
                                 </Empty>

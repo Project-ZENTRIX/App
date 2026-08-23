@@ -9,7 +9,7 @@ import {
     getNotificationPreferences,
     updateNotificationPreferences,
     type NotificationPreferences,
-} from "@/lib/api/endpoints/auth-api";
+} from "@/lib/supabase/auth-queries";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 

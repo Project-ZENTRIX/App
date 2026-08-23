@@ -1,87 +1,36 @@
 import { apiRequest } from "../client";
 import { getAuthorizedHeaders } from "../auth";
+import {
+    getCurrentSubscription as loadCurrentSubscription,
+    getOrder as loadOrder,
+    getPaymentStatus as loadPaymentStatus,
+    listOrders as loadOrders,
+    listProducts as loadProducts,
+    getSubscription as loadSubscription,
+    listSubscriptions as loadSubscriptions,
+    type OrderDetail,
+    type OrderItem,
+    type PaymentStatus,
+    type ProductItem,
+    type SubscriptionItem,
+} from "@/lib/supabase/commerce-queries";
 
-export type ProductItem = {
-    id: string;
-    name: string;
-    code: string;
-    description: string | null;
-    price: string;
-    currency: string;
-    status: string;
-    courseId: string | null;
-    course: {
-        id: string;
-        title: string;
-        summary: string;
-    } | null;
-};
-
-export type OrderItem = {
-    id: string;
-    orderNo: string;
-    status: string;
-    totalAmount: string;
-    currency: string;
-    createdAt: string;
-    updatedAt: string;
-    canPay: boolean;
-    canCancel: boolean;
-    items: Array<{
-        id: string;
-        productId: string;
-        name: string;
-        quantity: number;
-        unitPrice: string;
-        subtotal: string;
-    }>;
-    payments: Array<{
-        id: string;
-        paymentNo: string;
-        status: string;
-        amount: string;
-        currency: string;
-        createdAt: string;
-    }>;
-};
-
-export type OrderDetail = OrderItem;
-
-export type SubscriptionItem = {
-    id: string;
-    status: string;
-    startedAt: string;
-    endsAt: string;
-    autoRenew: boolean;
-    product: ProductItem | null;
-    orderId: string | null;
-};
+export type { OrderDetail, OrderItem, PaymentStatus, ProductItem, SubscriptionItem };
 
 export function listProducts(params: { keyword?: string; status?: string; courseId?: string } = {}) {
-    const query = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => {
-        if (value) {
-            query.set(key, value);
-        }
-    });
-
-    return apiRequest<{ items: ProductItem[] }>(`/products${query.toString() ? `?${query.toString()}` : ""}`, {
-        method: "GET",
-    });
+    return loadProducts(params);
 }
 
 export function listOrders() {
-    return apiRequest<{ items: OrderItem[] }>("/orders", {
-        method: "GET",
-        headers: getAuthorizedHeaders(),
-    });
+    return loadOrders();
 }
 
 export function getOrder(orderId: string) {
-    return apiRequest<OrderDetail | null>(`/orders/${orderId}`, {
-        method: "GET",
-        headers: getAuthorizedHeaders(),
-    });
+    return loadOrder(orderId);
+}
+
+export function getPaymentStatus(orderId: string) {
+    return loadPaymentStatus(orderId);
 }
 
 export function createOrder(input: { items: Array<{ productId: string; quantity?: number }> }) {
@@ -109,37 +58,16 @@ export function payOrder(orderId: string) {
     );
 }
 
-export function getPaymentStatus(orderId: string) {
-    return apiRequest<{
-        orderId: string;
-        orderStatus: string;
-        paymentStatus: string;
-        paymentId: string | null;
-    }>(`/orders/${orderId}/payment-status`, {
-        method: "GET",
-        headers: getAuthorizedHeaders(),
-    });
-}
-
 export function getCurrentSubscription() {
-    return apiRequest<SubscriptionItem | null>("/subscriptions/current", {
-        method: "GET",
-        headers: getAuthorizedHeaders(),
-    });
+    return loadCurrentSubscription();
 }
 
 export function listSubscriptions() {
-    return apiRequest<{ items: SubscriptionItem[] }>("/subscriptions", {
-        method: "GET",
-        headers: getAuthorizedHeaders(),
-    });
+    return loadSubscriptions();
 }
 
 export function getSubscription(subscriptionId: string) {
-    return apiRequest<SubscriptionItem | null>(`/subscriptions/${subscriptionId}`, {
-        method: "GET",
-        headers: getAuthorizedHeaders(),
-    });
+    return loadSubscription(subscriptionId);
 }
 
 export function renewSubscription(subscriptionId: string) {

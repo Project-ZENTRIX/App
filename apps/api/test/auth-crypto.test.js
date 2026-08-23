@@ -5,7 +5,7 @@ const {
     getTokenFromAuthorizationHeader,
     hashPassword,
     verifyPassword,
-} = require("../dist/src/auth/auth-crypto.js");
+} = require("../dist/auth/auth-crypto.js");
 
 test("hashPassword and verifyPassword round-trip", () => {
     const stored = hashPassword("passw0rd!");
@@ -18,4 +18,3 @@ test("getTokenFromAuthorizationHeader parses bearer tokens", () => {
     assert.equal(getTokenFromAuthorizationHeader("Basic token-123"), null);
     assert.equal(getTokenFromAuthorizationHeader(undefined), null);
 });
-

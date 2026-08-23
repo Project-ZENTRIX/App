@@ -8,13 +8,8 @@ import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import {
-    cancelAutoRenew,
-    getCurrentSubscription,
-    listSubscriptions,
-    renewSubscription,
-    type SubscriptionItem,
-} from "@/lib/api/endpoints/commerce-api";
+import { getCurrentSubscription, listSubscriptions, type SubscriptionItem } from "@/lib/supabase/commerce-queries";
+import { cancelAutoRenew, renewSubscription } from "@/lib/api/endpoints/commerce-api";
 import { formatDateTime } from "@/lib/format";
 import { useDictionary, useLocale } from "@/lib/i18n";
 
@@ -169,7 +164,11 @@ export default function MembershipPage() {
                                         })();
                                     }}
                                     disabled={!current || pending !== null || !current.autoRenew}>
-                                    {pending === "cancel" ? t.auth.loading : locale === "zh-CN" ? "关闭自动续费" : "Turn off auto-renew"}
+                                    {pending === "cancel"
+                                        ? t.auth.loading
+                                        : locale === "zh-CN"
+                                          ? "关闭自动续费"
+                                          : "Turn off auto-renew"}
                                 </Button>
                             </>
                         ) : (

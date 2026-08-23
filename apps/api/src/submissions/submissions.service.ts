@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { errorKeys } from "../common/errors/error-keys.js";
-import { getSessionFromAuthorizationHeader } from "../auth/auth-session.js";
+import { SUPABASE_CLIENT } from "../common/supabase/supabase.module.js";
+import { SupabaseClient } from "../common/supabase/supabase.client.js";
+import { getTokenFromAuthorizationHeader } from "../auth/auth-crypto.js";
 
 type CreateSubmissionInput = {
     taskId: string;
@@ -11,40 +11,63 @@ type CreateSubmissionInput = {
     language?: string | null;
 };
 
-function mapSubmission(submission: {
+type SubmissionRow = {
     id: string;
-    userId: string;
-    taskId: string;
+    user_id: string;
+    task_id: string;
     status: string;
     code: string | null;
     language: string | null;
-    runId: string | null;
-    submittedAt: Date;
-    evaluatedAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
+    run_id: string | null;
+    submitted_at: string;
+    evaluated_at: string | null;
+    created_at: string;
+    updated_at: string;
+};
+
+function toDate(value: string) {
+    return new Date(value);
+}
+
+function mapSubmission(submission: {
+    id: string;
+    user_id: string;
+    task_id: string;
+    status: string;
+    code: string | null;
+    language: string | null;
+    run_id: string | null;
+    submitted_at: string;
+    evaluated_at: string | null;
+    created_at: string;
+    updated_at: string;
 }) {
     return {
         id: submission.id,
-        userId: submission.userId,
-        taskId: submission.taskId,
+        userId: submission.user_id,
+        taskId: submission.task_id,
         status: submission.status,
         code: submission.code,
         language: submission.language,
-        runId: submission.runId,
-        submittedAt: submission.submittedAt,
-        evaluatedAt: submission.evaluatedAt,
-        createdAt: submission.createdAt,
-        updatedAt: submission.updatedAt,
+        runId: submission.run_id,
+        submittedAt: toDate(submission.submitted_at),
+        evaluatedAt: submission.evaluated_at ? toDate(submission.evaluated_at) : null,
+        createdAt: toDate(submission.created_at),
+        updatedAt: toDate(submission.updated_at),
     };
 }
 
 @Injectable()
 export class SubmissionsService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(@Inject(SUPABASE_CLIENT) private readonly supabase: SupabaseClient) {}
 
     private async requireSession(authorization?: string) {
-        const session = await getSessionFromAuthorizationHeader(this.prisma, authorization);
+        const token = getTokenFromAuthorizationHeader(authorization);
+        if (!token) {
+            throw new UnauthorizedException(errorKeys.unauthorized);
+        }
+
+        const session = await this.supabase.getCurrentUser(authorization);
         if (!session) {
             throw new UnauthorizedException(errorKeys.unauthorized);
         }
@@ -53,10 +76,10 @@ export class SubmissionsService {
     }
 
     private async requireTask(taskId: string) {
-        const task = await this.prisma.task.findUnique({
-            where: {
-                id: taskId,
-            },
+        const task = await this.supabase.selectOne<{
+            id: string;
+        }>("public", "tasks", {
+            id: taskId,
         });
 
         if (!task) {
@@ -67,12 +90,12 @@ export class SubmissionsService {
     }
 
     private async requireRun(runId: string, userId: string) {
-        const run = await this.prisma.run.findFirst({
-            where: {
-                id: runId,
-                userId,
-                deletedAt: null,
-            },
+        const run = await this.supabase.selectOne<{
+            id: string;
+        }>("public", "runs", {
+            id: runId,
+            user_id: userId,
+            deleted_at: null,
         });
 
         if (!run) {
@@ -90,19 +113,17 @@ export class SubmissionsService {
 
         await this.requireTask(body.taskId);
         if (body.runId) {
-            await this.requireRun(body.runId, session.user.id as string);
+            await this.requireRun(body.runId, session.id);
         }
 
-        const submission = await this.prisma.taskSubmission.create({
-            data: {
-                userId: session.user.id as string,
-                taskId: body.taskId,
-                runId: body.runId ?? null,
-                code: body.code ?? null,
-                language: body.language ?? null,
-                status: body.runId ? "running" : "queued",
-                submittedAt: new Date(),
-            },
+        const submission = await this.supabase.insertRow<SubmissionRow>("public", "task_submissions", {
+            user_id: session.id,
+            task_id: body.taskId,
+            run_id: body.runId ?? null,
+            code: body.code ?? null,
+            language: body.language ?? null,
+            status: body.runId ? "running" : "queued",
+            submitted_at: new Date().toISOString(),
         });
 
         return mapSubmission(submission);
@@ -110,14 +131,18 @@ export class SubmissionsService {
 
     async listSubmissions(authorization?: string) {
         const session = await this.requireSession(authorization);
-        const items = await this.prisma.taskSubmission.findMany({
-            where: {
-                userId: session.user.id as string,
+        const items = await this.supabase.selectRows<SubmissionRow>(
+            "public",
+            "task_submissions",
+            {
+                user_id: session.id,
             },
-            orderBy: {
-                submittedAt: "desc",
-            },
-        });
+            "*",
+            {
+                column: "submitted_at",
+                ascending: false,
+            }
+        );
 
         return {
             items: items.map((submission) => mapSubmission(submission)),
@@ -126,11 +151,9 @@ export class SubmissionsService {
 
     async getSubmission(submissionId: string, authorization?: string) {
         const session = await this.requireSession(authorization);
-        const submission = await this.prisma.taskSubmission.findFirst({
-            where: {
-                id: submissionId,
-                userId: session.user.id as string,
-            },
+        const submission = await this.supabase.selectOne<SubmissionRow>("public", "task_submissions", {
+            id: submissionId,
+            user_id: session.id,
         });
 
         return submission ? mapSubmission(submission) : null;

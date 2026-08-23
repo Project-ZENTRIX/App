@@ -1,7 +1,7 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { WebhooksController } = require("../dist/src/webhooks/webhooks.controller.js");
+const { WebhooksController } = require("../dist/webhooks/webhooks.controller.js");
 
 test("webhooks controller proxies webhook routes to the webhook service", () => {
     const calls = [];
@@ -35,4 +35,3 @@ test("webhooks controller proxies webhook routes to the webhook service", () => 
         ["sandbox", { eventId: "evt-4" }],
     ]);
 });
-

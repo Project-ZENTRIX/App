@@ -1,30 +1,30 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { AdminService } = require("../dist/src/admin/admin.service.js");
-const { createMockPrisma } = require("./helpers/mock-prisma.js");
+const { AdminService } = require("../dist/admin/admin.service.js");
+const { createMockSupabaseAdmin } = require("./helpers/mock-supabase-admin.js");
 
 function createService() {
-    const prisma = createMockPrisma();
-    return { prisma, service: new AdminService(prisma) };
+    const supabase = createMockSupabaseAdmin();
+    return { supabase, service: new AdminService(supabase) };
 }
 
 test("lists audit logs, feature flags and integration clients for admin views", async () => {
-    const { prisma, service } = createService();
-    prisma.seed.auditLog({
+    const { supabase, service } = createService();
+    supabase.seed.auditLog({
         id: "audit-1",
         userId: "user-1",
         action: "user.updated",
         entityType: "user",
         entityId: "user-1",
     });
-    prisma.seed.featureFlag({
+    supabase.seed.featureFlag({
         id: "flag-1",
         key: "new-dashboard",
         name: "New Dashboard",
         enabled: true,
     });
-    prisma.seed.integrationClient({
+    supabase.seed.integrationClient({
         id: "client-1",
         code: "payments",
         name: "Payments",
@@ -41,4 +41,3 @@ test("lists audit logs, feature flags and integration clients for admin views", 
     assert.equal(integrationClients.items.length, 1);
     assert.equal(integrationClients.items[0].code, "payments");
 });
-

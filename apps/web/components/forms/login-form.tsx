@@ -9,7 +9,7 @@ import { Card, CardContent } from "@workspace/ui/components/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { IconifyIcon } from "@/components/iconify-icon";
-import { setAuthToken, signIn } from "@/lib/api/endpoints/auth-api";
+import { signIn } from "@/lib/supabase/auth-queries";
 import { useDictionary } from "@/lib/i18n";
 import { toast } from "sonner";
 
@@ -34,8 +34,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         setPending(true);
 
         try {
-            const account = await signIn({ email, password });
-            setAuthToken(account.token);
+            await signIn({ email, password });
             toast.success(t.auth.signInSuccess);
             router.replace(redirectTo);
         } catch (error) {
@@ -70,7 +69,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                             <Field>
                                 <div className="flex items-center">
                                     <FieldLabel htmlFor="password">{t.auth.passwordLabel}</FieldLabel>
-                                    <Link href="/account/forgot-password" className="ms-auto text-sm underline-offset-2 hover:underline">
+                                    <Link
+                                        href="/account/forgot-password"
+                                        className="ms-auto text-sm underline-offset-2 hover:underline">
                                         {t.auth.forgotPassword}
                                     </Link>
                                 </div>

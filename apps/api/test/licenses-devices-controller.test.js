@@ -1,8 +1,8 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { DevicesController } = require("../dist/src/devices/devices.controller.js");
-const { LicensesController } = require("../dist/src/licenses/licenses.controller.js");
+const { DevicesController } = require("../dist/devices/devices.controller.js");
+const { LicensesController } = require("../dist/licenses/licenses.controller.js");
 
 test("licenses controller proxies license routes to the license service", () => {
     const calls = [];

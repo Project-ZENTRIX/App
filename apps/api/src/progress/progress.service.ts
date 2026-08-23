@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
+import { randomUUID } from "node:crypto";
 import { errorKeys } from "../common/errors/error-keys.js";
-import { getSessionFromAuthorizationHeader } from "../auth/auth-session.js";
+import { SUPABASE_CLIENT } from "../common/supabase/supabase.module.js";
+import { SupabaseClient } from "../common/supabase/supabase.client.js";
 
 type ProgressEventInput = {
     courseId?: string | null;
@@ -10,6 +10,45 @@ type ProgressEventInput = {
     taskId?: string | null;
     eventType: string;
     payload?: Record<string, unknown> | null;
+};
+
+type LessonRow = {
+    id: string;
+    course_id: string;
+    title: string;
+    summary: string | null;
+    sort_order: number;
+    status: string;
+};
+
+type EnrollmentRow = {
+    id: string;
+    user_id: string;
+    course_id: string;
+    status: string;
+    enrolled_at: string;
+    completed_at: string | null;
+};
+
+type LessonProgressRow = {
+    id: string;
+    user_id: string;
+    lesson_id: string;
+    status: string;
+    progress: number;
+    updated_at: string;
+    created_at: string;
+};
+
+type ProgressEventRow = {
+    id: string;
+    user_id: string;
+    course_id: string | null;
+    lesson_id: string | null;
+    task_id: string | null;
+    event_type: string;
+    payload: unknown;
+    created_at: string;
 };
 
 type LessonProgressSummary = {
@@ -26,46 +65,38 @@ type LessonProgressSummary = {
     } | null;
 };
 
-function toLessonProgressSummary(progress: {
-    lessonId: string;
-    status: string;
-    progress: number;
-    lesson?: {
-        id: string;
-        courseId: string;
-        title: string;
-        summary: string | null;
-        sortOrder: number;
-        status: string;
-    } | null;
-}): LessonProgressSummary {
+function toDate(value: string) {
+    return new Date(value);
+}
+
+function toLessonProgressSummary(progress: LessonProgressRow, lesson?: LessonRow | null): LessonProgressSummary {
     return {
-        lessonId: progress.lessonId,
+        lessonId: progress.lesson_id,
         status: progress.status,
         progress: progress.progress,
-        lesson: progress.lesson ?? null,
+        lesson: lesson
+            ? {
+                  id: lesson.id,
+                  courseId: lesson.course_id,
+                  title: lesson.title,
+                  summary: lesson.summary,
+                  sortOrder: lesson.sort_order,
+                  status: lesson.status,
+              }
+            : null,
     };
 }
 
-function toProgressEventPayload(event: {
-    id: string;
-    userId: string;
-    courseId: string | null;
-    lessonId: string | null;
-    taskId: string | null;
-    eventType: string;
-    payload: unknown;
-    createdAt: Date;
-}) {
+function toProgressEventPayload(event: ProgressEventRow) {
     return {
         id: event.id,
-        userId: event.userId,
-        courseId: event.courseId,
-        lessonId: event.lessonId,
-        taskId: event.taskId,
-        eventType: event.eventType,
+        userId: event.user_id,
+        courseId: event.course_id,
+        lessonId: event.lesson_id,
+        taskId: event.task_id,
+        eventType: event.event_type,
         payload: event.payload,
-        createdAt: event.createdAt,
+        createdAt: toDate(event.created_at),
     };
 }
 
@@ -97,112 +128,110 @@ function inferLessonProgressState(
 
 @Injectable()
 export class ProgressService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(@Inject(SUPABASE_CLIENT) private readonly supabase: SupabaseClient) {}
 
-    private async requireSession(authorization?: string) {
-        const session = await getSessionFromAuthorizationHeader(this.prisma, authorization);
-        if (!session) {
+    private async requireCurrentUser(authorization?: string) {
+        const user = await this.supabase.getCurrentUser(authorization);
+        if (!user) {
             throw new UnauthorizedException(errorKeys.unauthorized);
         }
 
-        return session;
+        return user;
+    }
+
+    private async loadLessons(courseId: string) {
+        return this.supabase.selectRows<LessonRow>(
+            "public",
+            "lessons",
+            {
+                course_id: courseId,
+            },
+            "*",
+            { column: "sort_order", ascending: true }
+        );
+    }
+
+    private async loadLessonProgress(userId: string) {
+        return this.supabase.selectRows<LessonProgressRow>(
+            "public",
+            "lesson_progress",
+            {
+                user_id: userId,
+            },
+            "*",
+            { column: "updated_at", ascending: false }
+        );
     }
 
     async getOverview(authorization?: string) {
-        const session = await this.requireSession(authorization);
-        const userId = session.user.id as string;
+        const session = await this.requireCurrentUser(authorization);
         const [enrollments, lessonProgresses, recentEvents] = await Promise.all([
-            this.prisma.enrollment.findMany({
-                where: {
-                    userId,
-                },
-            }),
-            this.prisma.lessonProgress.findMany({
-                where: {
-                    userId,
-                },
-                include: {
-                    lesson: true,
-                },
-            }),
-            this.prisma.progressEvent.findMany({
-                where: {
-                    userId,
-                },
-                orderBy: {
-                    createdAt: "desc",
-                },
+            this.supabase.selectRows<EnrollmentRow>("public", "enrollments", { user_id: session.id }),
+            this.loadLessonProgress(session.id),
+            this.supabase.selectRows<ProgressEventRow>("public", "progress_events", { user_id: session.id }, "*", {
+                column: "created_at",
+                ascending: false,
             }),
         ]);
 
-        const courseIds = Array.from(new Set(enrollments.map((enrollment) => enrollment.courseId)));
-        const lessonTotals = await Promise.all(
-            courseIds.map(async (courseId) => this.prisma.lesson.findMany({ where: { courseId } }))
-        );
+        const courseIds = Array.from(new Set(enrollments.map((enrollment) => enrollment.course_id)));
+        const lessonTotals = await Promise.all(courseIds.map((courseId) => this.loadLessons(courseId)));
         const totalLessons = lessonTotals.reduce((total, lessons) => total + lessons.length, 0);
         const completedLessons = lessonProgresses.filter((progress) =>
             ["completed", "passed"].includes(progress.status)
         ).length;
 
+        const lessonLookups = await Promise.all(
+            lessonProgresses.map((progress) =>
+                this.supabase.selectOne<LessonRow>("public", "lessons", { id: progress.lesson_id })
+            )
+        );
+
         return {
-            userId,
+            userId: session.id,
             enrollments: enrollments.map((enrollment) => ({
                 id: enrollment.id,
-                courseId: enrollment.courseId,
+                courseId: enrollment.course_id,
                 status: enrollment.status,
-                enrolledAt: enrollment.enrolledAt,
-                completedAt: enrollment.completedAt,
+                enrolledAt: toDate(enrollment.enrolled_at),
+                completedAt: enrollment.completed_at ? toDate(enrollment.completed_at) : null,
             })),
             lessonProgress: {
                 totalLessons,
                 completedLessons,
                 completionRate: totalLessons > 0 ? completedLessons / totalLessons : 0,
-                items: lessonProgresses.map((progress) => toLessonProgressSummary(progress)),
+                items: lessonProgresses.map((progress, index) => toLessonProgressSummary(progress, lessonLookups[index])),
             },
             recentEvents: recentEvents.map((event) => toProgressEventPayload(event)),
         };
     }
 
     async listEnrollments(authorization?: string) {
-        const session = await this.requireSession(authorization);
-        const items = await this.prisma.enrollment.findMany({
-            where: {
-                userId: session.user.id as string,
-            },
-        });
+        const session = await this.requireCurrentUser(authorization);
+        const items = await this.supabase.selectRows<EnrollmentRow>("public", "enrollments", { user_id: session.id });
 
         return {
             items: items.map((enrollment) => ({
                 id: enrollment.id,
-                courseId: enrollment.courseId,
+                courseId: enrollment.course_id,
                 status: enrollment.status,
-                enrolledAt: enrollment.enrolledAt,
-                completedAt: enrollment.completedAt,
+                enrolledAt: toDate(enrollment.enrolled_at),
+                completedAt: enrollment.completed_at ? toDate(enrollment.completed_at) : null,
             })),
         };
     }
 
     async getCourseProgress(courseId: string, authorization?: string) {
-        const session = await this.requireSession(authorization);
+        const session = await this.requireCurrentUser(authorization);
         const [lessons, lessonProgresses] = await Promise.all([
-            this.prisma.lesson.findMany({
-                where: {
-                    courseId,
-                },
-            }),
-            this.prisma.lessonProgress.findMany({
-                where: {
-                    userId: session.user.id as string,
-                },
-                include: {
-                    lesson: true,
-                },
-            }),
+            this.loadLessons(courseId),
+            this.loadLessonProgress(session.id),
         ]);
 
+        const lessonLookup = new Map(lessons.map((lesson) => [lesson.id, lesson]));
         const items = lessonProgresses
-            .filter((progress) => progress.lesson?.courseId === courseId)
-            .map((progress) => toLessonProgressSummary(progress));
+            .filter((progress) => lessonLookup.get(progress.lesson_id)?.course_id === courseId)
+            .map((progress) => toLessonProgressSummary(progress, lessonLookup.get(progress.lesson_id) ?? null));
         const completedLessons = items.filter((item) => ["completed", "passed"].includes(item.status)).length;
 
         return {
@@ -215,32 +244,32 @@ export class ProgressService {
     }
 
     async getLessonProgress(lessonId: string, authorization?: string) {
-        const session = await this.requireSession(authorization);
-        const progress = await this.prisma.lessonProgress.findUnique({
-            where: {
-                userId_lessonId: {
-                    userId: session.user.id as string,
-                    lessonId,
-                },
-            },
-            include: {
-                lesson: true,
-            },
+        const session = await this.requireCurrentUser(authorization);
+        const progress = await this.supabase.selectOne<LessonProgressRow>("public", "lesson_progress", {
+            user_id: session.id,
+            lesson_id: lessonId,
         });
 
-        return progress ? toLessonProgressSummary(progress) : null;
+        if (!progress) {
+            return null;
+        }
+
+        const lesson = await this.supabase.selectOne<LessonRow>("public", "lessons", { id: lessonId });
+        return toLessonProgressSummary(progress, lesson);
     }
 
     async listEvents(authorization?: string) {
-        const session = await this.requireSession(authorization);
-        const items = await this.prisma.progressEvent.findMany({
-            where: {
-                userId: session.user.id as string,
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+        const session = await this.requireCurrentUser(authorization);
+        const items = await this.supabase.selectRows<ProgressEventRow>(
+            "public",
+            "progress_events",
+            { user_id: session.id },
+            "*",
+            {
+                column: "created_at",
+                ascending: false,
+            }
+        );
 
         return {
             items: items.map((event) => toProgressEventPayload(event)),
@@ -248,56 +277,37 @@ export class ProgressService {
     }
 
     async createEvent(authorization: string | undefined, body: ProgressEventInput) {
-        const session = await this.requireSession(authorization);
+        const session = await this.requireCurrentUser(authorization);
         if (!body?.eventType || typeof body.eventType !== "string") {
             throw new BadRequestException(errorKeys.eventTypeRequired);
         }
 
-        const event = await this.prisma.$transaction(async (tx) => {
-            const createdEvent = await tx.progressEvent.create({
-                data: {
-                    userId: session.user.id as string,
-                    courseId: body.courseId ?? null,
-                    lessonId: body.lessonId ?? null,
-                    taskId: body.taskId ?? null,
-                    eventType: body.eventType,
-                    payload:
-                        body.payload === null
-                            ? Prisma.JsonNull
-                            : body.payload
-                              ? (body.payload as Prisma.InputJsonValue)
-                              : undefined,
-                },
-            });
-
-            const lessonState = body.lessonId ? inferLessonProgressState(body.eventType, body.payload) : null;
-            if (body.lessonId && lessonState) {
-                await tx.lessonProgress.upsert({
-                    where: {
-                        userId_lessonId: {
-                            userId: session.user.id as string,
-                            lessonId: body.lessonId,
-                        },
-                    },
-                    create: {
-                        userId: session.user.id as string,
-                        lessonId: body.lessonId,
-                        status: lessonState.status,
-                        progress: lessonState.progress,
-                    },
-                    update: {
-                        status: lessonState.status,
-                        progress: lessonState.progress,
-                    },
-                    include: {
-                        lesson: true,
-                    },
-                });
-            }
-
-            return createdEvent;
+        const createdEvent = await this.supabase.insertRow<ProgressEventRow>("public", "progress_events", {
+            id: randomUUID(),
+            user_id: session.id,
+            course_id: body.courseId ?? null,
+            lesson_id: body.lessonId ?? null,
+            task_id: body.taskId ?? null,
+            event_type: body.eventType,
+            payload: body.payload ?? null,
         });
 
-        return toProgressEventPayload(event);
+        const lessonState = body.lessonId ? inferLessonProgressState(body.eventType, body.payload) : null;
+        if (body.lessonId && lessonState) {
+            await this.supabase.upsertRow(
+                "public",
+                "lesson_progress",
+                {
+                    id: randomUUID(),
+                    user_id: session.id,
+                    lesson_id: body.lessonId,
+                    status: lessonState.status,
+                    progress: lessonState.progress,
+                },
+                "user_id,lesson_id"
+            );
+        }
+
+        return toProgressEventPayload(createdEvent);
     }
 }

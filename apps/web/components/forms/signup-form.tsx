@@ -9,7 +9,7 @@ import { Card, CardContent } from "@workspace/ui/components/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { IconifyIcon } from "@/components/iconify-icon";
-import { signUp } from "@/lib/api/endpoints/auth-api";
+import { signUp } from "@/lib/supabase/auth-queries";
 import { useDictionary } from "@/lib/i18n";
 import { toast } from "sonner";
 

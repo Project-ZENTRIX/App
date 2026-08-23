@@ -10,8 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Separator } from "@workspace/ui/components/separator";
-import { listCourses, type CourseItem } from "@/lib/api/endpoints/catalog-api";
-import { getProgressOverview } from "@/lib/api/endpoints/progress-api";
+import { listCourses, type CourseItem } from "@/lib/supabase/catalog-queries";
+import { getProgressOverview } from "@/lib/supabase/progress-queries";
 import { formatCurrency } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 

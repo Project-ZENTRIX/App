@@ -1,13 +1,16 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { AuthCoreService } = require("../dist/src/auth/auth-core.service.js");
-const { hashPassword } = require("../dist/src/auth/auth-crypto.js");
-const { createMockPrisma } = require("./helpers/mock-prisma.js");
+const { AuthCoreService } = require("../dist/auth/auth-core.service.js");
+const { createMockSupabase } = require("./helpers/mock-supabase.js");
 
-test("signUp creates a user, account and session", async () => {
-    const prisma = createMockPrisma();
-    const service = new AuthCoreService(prisma);
+function createService() {
+    const supabase = createMockSupabase();
+    return { supabase, service: new AuthCoreService(supabase) };
+}
+
+test("signUp creates a Supabase auth user and returns the auth session token", async () => {
+    const { supabase, service } = createService();
 
     const result = await service.signUp({
         email: "learner@example.com",
@@ -17,21 +20,14 @@ test("signUp creates a user, account and session", async () => {
 
     assert.equal(result.user.email, "learner@example.com");
     assert.ok(result.token);
-    assert.equal(prisma.state.users.length, 1);
-    assert.equal(prisma.state.accounts.length, 1);
-    assert.equal(prisma.state.sessions.length, 1);
+    assert.equal(supabase.state.users.length, 1);
+    assert.equal(supabase.state.sessions.length, 1);
+    assert.equal(supabase.state.profiles.length, 1);
 });
 
-test("signIn returns an existing session token for valid credentials", async () => {
-    const prisma = createMockPrisma();
-    prisma.seed.user({ id: "user-1", email: "learner@example.com", name: "Learner" });
-    prisma.seed.account({
-        id: "account-1",
-        userId: "user-1",
-        identifier: "learner@example.com",
-        passwordHash: hashPassword("passw0rd!"),
-    });
-    const service = new AuthCoreService(prisma);
+test("signIn reads the current Supabase user session", async () => {
+    const { supabase, service } = createService();
+    supabase.seed.user({ id: "user-1", email: "learner@example.com", name: "Learner", password: "passw0rd!" });
 
     const result = await service.signIn({
         email: "learner@example.com",
@@ -40,23 +36,58 @@ test("signIn returns an existing session token for valid credentials", async () 
 
     assert.equal(result.user.email, "learner@example.com");
     assert.ok(result.token);
-    assert.equal(prisma.state.sessions.length, 1);
+    assert.equal(supabase.state.sessions.length, 1);
 });
 
-test("getCurrentAccount reads the bearer token from authorization headers", async () => {
-    const prisma = createMockPrisma();
-    prisma.seed.user({ id: "user-1", email: "learner@example.com", name: "Learner" });
-    prisma.seed.session({
+test("getCurrentAccount and updateProfile use the Supabase bearer token", async () => {
+    const { supabase, service } = createService();
+    supabase.seed.user({ id: "user-1", email: "learner@example.com", name: "Learner", password: "passw0rd!" });
+
+    const account = await service.getCurrentAccount("Bearer token-user-1");
+    assert.equal(account.token, "token-user-1");
+    assert.equal(account.user.name, "Learner");
+
+    const updated = await service.updateProfile(
+        {
+            name: "Updated Learner",
+            image: "https://example.com/avatar.png",
+            bio: "learning with Supabase",
+        },
+        "Bearer token-user-1"
+    );
+
+    assert.equal(updated.user.name, "Updated Learner");
+    assert.equal(updated.user.image, "https://example.com/avatar.png");
+    assert.equal(supabase.state.profiles[0].bio, "learning with Supabase");
+});
+
+test("listSessions, revokeSession and updateNotificationPreferences work through Supabase tables", async () => {
+    const { supabase, service } = createService();
+    supabase.seed.user({ id: "user-1", email: "learner@example.com", name: "Learner", password: "passw0rd!" });
+    supabase.seed.session({
         id: "session-1",
         userId: "user-1",
-        token: "token-123",
         expiresAt: new Date("2026-08-20T00:00:00.000Z").toISOString(),
     });
-    const service = new AuthCoreService(prisma);
 
-    const result = await service.getCurrentAccount("Bearer token-123");
+    const sessions = await service.listSessions("Bearer token-user-1");
+    assert.equal(sessions.sessions.length, 1);
+    assert.equal(sessions.sessions[0].id, "session-1");
 
-    assert.equal(result.token, "token-123");
-    assert.equal(result.user.email, "learner@example.com");
+    const preferences = await service.updateNotificationPreferences(
+        {
+            email: false,
+            sms: true,
+            inApp: false,
+        },
+        "Bearer token-user-1"
+    );
+    assert.equal(preferences.sms, true);
+    assert.equal(supabase.state.notificationPreferences[0].sms, true);
+
+    await service.revokeSession("session-1", "Bearer token-user-1");
+    assert.equal(supabase.state.sessions.length, 0);
+
+    const audit = await service.getAuditRecords("Bearer token-user-1");
+    assert.deepEqual(audit.records, []);
 });
-

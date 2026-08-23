@@ -1,6 +1,6 @@
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { SupabaseClient } from "../common/supabase/supabase.client.js";
 
-export async function getSessionFromAuthorizationHeader(prisma: PrismaService, authorization?: string) {
+export async function getSessionFromAuthorizationHeader(supabase: SupabaseClient, authorization?: string) {
     if (!authorization) {
         return null;
     }
@@ -10,16 +10,5 @@ export async function getSessionFromAuthorizationHeader(prisma: PrismaService, a
         return null;
     }
 
-    return prisma.session.findUnique({
-        where: {
-            token,
-        },
-        include: {
-            user: {
-                include: {
-                    userProfile: true,
-                },
-            },
-        },
-    });
+    return supabase.getCurrentUser(authorization);
 }

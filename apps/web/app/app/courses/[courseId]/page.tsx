@@ -11,8 +11,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { Separator } from "@workspace/ui/components/separator";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { createOrder, listProducts, type ProductItem } from "@/lib/api/endpoints/commerce-api";
-import { getCourse, type CourseDetail } from "@/lib/api/endpoints/catalog-api";
+import { createOrder } from "@/lib/api/endpoints/commerce-api";
+import { listProducts, type ProductItem } from "@/lib/supabase/commerce-queries";
+import { getCourse, type CourseDetail } from "@/lib/supabase/catalog-queries";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { useLocale } from "@/lib/i18n";
 
@@ -177,7 +178,9 @@ export default function CourseDetailPage() {
 
             router.push(`/app/orders/${order.id}`);
         } catch (buyError) {
-            setError(buyError instanceof Error ? buyError.message : locale === "zh-CN" ? "无法创建订单" : "Unable to create order");
+            setError(
+                buyError instanceof Error ? buyError.message : locale === "zh-CN" ? "无法创建订单" : "Unable to create order"
+            );
         } finally {
             setOrdering(false);
         }
@@ -306,7 +309,11 @@ export default function CourseDetailPage() {
                                         <div className="text-muted-foreground">{text.purchaseUnavailable}</div>
                                     )}
                                 </div>
-                                <Button type="button" variant="secondary" disabled={!product || ordering} onClick={handleBuyNow}>
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    disabled={!product || ordering}
+                                    onClick={handleBuyNow}>
                                     {ordering ? text.purchasePending : text.purchaseButton}
                                 </Button>
                             </div>

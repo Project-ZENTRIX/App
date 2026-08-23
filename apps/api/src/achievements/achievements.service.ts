@@ -1,58 +1,78 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { errorKeys } from "../common/errors/error-keys.js";
-import { getSessionFromAuthorizationHeader } from "../auth/auth-session.js";
+import { SUPABASE_CLIENT } from "../common/supabase/supabase.module.js";
+import { SupabaseClient } from "../common/supabase/supabase.client.js";
 
-type AchievementPayload = {
+type AchievementRow = {
     id: string;
     code: string;
     name: string;
     description: string | null;
-    deletedAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
+    deleted_at: string | null;
+    created_at: string;
+    updated_at: string;
 };
 
-type LevelPayload = {
+type LevelRow = {
     id: string;
     code: string;
     name: string;
     rank: number;
-    deletedAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
+    deleted_at: string | null;
+    created_at: string;
+    updated_at: string;
 };
 
-function mapAchievement(achievement: AchievementPayload) {
+type UserAchievementRow = {
+    id: string;
+    user_id: string;
+    achievement_id: string;
+    achieved_at: string;
+};
+
+type UserLevelProgressRow = {
+    id: string;
+    user_id: string;
+    level_id: string;
+    progress: number;
+    created_at: string;
+    updated_at: string;
+};
+
+function toDate(value: string | null) {
+    return value ? new Date(value) : null;
+}
+
+function mapAchievement(achievement: AchievementRow) {
     return {
         id: achievement.id,
         code: achievement.code,
         name: achievement.name,
         description: achievement.description,
-        deletedAt: achievement.deletedAt,
-        createdAt: achievement.createdAt,
-        updatedAt: achievement.updatedAt,
+        deletedAt: toDate(achievement.deleted_at),
+        createdAt: new Date(achievement.created_at),
+        updatedAt: new Date(achievement.updated_at),
     };
 }
 
-function mapLevel(level: LevelPayload) {
+function mapLevel(level: LevelRow) {
     return {
         id: level.id,
         code: level.code,
         name: level.name,
         rank: level.rank,
-        deletedAt: level.deletedAt,
-        createdAt: level.createdAt,
-        updatedAt: level.updatedAt,
+        deletedAt: toDate(level.deleted_at),
+        createdAt: new Date(level.created_at),
+        updatedAt: new Date(level.updated_at),
     };
 }
 
 @Injectable()
 export class AchievementsService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(@Inject(SUPABASE_CLIENT) private readonly supabase: SupabaseClient) {}
 
     private async requireSession(authorization?: string) {
-        const session = await getSessionFromAuthorizationHeader(this.prisma, authorization);
+        const session = await this.supabase.getCurrentUser(authorization);
         if (!session) {
             throw new UnauthorizedException(errorKeys.unauthorized);
         }
@@ -61,14 +81,18 @@ export class AchievementsService {
     }
 
     async listAchievements() {
-        const achievements = await this.prisma.achievement.findMany({
-            where: {
-                deletedAt: null,
+        const achievements = await this.supabase.selectRows<AchievementRow>(
+            "public",
+            "achievements",
+            {
+                deleted_at: null,
             },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+            "*",
+            {
+                column: "created_at",
+                ascending: false,
+            }
+        );
 
         return {
             items: achievements.map((achievement) => mapAchievement(achievement)),
@@ -76,10 +100,8 @@ export class AchievementsService {
     }
 
     async getAchievement(achievementId: string) {
-        const achievement = await this.prisma.achievement.findUnique({
-            where: {
-                id: achievementId,
-            },
+        const achievement = await this.supabase.selectOne<AchievementRow>("public", "achievements", {
+            id: achievementId,
         });
 
         return achievement ? mapAchievement(achievement) : null;
@@ -87,36 +109,49 @@ export class AchievementsService {
 
     async listUserAchievements(authorization?: string) {
         const session = await this.requireSession(authorization);
-        const userAchievements = await this.prisma.userAchievement.findMany({
-            where: {
-                userId: session.user.id as string,
+        const userAchievements = await this.supabase.selectRows<UserAchievementRow>(
+            "public",
+            "user_achievements",
+            {
+                user_id: session.id,
             },
-            include: {
-                achievement: true,
-            },
-            orderBy: {
-                achievedAt: "desc",
-            },
-        });
+            "*",
+            {
+                column: "achieved_at",
+                ascending: false,
+            }
+        );
+
+        const achievements = await Promise.all(
+            userAchievements.map((item) =>
+                this.supabase.selectOne<AchievementRow>("public", "achievements", {
+                    id: item.achievement_id,
+                })
+            )
+        );
 
         return {
-            items: userAchievements.map((item) => ({
+            items: userAchievements.map((item, index) => ({
                 id: item.id,
-                achievedAt: item.achievedAt,
-                achievement: item.achievement ? mapAchievement(item.achievement) : null,
+                achievedAt: new Date(item.achieved_at),
+                achievement: achievements[index] ? mapAchievement(achievements[index] as AchievementRow) : null,
             })),
         };
     }
 
     async listLevels() {
-        const levels = await this.prisma.level.findMany({
-            where: {
-                deletedAt: null,
+        const levels = await this.supabase.selectRows<LevelRow>(
+            "public",
+            "levels",
+            {
+                deleted_at: null,
             },
-            orderBy: {
-                rank: "asc",
-            },
-        });
+            "*",
+            {
+                column: "rank",
+                ascending: true,
+            }
+        );
 
         return {
             items: levels.map((level) => mapLevel(level)),
@@ -126,46 +161,42 @@ export class AchievementsService {
     async getLevelProgress(authorization?: string) {
         const session = await this.requireSession(authorization);
         const [levels, userLevelProgresses] = await Promise.all([
-            this.prisma.level.findMany({
-                where: {
-                    deletedAt: null,
+            this.supabase.selectRows<LevelRow>(
+                "public",
+                "levels",
+                {
+                    deleted_at: null,
                 },
-                orderBy: {
-                    rank: "asc",
-                },
-            }),
-            this.prisma.userLevelProgress.findMany({
-                where: {
-                    userId: session.user.id as string,
-                },
-                include: {
-                    level: true,
-                },
+                "*",
+                {
+                    column: "rank",
+                    ascending: true,
+                }
+            ),
+            this.supabase.selectRows<UserLevelProgressRow>("public", "user_level_progress", {
+                user_id: session.id,
             }),
         ]);
 
+        const levelById = new Map(levels.map((level) => [level.id, level]));
         const items = userLevelProgresses
-            .filter((item) => item.level)
             .map((item) => ({
                 id: item.id,
                 progress: item.progress,
-                level: item.level ? mapLevel(item.level) : null,
-                createdAt: item.createdAt,
-                updatedAt: item.updatedAt,
+                level: levelById.get(item.level_id) ? mapLevel(levelById.get(item.level_id) as LevelRow) : null,
+                createdAt: new Date(item.created_at),
+                updatedAt: new Date(item.updated_at),
             }))
-            .sort((left, right) => (left.level?.rank ?? 0) - (right.level?.rank ?? 0));
+            .filter((item) => item.level);
 
         const currentLevel = items.length
             ? items.reduce((highest, item) => ((item.level?.rank ?? 0) > (highest.level?.rank ?? 0) ? item : highest))
             : null;
-        const nextLevel =
-            currentLevel?.level && levels.find((level) => level.rank > currentLevel.level!.rank)
-                ? mapLevel(levels.find((level) => level.rank > currentLevel.level!.rank) as LevelPayload)
-                : null;
+        const nextLevel = currentLevel?.level ? (levels.find((level) => level.rank > currentLevel.level!.rank) ?? null) : null;
 
         return {
             currentLevel,
-            nextLevel,
+            nextLevel: nextLevel ? mapLevel(nextLevel) : null,
             items,
         };
     }

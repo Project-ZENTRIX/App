@@ -1,5 +1,24 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { apiUrl, createTestEmail, createTestPassword, expectApiOk } from "./helpers/api";
+import { createSupabaseTestAccount } from "./helpers/supabase";
+
+function collectRequests(page: Page) {
+    const urls: string[] = [];
+    page.on("request", (request) => {
+        urls.push(request.url());
+    });
+
+    return urls;
+}
+
+async function signInThroughUi(page: Page, email: string, password: string) {
+    await page.goto("/account/login");
+    await expect(page.getByLabel("Email")).toBeVisible();
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password").fill(password);
+    await page.locator('section[id="_zentrix.comp-content"] button[type="submit"]').click();
+    await expect(page).toHaveURL(/\/app$/);
+}
 
 test.describe("Web pages end to end", () => {
     test("renders the landing and pricing pages", async ({ page }) => {
@@ -99,16 +118,10 @@ test.describe("Web pages end to end", () => {
         const email = createTestEmail("page");
         const password = createTestPassword();
 
-        const signup = await expectApiOk<{ token: string; user: { id: string } }>(
-            request.post(apiUrl("/auth/signup"), {
-                data: { email, password, confirmPassword: password },
-            }),
-            "seed account should be created"
-        );
+        const signup = await createSupabaseTestAccount(request, email, password);
+        await signInThroughUi(page, email, password);
 
-        await page.addInitScript((token) => {
-            window.localStorage.setItem("zentrix-auth-token", token);
-        }, signup.token);
+        const requestUrls = collectRequests(page);
 
         await page.goto("/app");
         await expect(page.getByRole("heading", { name: /Welcome back/ })).toBeVisible();
@@ -123,18 +136,22 @@ test.describe("Web pages end to end", () => {
         await page.getByLabel("Name").fill("UI Test Learner");
         await page.getByLabel("Avatar URL").fill("https://example.com/avatar.png");
         await page.getByLabel("Bio").fill("Updated from Playwright");
-        const profileResponse = page.waitForResponse(
-            (response) => response.url().endsWith("/api/auth/me/profile") && response.request().method() === "PATCH"
-        );
         await page.getByRole("button", { name: "Save profile" }).click();
-        const savedProfile = await profileResponse;
-        expect(savedProfile.ok()).toBe(true);
+        await expect(page.getByText("Profile updated")).toBeVisible();
+
+        await page.reload();
+        await expect(page.getByLabel("Name")).toHaveValue("UI Test Learner");
+        await expect(page.getByLabel("Avatar URL")).toHaveValue("https://example.com/avatar.png");
+        await expect(page.getByLabel("Bio")).toHaveValue("Updated from Playwright");
 
         await page.goto("/app/settings/notifications");
         await expect(page.getByRole("tab", { name: "Notifications" })).toBeVisible();
         await page.getByLabel("Email notifications").click();
         await page.getByRole("button", { name: "Save settings" }).click();
-        await expect(page.getByRole("button", { name: "Save settings" })).toBeVisible();
+        await expect(page.getByText("Notification settings saved")).toBeVisible();
+
+        await page.reload();
+        await expect(page.getByLabel("Email notifications")).not.toBeChecked();
 
         await page.goto("/app/settings/security");
         await expect(page.getByRole("tab", { name: "Security" })).toBeVisible();
@@ -143,6 +160,7 @@ test.describe("Web pages end to end", () => {
         await page.getByLabel("Confirm new password").fill("ZentrixPass789!");
         await page.getByRole("button", { name: "Update password" }).click();
         await expect(page.getByRole("button", { name: "Update password" })).toBeVisible();
+        expect(requestUrls.some((url) => url.includes("127.20.0.1:4000/api"))).toBe(false);
 
         await page.goto("/app/settings/sessions");
         await expect(page.getByRole("tab", { name: "Sessions" })).toBeVisible();
@@ -158,16 +176,8 @@ test.describe("Web pages end to end", () => {
         const email = createTestEmail("catalog");
         const password = createTestPassword();
 
-        const signup = await expectApiOk<{ token: string }>(
-            request.post(apiUrl("/auth/signup"), {
-                data: { email, password, confirmPassword: password },
-            }),
-            "seed account should be created"
-        );
-
-        await page.addInitScript((token) => {
-            window.localStorage.setItem("zentrix-auth-token", token);
-        }, signup.token);
+        const signup = await createSupabaseTestAccount(request, email, password);
+        await signInThroughUi(page, email, password);
 
         await page.goto("/app/courses");
         await expect(page.locator("h1").filter({ hasText: "Course market" })).toBeVisible();
@@ -186,46 +196,64 @@ test.describe("Web pages end to end", () => {
         await expect(page.getByRole("link", { name: "Open details" }).first()).toBeVisible();
     });
 
-    test("lets a learner buy a course package and review the created order", async ({ page, request }) => {
-        const email = createTestEmail("buy");
+    test("loads order payment status through Supabase REST instead of the backend API", async ({ page, request }) => {
+        const email = createTestEmail("order-status");
         const password = createTestPassword();
 
-        const signup = await expectApiOk<{ token: string }>(
-            request.post(apiUrl("/auth/signup"), {
-                data: { email, password, confirmPassword: password },
-            }),
-            "seed account should be created"
-        );
+        const signup = await createSupabaseTestAccount(request, email, password);
 
-        await page.addInitScript((token) => {
-            window.localStorage.setItem("zentrix-auth-token", token);
-        }, signup.token);
+        const createOrderResponse = await request.post(apiUrl("/orders"), {
+            headers: {
+                Authorization: `Bearer ${signup.token}`,
+            },
+            data: {
+                items: [{ productId: "product-api-design" }],
+            },
+        });
+        const createOrderBody = await createOrderResponse.text();
+        expect(
+            createOrderResponse.ok(),
+            `order should be created: ${createOrderResponse.status()} ${createOrderBody}`
+        ).toBeTruthy();
+        const createOrder = JSON.parse(createOrderBody) as { success: boolean; message: string; data: { id: string } };
+        const orderId = createOrder.data.id;
 
-        await page.goto("/app/courses/course-api-design");
-        const buyButton = page.getByRole("button", { name: "Buy package" });
-        await expect(buyButton).toBeVisible();
-        await buyButton.click();
+        await signInThroughUi(page, email, password);
 
-        await expect(page).toHaveURL(/\/app\/orders\/.+/);
+        const requestUrls = collectRequests(page);
+
+        await page.goto(`/app/orders/${orderId}`);
         await expect(page.getByRole("heading", { name: "Order detail" })).toBeVisible();
         await expect(page.getByRole("button", { name: "Pay now" })).toBeVisible();
         await expect(page.getByRole("button", { name: "Cancel order" })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Payment status" })).toBeVisible();
+        await expect(
+            page
+                .locator("div.rounded-xl.border.p-4")
+                .filter({ has: page.getByRole("heading", { name: "Payment status" }) })
+                .getByText("initiated")
+        ).toBeVisible();
+
+        requestUrls.length = 0;
+        await page.reload();
+
+        await expect(page.getByRole("heading", { name: "Payment status" })).toBeVisible();
+        await expect(
+            page
+                .locator("div.rounded-xl.border.p-4")
+                .filter({ has: page.getByRole("heading", { name: "Payment status" }) })
+                .getByText("initiated")
+        ).toBeVisible();
+        expect(requestUrls.some((url) => url.includes("127.20.0.1:4000/api"))).toBe(false);
+        expect(requestUrls.some((url) => url.includes("127.20.0.1:54321/rest/v1"))).toBe(true);
     });
 
     test("renders commerce, license, and progress surfaces", async ({ page, request }) => {
         const email = createTestEmail("commerce");
         const password = createTestPassword();
 
-        const signup = await expectApiOk<{ token: string }>(
-            request.post(apiUrl("/auth/signup"), {
-                data: { email, password, confirmPassword: password },
-            }),
-            "seed account should be created"
-        );
-
-        await page.addInitScript((token) => {
-            window.localStorage.setItem("zentrix-auth-token", token);
-        }, signup.token);
+        const signup = await createSupabaseTestAccount(request, email, password);
+        await signInThroughUi(page, email, password);
 
         await page.goto("/app/membership");
         await expect(page.locator("h1").filter({ hasText: "Membership centre" })).toBeVisible();
@@ -242,9 +270,57 @@ test.describe("Web pages end to end", () => {
         await page.goto("/app/progress");
         await expect(page.locator("h1").filter({ hasText: "Achievements & progress" })).toBeVisible();
         await expect(page.getByText("Learning summary")).toBeVisible();
-        await expect(page.getByText("Achievements")).toBeVisible();
-        await expect(page.getByText("Levels")).toBeVisible();
-        await expect(page.getByText("Last sync")).toBeVisible();
-        await expect(page.getByText("Related courses")).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Achievements", exact: true })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Levels", exact: true })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Last sync", exact: true })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Related courses", exact: true })).toBeVisible();
+    });
+
+    test("loads read-only learning pages through Supabase REST instead of the backend API", async ({ page, request }) => {
+        const email = createTestEmail("supabase");
+        const password = createTestPassword();
+
+        const signup = await createSupabaseTestAccount(request, email, password);
+        await signInThroughUi(page, email, password);
+
+        const requestUrls = collectRequests(page);
+
+        await page.goto("/app/courses");
+        await expect(page.locator("h1").filter({ hasText: "Course market" })).toBeVisible();
+
+        await page.goto("/app/library");
+        await expect(page.locator("h1").filter({ hasText: "My Courses" })).toBeVisible();
+
+        await page.goto("/app/progress");
+        await expect(page.locator("h1").filter({ hasText: "Achievements & progress" })).toBeVisible();
+
+        expect(requestUrls.some((url) => url.includes("127.20.0.1:4000/api"))).toBe(false);
+        expect(requestUrls.some((url) => url.includes("127.20.0.1:54321/rest/v1"))).toBe(true);
+    });
+
+    test("loads commerce and license read paths through Supabase REST instead of the backend API", async ({
+        page,
+        request,
+    }) => {
+        const email = createTestEmail("commerce-supabase");
+        const password = createTestPassword();
+
+        const signup = await createSupabaseTestAccount(request, email, password);
+        await signInThroughUi(page, email, password);
+
+        const requestUrls = collectRequests(page);
+
+        await page.goto("/app/membership");
+        await expect(page.locator("h1").filter({ hasText: "Membership centre" })).toBeVisible();
+
+        await page.goto("/app/orders");
+        await expect(page.locator("h1").filter({ hasText: "Order centre" })).toBeVisible();
+
+        await page.goto("/app/devices");
+        await expect(page.locator("h1").filter({ hasText: "Device & licence" })).toBeVisible();
+        await page.waitForLoadState("networkidle");
+
+        expect(requestUrls.some((url) => url.includes("127.20.0.1:4000/api"))).toBe(false);
+        expect(requestUrls.some((url) => url.includes("127.20.0.1:54321/rest/v1"))).toBe(true);
     });
 });

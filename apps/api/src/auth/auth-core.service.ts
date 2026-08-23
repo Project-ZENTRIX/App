@@ -1,26 +1,30 @@
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
-import { PrismaService } from "../../prisma/prisma.service.js";
 import { errorKeys } from "../common/errors/error-keys.js";
-import { getTokenFromAuthorizationHeader, hashPassword, verifyPassword } from "./auth-crypto.js";
-import { getSessionFromAuthorizationHeader } from "./auth-session.js";
+import { SUPABASE_CLIENT } from "../common/supabase/supabase.module.js";
+import {
+    SupabaseClient,
+    SupabaseClientError,
+    type CurrentSupabaseUser,
+    type SupabaseAuthUser,
+} from "../common/supabase/supabase.client.js";
+import { getTokenFromAuthorizationHeader } from "./auth-crypto.js";
 import { SignInDto } from "./dto/signin.dto.js";
 import { SignUpDto } from "./dto/signup.dto.js";
-
-type CurrentSessionPayload = {
-    id: string;
-    token: string;
-    expiresAt: Date;
-    createdAt: Date;
-    revokedAt: Date | null;
-    ipAddress: string | null;
-    userAgent: string | null;
-};
 
 type NotificationPreferencesPayload = {
     email: boolean;
     sms: boolean;
     inApp: boolean;
+};
+
+type NotificationPreferencesRow = {
+    email: boolean;
+    sms: boolean;
+    in_app: boolean;
+    user_id: string;
+    created_at: string;
+    updated_at: string;
 };
 
 type UpdateProfileDto = {
@@ -40,9 +44,92 @@ type UpdateNotificationPreferencesDto = {
     inApp?: boolean;
 };
 
+type SupabaseProfileRow = {
+    id: string;
+    display_name: string;
+    avatar_url: string | null;
+    bio: string | null;
+    status: string;
+    created_at: string;
+    updated_at: string;
+};
+
+type CurrentSessionPayload = {
+    id: string;
+    token: string | null;
+    expiresAt: Date | null;
+    createdAt: Date;
+    revokedAt: Date | null;
+    ipAddress: string | null;
+    userAgent: string | null;
+};
+
+type UserSessionRow = {
+    id: string;
+    user_id: string;
+    created_at: string;
+    updated_at: string;
+    expires_at: string | null;
+    revoked_at: string | null;
+    ip_address: string | null;
+    user_agent: string | null;
+};
+
+type AppUserRecord = {
+    id: string;
+    name: string;
+    email: string;
+    emailVerified: boolean;
+    image: string | null;
+    status: "active";
+    createdAt: Date;
+    updatedAt: Date;
+    userProfile: {
+        id: string;
+        userId: string;
+        avatarUrl: string | null;
+        bio: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    } | null;
+};
+
+function mapProfile(profile: SupabaseProfileRow | null, userId: string) {
+    if (!profile) {
+        return null;
+    }
+
+    return {
+        id: profile.id,
+        userId,
+        avatarUrl: profile.avatar_url,
+        bio: profile.bio,
+        createdAt: new Date(profile.created_at),
+        updatedAt: new Date(profile.updated_at),
+    };
+}
+
+function mapUser(user: SupabaseAuthUser | CurrentSupabaseUser, profile: SupabaseProfileRow | null): AppUserRecord {
+    const displayName =
+        profile?.display_name ?? String(user.user_metadata?.name ?? user.raw_user_meta_data?.name ?? user.email);
+    const image = profile?.avatar_url ?? (user.user_metadata?.image as string | null | undefined) ?? null;
+
+    return {
+        id: user.id,
+        name: displayName,
+        email: user.email,
+        emailVerified: Boolean(user.email_confirmed_at),
+        image,
+        status: "active",
+        createdAt: new Date(user.created_at),
+        updatedAt: new Date(user.updated_at),
+        userProfile: mapProfile(profile, user.id),
+    };
+}
+
 @Injectable()
 export class AuthCoreService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(@Inject(SUPABASE_CLIENT) private readonly supabase: SupabaseClient) {}
 
     private assertAuthPayload(body: SignInDto | SignUpDto) {
         if (!body || typeof body.email !== "string" || typeof body.password !== "string") {
@@ -58,44 +145,66 @@ export class AuthCoreService {
         }
     }
 
+    private async loadUserProfile(userId: string) {
+        return this.supabase.selectOne<SupabaseProfileRow>("public", "profiles", { id: userId });
+    }
+
+    private async loadCurrentUser(authorization?: string) {
+        const user = await this.supabase.getCurrentUser(authorization);
+        if (!user) {
+            throw new UnauthorizedException(errorKeys.unauthorized);
+        }
+
+        return user;
+    }
+
+    private async recordSession(userId: string, accessToken: string) {
+        await this.supabase.insertRow("public", "user_sessions", {
+            id: `session-${randomUUID()}`,
+            user_id: userId,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            expires_at: null,
+            revoked_at: null,
+            ip_address: null,
+            user_agent: null,
+        });
+    }
+
     async getSessionFromAuthorization(authorization?: string) {
-        return getSessionFromAuthorizationHeader(this.prisma, authorization);
+        const token = getTokenFromAuthorizationHeader(authorization);
+        if (!token) {
+            return null;
+        }
+
+        const user = await this.supabase.getCurrentUser(authorization);
+        if (!user) {
+            return null;
+        }
+
+        return {
+            token,
+            user: mapUser(user, await this.loadUserProfile(user.id)),
+        };
     }
 
     async signIn(body: SignInDto) {
         this.assertAuthPayload(body);
 
-        const account = await this.prisma.account.findFirst({
-            where: {
-                passwordHash: {
-                    not: null,
-                },
-                user: {
-                    email: body.email,
-                },
-            },
-            include: {
-                user: true,
-            },
-        });
+        try {
+            const session = await this.supabase.signInWithPassword(body.email, body.password);
+            await this.recordSession(session.user.id, session.access_token);
+            return {
+                token: session.access_token,
+                user: mapUser(session.user, await this.loadUserProfile(session.user.id)),
+            };
+        } catch (error) {
+            if (error instanceof SupabaseClientError) {
+                throw new UnauthorizedException(errorKeys.invalidEmailOrPassword);
+            }
 
-        if (!account?.passwordHash || !verifyPassword(body.password, account.passwordHash)) {
-            throw new UnauthorizedException(errorKeys.invalidEmailOrPassword);
+            throw error;
         }
-
-        const token = randomUUID();
-        await this.prisma.session.create({
-            data: {
-                token,
-                userId: account.userId,
-                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-            },
-        });
-
-        return {
-            token,
-            user: account.user,
-        };
     }
 
     async signUp(body: SignUpDto) {
@@ -105,46 +214,32 @@ export class AuthCoreService {
             throw new BadRequestException(errorKeys.passwordMismatch);
         }
 
-        const existingUser = await this.prisma.user.findUnique({
-            where: {
-                email: body.email,
-            },
-        });
-
-        if (existingUser) {
-            throw new BadRequestException(errorKeys.emailAlreadyExists);
-        }
-
-        const user = await this.prisma.user.create({
-            data: {
-                email: body.email,
+        try {
+            const result = await this.supabase.signUpWithPassword(body.email, body.password, {
                 name: body.email,
-                emailVerified: true,
-            },
-        });
+            });
 
-        await this.prisma.account.create({
-            data: {
-                userId: user.id,
-                provider: "credentials",
-                identifier: body.email,
-                passwordHash: hashPassword(body.password),
-            },
-        });
+            if (!result.session) {
+                throw new BadRequestException(errorKeys.internalServerError);
+            }
 
-        const token = randomUUID();
-        await this.prisma.session.create({
-            data: {
-                token,
-                userId: user.id,
-                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-            },
-        });
+            await this.recordSession(result.user.id, result.session.access_token);
 
-        return {
-            token,
-            user,
-        };
+            return {
+                token: result.session.access_token,
+                user: mapUser(result.user, await this.loadUserProfile(result.user.id)),
+            };
+        } catch (error) {
+            if (error instanceof SupabaseClientError) {
+                if (error.status === 400 || error.status === 422) {
+                    throw new BadRequestException(errorKeys.emailAlreadyExists);
+                }
+
+                throw new BadRequestException(errorKeys.internalServerError);
+            }
+
+            throw error;
+        }
     }
 
     async getCurrentAccount(authorization?: string) {
@@ -160,53 +255,40 @@ export class AuthCoreService {
     }
 
     async updateProfile(body: UpdateProfileDto, authorization?: string) {
-        const session = await this.getSessionFromAuthorization(authorization);
-        if (!session) {
+        const token = getTokenFromAuthorizationHeader(authorization);
+        if (!token) {
             throw new UnauthorizedException(errorKeys.unauthorized);
         }
 
-        const user = await this.prisma.user.update({
-            where: {
-                id: session.user.id as string,
-            },
-            data: {
-                ...(typeof body.name === "string" ? { name: body.name } : {}),
-                ...(body.image !== undefined ? { image: body.image } : {}),
-            },
+        const currentUser = await this.loadCurrentUser(authorization);
+        const updatedMetadata = {
+            name: typeof body.name === "string" ? body.name : (currentUser.user_metadata?.name ?? currentUser.email),
+            image: body.image !== undefined ? body.image : (currentUser.user_metadata?.image ?? null),
+        };
+
+        await this.supabase.updateCurrentUser(authorization!, {
+            data: updatedMetadata,
         });
 
-        if (body.bio !== undefined || body.image !== undefined) {
-            await this.prisma.userProfile.upsert({
-                where: {
-                    userId: session.user.id as string,
-                },
-                create: {
-                    userId: session.user.id as string,
-                    bio: body.bio ?? null,
-                    avatarUrl: body.image ?? null,
-                },
-                update: {
-                    ...(body.bio !== undefined ? { bio: body.bio } : {}),
-                    ...(body.image !== undefined ? { avatarUrl: body.image } : {}),
-                },
-            });
-        }
+        await this.supabase.upsertRow<SupabaseProfileRow>(
+            "public",
+            "profiles",
+            {
+                id: currentUser.id,
+                display_name:
+                    typeof body.name === "string" ? body.name : String(currentUser.user_metadata?.name ?? currentUser.email),
+                avatar_url: body.image !== undefined ? body.image : (currentUser.user_metadata?.image ?? null),
+                bio: body.bio ?? null,
+            },
+            "id"
+        );
 
-        return {
-            user: await this.prisma.user.findUnique({
-                where: {
-                    id: user.id,
-                },
-                include: {
-                    userProfile: true,
-                },
-            }),
-        };
+        return this.getCurrentAccount(authorization);
     }
 
     async updatePassword(body: UpdatePasswordDto, authorization?: string) {
-        const session = await this.getSessionFromAuthorization(authorization);
-        if (!session) {
+        const token = getTokenFromAuthorizationHeader(authorization);
+        if (!token) {
             throw new UnauthorizedException(errorKeys.unauthorized);
         }
 
@@ -218,24 +300,20 @@ export class AuthCoreService {
             throw new BadRequestException(errorKeys.passwordTooShort);
         }
 
-        const account = await this.prisma.account.findFirst({
-            where: {
-                userId: session.user.id as string,
-                provider: "credentials",
-            },
-        });
+        const currentUser = await this.loadCurrentUser(authorization);
 
-        if (!account?.passwordHash || !verifyPassword(body.currentPassword, account.passwordHash)) {
-            throw new UnauthorizedException(errorKeys.invalidCurrentPassword);
+        try {
+            await this.supabase.signInWithPassword(currentUser.email, body.currentPassword);
+        } catch (error) {
+            if (error instanceof SupabaseClientError) {
+                throw new UnauthorizedException(errorKeys.invalidCurrentPassword);
+            }
+
+            throw error;
         }
 
-        await this.prisma.account.update({
-            where: {
-                id: account.id,
-            },
-            data: {
-                passwordHash: hashPassword(body.newPassword),
-            },
+        await this.supabase.updateCurrentUser(authorization!, {
+            password: body.newPassword,
         });
 
         return {
@@ -244,40 +322,29 @@ export class AuthCoreService {
     }
 
     async listSessions(authorization?: string) {
-        const session = await this.getSessionFromAuthorization(authorization);
-        if (!session) {
-            throw new UnauthorizedException(errorKeys.unauthorized);
-        }
-
-        const sessions = await this.prisma.session.findMany({
-            where: {
-                userId: session.user.id as string,
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+        const currentUser = await this.loadCurrentUser(authorization);
+        const sessions = await this.supabase.listSessions(currentUser.id);
 
         return {
-            sessions: sessions as CurrentSessionPayload[],
+            sessions: sessions.map((session) => ({
+                id: String(session.id),
+                token: null,
+                expiresAt: session.expires_at
+                    ? new Date(String(session.expires_at))
+                    : session.not_after
+                      ? new Date(String(session.not_after))
+                      : null,
+                createdAt: new Date(String(session.created_at)),
+                revokedAt: session.revoked_at ? new Date(String(session.revoked_at)) : null,
+                ipAddress: session.ip_address ? String(session.ip_address) : session.ip ? String(session.ip) : null,
+                userAgent: session.user_agent ? String(session.user_agent) : null,
+            })) as CurrentSessionPayload[],
         };
     }
 
     async revokeSession(sessionId: string, authorization?: string) {
-        const session = await this.getSessionFromAuthorization(authorization);
-        if (!session) {
-            throw new UnauthorizedException(errorKeys.unauthorized);
-        }
-
-        await this.prisma.session.updateMany({
-            where: {
-                id: sessionId,
-                userId: session.user.id as string,
-            },
-            data: {
-                revokedAt: new Date(),
-            },
-        });
+        const currentUser = await this.loadCurrentUser(authorization);
+        await this.supabase.revokeSession(currentUser.id, sessionId);
 
         return {
             success: true as const,
@@ -285,59 +352,45 @@ export class AuthCoreService {
     }
 
     async getNotificationPreferences(authorization?: string) {
-        const session = await this.getSessionFromAuthorization(authorization);
-        if (!session) {
-            throw new UnauthorizedException(errorKeys.unauthorized);
-        }
-
-        const preference = await this.prisma.notificationPreference.findUnique({
-            where: {
-                userId: session.user.id as string,
-            },
+        const currentUser = await this.loadCurrentUser(authorization);
+        const preference = await this.supabase.selectOne<NotificationPreferencesRow>("public", "notification_preferences", {
+            user_id: currentUser.id,
         });
 
-        return preference ?? { email: true, sms: false, inApp: true };
+        if (!preference) {
+            return { email: true, sms: false, inApp: true };
+        }
+
+        return {
+            email: preference.email,
+            sms: preference.sms,
+            inApp: preference.in_app,
+        };
     }
 
     async updateNotificationPreferences(body: UpdateNotificationPreferencesDto, authorization?: string) {
-        const session = await this.getSessionFromAuthorization(authorization);
-        if (!session) {
-            throw new UnauthorizedException(errorKeys.unauthorized);
-        }
-
+        const currentUser = await this.loadCurrentUser(authorization);
         const preference = {
+            user_id: currentUser.id,
             email: body.email ?? true,
             sms: body.sms ?? false,
-            inApp: body.inApp ?? true,
+            in_app: body.inApp ?? true,
         };
 
-        await this.prisma.notificationPreference.upsert({
-            where: {
-                userId: session.user.id as string,
-            },
-            create: {
-                userId: session.user.id as string,
-                ...preference,
-            },
-            update: preference,
-        });
+        await this.supabase.upsertRow("public", "notification_preferences", preference, "user_id");
 
-        return preference;
+        return {
+            email: preference.email,
+            sms: preference.sms,
+            inApp: preference.in_app,
+        };
     }
 
     async getAuditRecords(authorization?: string) {
-        const session = await this.getSessionFromAuthorization(authorization);
-        if (!session) {
-            throw new UnauthorizedException(errorKeys.unauthorized);
-        }
-
-        const records = await this.prisma.auditLog.findMany({
-            where: {
-                userId: session.user.id as string,
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
+        const currentUser = await this.loadCurrentUser(authorization);
+        const records = await this.supabase.selectRows("public", "audit_logs", { user_id: currentUser.id }, "*", {
+            column: "created_at",
+            ascending: false,
         });
 
         return {
@@ -346,22 +399,9 @@ export class AuthCoreService {
     }
 
     async getProfile(authorization?: string) {
-        const session = await this.getSessionFromAuthorization(authorization);
-        if (!session) {
-            throw new UnauthorizedException(errorKeys.unauthorized);
-        }
-
-        const user = await this.prisma.user.findUnique({
-            where: {
-                id: session.user.id as string,
-            },
-            include: {
-                userProfile: true,
-            },
-        });
-
+        const currentUser = await this.loadCurrentUser(authorization);
         return {
-            user,
+            user: mapUser(currentUser, await this.loadUserProfile(currentUser.id)),
         };
     }
 

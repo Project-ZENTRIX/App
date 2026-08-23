@@ -16,7 +16,7 @@ import {
 
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
-import { getAuditRecords, getCurrentAccount, type AuditRecord, type UserProfile } from "@/lib/api/endpoints/auth-api";
+import { getCurrentAccount, type UserProfile } from "@/lib/supabase/auth-queries";
 import { useDictionary, useLocale } from "@/lib/i18n";
 
 const quickLinks = [
@@ -81,7 +81,7 @@ export default function AppIndexPage() {
     const t = useDictionary();
     const locale = useLocale();
     const [user, setUser] = useState<UserProfile | null>(null);
-    const [recentActivity, setRecentActivity] = useState<AuditRecord[]>([]);
+    const recentActivity: Array<{ id: string; action: string; createdAt: string }> = [];
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -90,13 +90,12 @@ export default function AppIndexPage() {
 
         const loadDashboard = async () => {
             try {
-                const [account, audit] = await Promise.all([getCurrentAccount(), getAuditRecords()]);
+                const account = await getCurrentAccount();
                 if (!active) {
                     return;
                 }
 
                 setUser(account.user);
-                setRecentActivity(audit.records.slice(0, 4));
             } catch (err) {
                 if (!active) {
                     return;

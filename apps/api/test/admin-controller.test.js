@@ -1,7 +1,7 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { AdminController } = require("../dist/src/admin/admin.controller.js");
+const { AdminController } = require("../dist/admin/admin.controller.js");
 
 test("admin controller proxies audit logs, feature flags and integration client routes", () => {
     const calls = [];
@@ -25,4 +25,3 @@ test("admin controller proxies audit logs, feature flags and integration client 
     assert.deepEqual(controller.getIntegrationClients(), { items: [] });
     assert.deepEqual(calls, [["audit-logs"], ["feature-flags"], ["integration-clients"]]);
 });
-

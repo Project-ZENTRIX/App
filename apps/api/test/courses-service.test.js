@@ -1,50 +1,29 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { CoursesService } = require("../dist/src/courses/courses.service.js");
+const { CoursesService } = require("../dist/courses/courses.service.js");
 const {
     chapterSeedData,
     contentAssetSeedData,
     courseSeedData,
     lessonSeedData,
     taskSeedData,
-} = require("../dist/src/courses/courses.seed-data.js");
-
-function createMockPrisma() {
-    const clone = (value) => JSON.parse(JSON.stringify(value));
-
-    const state = {
-        courses: clone(courseSeedData),
-        chapters: clone(chapterSeedData),
-        lessons: clone(lessonSeedData),
-        tasks: clone(taskSeedData),
-        contentAssets: clone(contentAssetSeedData),
-    };
-
-    return {
-        course: {
-            findMany: async () => state.courses.map(clone),
-        },
-        chapter: {
-            findMany: async () => state.chapters.map(clone),
-        },
-        lesson: {
-            findMany: async () => state.lessons.map(clone),
-        },
-        task: {
-            findMany: async () => state.tasks.map(clone),
-        },
-        contentAsset: {
-            findMany: async () => state.contentAssets.map(clone),
-        },
-    };
-}
+} = require("../dist/courses/courses.seed-data.js");
+const { createMockSupabaseCourses } = require("./helpers/mock-supabase-courses.js");
 
 function createService() {
-    return new CoursesService(createMockPrisma());
+    const supabase = createMockSupabaseCourses({
+        courses: courseSeedData,
+        chapters: chapterSeedData,
+        lessons: lessonSeedData,
+        tasks: taskSeedData,
+        contentAssets: contentAssetSeedData,
+    });
+
+    return new CoursesService(supabase);
 }
 
-test("lists and filters courses from prisma records", async () => {
+test("lists and filters courses from Supabase records", async () => {
     const service = createService();
     const result = await service.listCourses({ keyword: "API", pageSize: 2 });
 
@@ -56,7 +35,7 @@ test("lists and filters courses from prisma records", async () => {
     assert.equal(result.items[0].version, "v2.1.0");
 });
 
-test("loads course detail and nested content from prisma records", async () => {
+test("loads course detail and nested content from Supabase records", async () => {
     const service = createService();
     const course = await service.getCourse("course-api-design");
 

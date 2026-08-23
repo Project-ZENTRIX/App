@@ -13,7 +13,7 @@ import { Input } from "@workspace/ui/components/input";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Separator } from "@workspace/ui/components/separator";
 import { cn } from "@workspace/ui/lib/utils";
-import { listCourses, type CourseItem } from "@/lib/api/endpoints/catalog-api";
+import { listCourses, type CourseItem } from "@/lib/supabase/catalog-queries";
 import { formatCurrency } from "@/lib/format";
 import { useDictionary, useLocale } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n";

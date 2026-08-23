@@ -37,9 +37,17 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# supabase local runtime artifacts
+supabase/.branches/
+supabase/.temp/
+supabase/dev-info.md
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# codex local sandbox environment
+.*-home

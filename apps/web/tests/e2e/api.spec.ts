@@ -1,17 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { apiUrl, createTestEmail, createTestPassword, expectApiOk } from "./helpers/api";
+import { createSupabaseTestAccount } from "./helpers/supabase";
 
 test.describe("API end to end", () => {
     test("supports sign up, sign in, and account lookup", async ({ request }) => {
         const email = createTestEmail("auth");
         const password = createTestPassword();
 
-        const signup = await expectApiOk<{ token: string; user: { id: string; email: string } }>(
-            request.post(apiUrl("/auth/signup"), {
-                data: { email, password, confirmPassword: password },
-            }),
-            "sign up should succeed"
-        );
+        const signup = await createSupabaseTestAccount(request, email, password);
 
         expect(signup.user.email).toBe(email);
         expect(signup.token).toBeTruthy();
@@ -38,13 +34,9 @@ test.describe("API end to end", () => {
     test("covers account, profile, security, session, notification, audit, and license routes", async ({ request }) => {
         const email = createTestEmail("account");
         const password = createTestPassword();
+        const missingDeviceId = "00000000-0000-0000-0000-000000000000";
 
-        const signup = await expectApiOk<{ token: string; user: { id: string } }>(
-            request.post(apiUrl("/auth/signup"), {
-                data: { email, password, confirmPassword: password },
-            }),
-            "sign up should succeed"
-        );
+        const signup = await createSupabaseTestAccount(request, email, password);
 
         const token = signup.token;
 
@@ -168,14 +160,14 @@ test.describe("API end to end", () => {
         expect(devices.devices).toEqual([]);
 
         const missingDevice = await expectApiOk<{ device: null }>(
-            request.get(apiUrl("/auth/me/license/devices/non-existent-device"), {
+            request.get(apiUrl(`/auth/me/license/devices/${missingDeviceId}`), {
                 headers: { Authorization: `Bearer ${token}` },
             }),
             "missing device lookup should return null"
         );
         expect(missingDevice.device).toBeNull();
 
-        const bindingCodeResponse = await request.post(apiUrl("/auth/me/license/devices/non-existent-device/binding-code"), {
+        const bindingCodeResponse = await request.post(apiUrl(`/auth/me/license/devices/${missingDeviceId}/binding-code`), {
             headers: { Authorization: `Bearer ${token}` },
         });
         expect(bindingCodeResponse.ok()).toBe(false);
@@ -184,14 +176,14 @@ test.describe("API end to end", () => {
         const bindResponse = await request.post(apiUrl("/auth/me/license/bindings"), {
             headers: { Authorization: `Bearer ${token}` },
             data: {
-                deviceId: "non-existent-device",
+                deviceId: missingDeviceId,
                 bindingCode: "invalid",
             },
         });
         expect(bindResponse.ok()).toBe(false);
         expect(bindResponse.status()).toBe(400);
 
-        const unbindResponse = await request.delete(apiUrl("/auth/me/license/bindings/non-existent-binding"), {
+        const unbindResponse = await request.delete(apiUrl("/auth/me/license/bindings/00000000-0000-0000-0000-000000000001"), {
             headers: { Authorization: `Bearer ${token}` },
         });
         expect(unbindResponse.ok()).toBe(false);

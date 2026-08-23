@@ -1,94 +1,156 @@
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { errorKeys } from "../common/errors/error-keys.js";
-import { getSessionFromAuthorizationHeader } from "../auth/auth-session.js";
+import { SUPABASE_CLIENT } from "../common/supabase/supabase.module.js";
+import { SupabaseClient } from "../common/supabase/supabase.client.js";
+import { getTokenFromAuthorizationHeader } from "../auth/auth-crypto.js";
 
 type CreateRunInput = {
     taskId: string;
     input?: string | null;
 };
 
-function mapRun(run: {
+type RunRow = {
     id: string;
-    userId: string;
-    taskId: string;
+    user_id: string;
+    task_id: string;
     status: string;
     input: string | null;
     output: string | null;
     error: string | null;
-    runtimeMs: number | null;
-    memoryKb: number | null;
-    startedAt: Date | null;
-    finishedAt: Date | null;
-    createdAt: Date;
-    submittedAt: Date | null;
-    deletedAt: Date | null;
+    runtime_ms: number | null;
+    memory_kb: number | null;
+    started_at: string | null;
+    finished_at: string | null;
+    created_at: string;
+    submitted_at: string | null;
+    deleted_at: string | null;
+};
+
+type RunLogRow = {
+    id: string;
+    run_id: string;
+    level: string;
+    message: string;
+    created_at: string;
+    archived_at: string | null;
+};
+
+type JudgementRow = {
+    id: string;
+    run_id: string;
+    status: string;
+    score: number | null;
+    feedback: string | null;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+};
+
+type SandboxJobRow = {
+    id: string;
+    run_id: string;
+    status: string;
+    retry_count: number;
+    queue_name: string | null;
+    resource_limit: unknown;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+};
+
+type TaskRow = {
+    id: string;
+};
+
+function toDate(value: string | null) {
+    return value ? new Date(value) : null;
+}
+
+function mapRun(run: {
+    id: string;
+    user_id: string;
+    task_id: string;
+    status: string;
+    input: string | null;
+    output: string | null;
+    error: string | null;
+    runtime_ms: number | null;
+    memory_kb: number | null;
+    started_at: string | null;
+    finished_at: string | null;
+    created_at: string;
+    submitted_at: string | null;
+    deleted_at: string | null;
 }) {
     return {
         id: run.id,
-        userId: run.userId,
-        taskId: run.taskId,
+        userId: run.user_id,
+        taskId: run.task_id,
         status: run.status,
         input: run.input,
         output: run.output,
         error: run.error,
-        runtimeMs: run.runtimeMs,
-        memoryKb: run.memoryKb,
-        startedAt: run.startedAt,
-        finishedAt: run.finishedAt,
-        createdAt: run.createdAt,
-        submittedAt: run.submittedAt,
-        deletedAt: run.deletedAt,
+        runtimeMs: run.runtime_ms,
+        memoryKb: run.memory_kb,
+        startedAt: toDate(run.started_at),
+        finishedAt: toDate(run.finished_at),
+        createdAt: new Date(run.created_at),
+        submittedAt: toDate(run.submitted_at),
+        deletedAt: toDate(run.deleted_at),
     };
 }
 
 function mapRunLog(log: {
     id: string;
-    runId: string;
+    run_id: string;
     level: string;
     message: string;
-    createdAt: Date;
-    archivedAt: Date | null;
+    created_at: string;
+    archived_at: string | null;
 }) {
     return {
         id: log.id,
-        runId: log.runId,
+        runId: log.run_id,
         level: log.level,
         message: log.message,
-        createdAt: log.createdAt,
-        archivedAt: log.archivedAt,
+        createdAt: new Date(log.created_at),
+        archivedAt: toDate(log.archived_at),
     };
 }
 
 function mapJudgement(judgement: {
     id: string;
-    runId: string;
+    run_id: string;
     status: string;
     score: number | null;
     feedback: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date | null;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
 }) {
     return {
         id: judgement.id,
-        runId: judgement.runId,
+        runId: judgement.run_id,
         status: judgement.status,
         score: judgement.score,
         feedback: judgement.feedback,
-        createdAt: judgement.createdAt,
-        updatedAt: judgement.updatedAt,
-        deletedAt: judgement.deletedAt,
+        createdAt: new Date(judgement.created_at),
+        updatedAt: new Date(judgement.updated_at),
+        deletedAt: toDate(judgement.deleted_at),
     };
 }
 
 @Injectable()
 export class RunsService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(@Inject(SUPABASE_CLIENT) private readonly supabase: SupabaseClient) {}
 
     private async requireSession(authorization?: string) {
-        const session = await getSessionFromAuthorizationHeader(this.prisma, authorization);
+        const token = getTokenFromAuthorizationHeader(authorization);
+        if (!token) {
+            throw new UnauthorizedException(errorKeys.unauthorized);
+        }
+
+        const session = await this.supabase.getCurrentUser(authorization);
         if (!session) {
             throw new UnauthorizedException(errorKeys.unauthorized);
         }
@@ -97,10 +159,8 @@ export class RunsService {
     }
 
     private async requireTask(taskId: string) {
-        const task = await this.prisma.task.findUnique({
-            where: {
-                id: taskId,
-            },
+        const task = await this.supabase.selectOne<TaskRow>("public", "tasks", {
+            id: taskId,
         });
 
         if (!task) {
@@ -118,28 +178,28 @@ export class RunsService {
 
         await this.requireTask(body.taskId);
 
-        const run = await this.prisma.$transaction(async (tx) => {
-            const createdRun = await tx.run.create({
-                data: {
-                    userId: session.user.id as string,
-                    taskId: body.taskId,
-                    status: "queued",
-                    input: body.input ?? null,
-                    submittedAt: new Date(),
-                },
-            });
+        const run = await this.supabase.insertRow<RunRow>("public", "runs", {
+            user_id: session.id,
+            task_id: body.taskId,
+            status: "queued",
+            input: body.input ?? null,
+            output: null,
+            error: null,
+            runtime_ms: null,
+            memory_kb: null,
+            started_at: null,
+            finished_at: null,
+            submitted_at: new Date().toISOString(),
+            deleted_at: null,
+        });
 
-            await tx.sandboxJob.create({
-                data: {
-                    runId: createdRun.id,
-                    status: "queued",
-                    retryCount: 0,
-                    queueName: "default",
-                    resourceLimit: Prisma.JsonNull,
-                },
-            });
-
-            return createdRun;
+        await this.supabase.insertRow<SandboxJobRow>("public", "sandbox_jobs", {
+            run_id: run.id,
+            status: "queued",
+            retry_count: 0,
+            queue_name: "default",
+            resource_limit: null,
+            deleted_at: null,
         });
 
         return mapRun(run);
@@ -147,15 +207,19 @@ export class RunsService {
 
     async listRuns(authorization?: string) {
         const session = await this.requireSession(authorization);
-        const runs = await this.prisma.run.findMany({
-            where: {
-                userId: session.user.id as string,
-                deletedAt: null,
+        const runs = await this.supabase.selectRows<RunRow>(
+            "public",
+            "runs",
+            {
+                user_id: session.id,
+                deleted_at: null,
             },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+            "*",
+            {
+                column: "created_at",
+                ascending: false,
+            }
+        );
 
         return {
             items: runs.map((run) => mapRun(run)),
@@ -164,12 +228,10 @@ export class RunsService {
 
     async getRun(runId: string, authorization?: string) {
         const session = await this.requireSession(authorization);
-        const run = await this.prisma.run.findFirst({
-            where: {
-                id: runId,
-                userId: session.user.id as string,
-                deletedAt: null,
-            },
+        const run = await this.supabase.selectOne<RunRow>("public", "runs", {
+            id: runId,
+            user_id: session.id,
+            deleted_at: null,
         });
 
         return run ? mapRun(run) : null;
@@ -177,27 +239,29 @@ export class RunsService {
 
     async getRunLogs(runId: string, authorization?: string) {
         const session = await this.requireSession(authorization);
-        const run = await this.prisma.run.findFirst({
-            where: {
-                id: runId,
-                userId: session.user.id as string,
-                deletedAt: null,
-            },
+        const run = await this.supabase.selectOne<RunRow>("public", "runs", {
+            id: runId,
+            user_id: session.id,
+            deleted_at: null,
         });
 
         if (!run) {
             throw new BadRequestException(errorKeys.runNotFound);
         }
 
-        const logs = await this.prisma.runLog.findMany({
-            where: {
-                runId,
-                archivedAt: null,
+        const logs = await this.supabase.selectRows<RunLogRow>(
+            "public",
+            "run_logs",
+            {
+                run_id: runId,
+                archived_at: null,
             },
-            orderBy: {
-                createdAt: "asc",
-            },
-        });
+            "*",
+            {
+                column: "created_at",
+                ascending: true,
+            }
+        );
 
         return {
             runId,
@@ -206,10 +270,8 @@ export class RunsService {
     }
 
     async getJudgement(judgementId: string) {
-        const judgement = await this.prisma.judgement.findUnique({
-            where: {
-                id: judgementId,
-            },
+        const judgement = await this.supabase.selectOne<JudgementRow>("public", "judgements", {
+            id: judgementId,
         });
 
         return judgement ? mapJudgement(judgement) : null;

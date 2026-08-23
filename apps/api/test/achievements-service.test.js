@@ -1,23 +1,23 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { AchievementsService } = require("../dist/src/achievements/achievements.service.js");
-const { createMockPrisma } = require("./helpers/mock-prisma.js");
+const { AchievementsService } = require("../dist/achievements/achievements.service.js");
+const { createMockSupabaseAchievements } = require("./helpers/mock-supabase-achievements.js");
 
 function createService() {
-    const prisma = createMockPrisma();
-    return { prisma, service: new AchievementsService(prisma) };
+    const supabase = createMockSupabaseAchievements();
+    return { supabase, service: new AchievementsService(supabase) };
 }
 
 test("lists achievements and loads a single achievement", async () => {
-    const { prisma, service } = createService();
-    prisma.seed.achievement({
+    const { supabase, service } = createService();
+    supabase.seed.achievement({
         id: "achievement-1",
         code: "first-login",
         name: "First Login",
         description: "Log in once",
     });
-    prisma.seed.achievement({
+    supabase.seed.achievement({
         id: "achievement-2",
         code: "course-complete",
         name: "Course Complete",
@@ -32,45 +32,33 @@ test("lists achievements and loads a single achievement", async () => {
 });
 
 test("lists unlocked achievements for the current user", async () => {
-    const { prisma, service } = createService();
-    prisma.seed.user({ id: "user-1", email: "learner@example.com", name: "Learner" });
-    prisma.seed.session({
-        id: "session-1",
-        userId: "user-1",
-        token: "token-123",
-        expiresAt: new Date("2026-08-20T00:00:00.000Z").toISOString(),
-    });
-    prisma.seed.achievement({
+    const { supabase, service } = createService();
+    supabase.seed.user({ id: "user-1", email: "learner@example.com", name: "Learner" });
+    supabase.seed.achievement({
         id: "achievement-1",
         code: "first-login",
         name: "First Login",
         description: "Log in once",
     });
-    prisma.seed.userAchievement({
+    supabase.seed.userAchievement({
         id: "user-achievement-1",
         userId: "user-1",
         achievementId: "achievement-1",
         achievedAt: new Date("2026-08-13T00:00:00.000Z"),
     });
 
-    const owned = await service.listUserAchievements("Bearer token-123");
+    const owned = await service.listUserAchievements("Bearer token-user-1");
 
     assert.equal(owned.items.length, 1);
     assert.equal(owned.items[0].achievement.code, "first-login");
 });
 
 test("lists levels and returns current level progress", async () => {
-    const { prisma, service } = createService();
-    prisma.seed.user({ id: "user-1", email: "learner@example.com", name: "Learner" });
-    prisma.seed.session({
-        id: "session-1",
-        userId: "user-1",
-        token: "token-123",
-        expiresAt: new Date("2026-08-20T00:00:00.000Z").toISOString(),
-    });
-    prisma.seed.level({ id: "level-1", code: "bronze", name: "Bronze", rank: 1 });
-    prisma.seed.level({ id: "level-2", code: "silver", name: "Silver", rank: 2 });
-    prisma.seed.userLevelProgress({
+    const { supabase, service } = createService();
+    supabase.seed.user({ id: "user-1", email: "learner@example.com", name: "Learner" });
+    supabase.seed.level({ id: "level-1", code: "bronze", name: "Bronze", rank: 1 });
+    supabase.seed.level({ id: "level-2", code: "silver", name: "Silver", rank: 2 });
+    supabase.seed.userLevelProgress({
         id: "user-level-1",
         userId: "user-1",
         levelId: "level-1",
@@ -78,7 +66,7 @@ test("lists levels and returns current level progress", async () => {
     });
 
     const levels = await service.listLevels();
-    const levelProgress = await service.getLevelProgress("Bearer token-123");
+    const levelProgress = await service.getLevelProgress("Bearer token-user-1");
 
     assert.equal(levels.items.length, 2);
     assert.equal(levelProgress.currentLevel?.level.code, "bronze");

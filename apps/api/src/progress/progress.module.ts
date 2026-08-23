@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
-import { PrismaModule } from "../../prisma/prisma.module.js";
+import { SupabaseModule } from "../common/supabase/supabase.module.js";
 import { ProgressController } from "./progress.controller.js";
 import { ProgressService } from "./progress.service.js";
 
 @Module({
-    imports: [PrismaModule],
+    imports: [SupabaseModule],
     controllers: [ProgressController],
     providers: [ProgressService],
 })

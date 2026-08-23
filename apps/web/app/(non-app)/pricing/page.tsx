@@ -4,7 +4,15 @@ import Link from "next/link";
 import { ArrowRight, Check, Crown, Leaf, Sparkles, X, Zap } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@workspace/ui/components/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@workspace/ui/components/table";
 import { cn } from "@workspace/ui/lib/utils";
 import { useDictionary } from "@/lib/i18n";
@@ -70,7 +78,9 @@ function PricingCards() {
                     </ul>
                 </CardContent>
                 <CardFooter>
-                    <Button className={cn("w-full", plan.highlighted ? plan.style.buttonHighlight : plan.style.button)} variant="outline">
+                    <Button
+                        className={cn("w-full", plan.highlighted ? plan.style.buttonHighlight : plan.style.button)}
+                        variant="outline">
                         {plan.buttonText}
                     </Button>
                 </CardFooter>

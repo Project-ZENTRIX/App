@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@workspace/ui/components/table";
-import { listOrders, type OrderItem } from "@/lib/api/endpoints/commerce-api";
+import { listOrders, type OrderItem } from "@/lib/supabase/commerce-queries";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { useDictionary, useLocale } from "@/lib/i18n";
 
@@ -100,7 +100,9 @@ export default function OrdersPage() {
                                         <TableCell>{formatDateTime(order.createdAt, locale)}</TableCell>
                                         <TableCell>{order.payments[0]?.status ?? text.paymentInitiated}</TableCell>
                                         <TableCell>
-                                            <Link className="inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline" href={`/app/orders/${order.id}`}>
+                                            <Link
+                                                className="inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline"
+                                                href={`/app/orders/${order.id}`}>
                                                 {t.portal.viewDetails}
                                                 <ArrowRight className="size-3.5" />
                                             </Link>

@@ -1,7 +1,7 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { SubmissionsController } = require("../dist/src/submissions/submissions.controller.js");
+const { SubmissionsController } = require("../dist/submissions/submissions.controller.js");
 
 test("submissions controller proxies submission routes to the service", () => {
     const calls = [];

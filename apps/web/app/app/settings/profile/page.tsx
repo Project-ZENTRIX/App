@@ -6,7 +6,7 @@ import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
 import { Textarea } from "@workspace/ui/components/textarea";
-import { getCurrentAccount, updateProfile, type UserProfile } from "@/lib/api/endpoints/auth-api";
+import { getCurrentAccount, updateProfile, type UserProfile } from "@/lib/supabase/auth-queries";
 import { useLocale } from "@/lib/i18n";
 import { toast } from "sonner";
 
