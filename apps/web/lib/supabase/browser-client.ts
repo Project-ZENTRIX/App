@@ -161,9 +161,7 @@ export async function signInWithPassword(email: string, password: string) {
     });
 
     const payload = (await parseJson<SupabaseAuthSession | SupabaseErrorPayload>(response)) as
-        | SupabaseAuthSession
-        | SupabaseErrorPayload
-        | null;
+        SupabaseAuthSession | SupabaseErrorPayload | null;
     if (!response.ok) {
         const errorPayload =
             payload && typeof payload === "object" && ("message" in payload || "error_description" in payload)
@@ -195,9 +193,7 @@ export async function signUpWithPassword(email: string, password: string, data?:
     });
 
     const payload = (await parseJson<SupabaseSignupResponse | SupabaseErrorPayload>(response)) as
-        | SupabaseSignupResponse
-        | SupabaseErrorPayload
-        | null;
+        SupabaseSignupResponse | SupabaseErrorPayload | null;
     if (!response.ok) {
         const errorPayload =
             payload && typeof payload === "object" && ("message" in payload || "error_description" in payload)
@@ -253,9 +249,7 @@ export async function getCurrentUser(token?: string | null) {
     }
 
     const payload = (await parseJson<AuthUserResponse | SupabaseErrorPayload>(response)) as
-        | AuthUserResponse
-        | SupabaseErrorPayload
-        | null;
+        AuthUserResponse | SupabaseErrorPayload | null;
     if (!response.ok) {
         const errorPayload =
             payload && typeof payload === "object" && ("message" in payload || "error_description" in payload)
