@@ -7,6 +7,8 @@ function createMockSupabase() {
         sessions: [],
         userSessions: [],
         profiles: [],
+        userRoles: [],
+        tenantMemberships: [],
         notificationPreferences: [],
         auditLogs: [],
         credentials: [],
@@ -86,6 +88,24 @@ function createMockSupabase() {
                     status: data.status ?? "active",
                     created_at: data.created_at ?? now(),
                     updated_at: data.updated_at ?? now(),
+                });
+            },
+            userRole(data) {
+                state.userRoles.push({
+                    id: data.id ?? `role-${state.userRoles.length + 1}`,
+                    user_id: data.userId,
+                    role_code: data.roleCode,
+                    created_at: data.createdAt ?? now(),
+                });
+            },
+            tenantMembership(data) {
+                state.tenantMemberships.push({
+                    id: data.id ?? `membership-${state.tenantMemberships.length + 1}`,
+                    tenant_id: data.tenantId ?? `tenant-${state.tenantMemberships.length + 1}`,
+                    user_id: data.userId,
+                    role: data.role,
+                    status: data.status ?? "active",
+                    created_at: data.createdAt ?? now(),
                 });
             },
             notificationPreference(data) {
@@ -310,6 +330,16 @@ function createMockSupabase() {
                 return device ? clone(device) : null;
             }
 
+            if (schema === "public" && table === "user_roles") {
+                const role = state.userRoles.find((item) => item.user_id === filters.user_id);
+                return role ? clone(role) : null;
+            }
+
+            if (schema === "public" && table === "tenant_memberships") {
+                const membership = state.tenantMemberships.find((item) => item.user_id === filters.user_id);
+                return membership ? clone(membership) : null;
+            }
+
             return null;
         },
         async selectRows(schema, table, filters) {
@@ -353,6 +383,20 @@ function createMockSupabase() {
                         (item) =>
                             item.desktop_license_id === filters.desktop_license_id &&
                             item.archived_at === filters.archived_at
+                    )
+                );
+            }
+
+            if (schema === "public" && table === "user_roles") {
+                return clone(state.userRoles.filter((item) => item.user_id === filters.user_id));
+            }
+
+            if (schema === "public" && table === "tenant_memberships") {
+                return clone(
+                    state.tenantMemberships.filter(
+                        (item) =>
+                            item.user_id === filters.user_id &&
+                            (filters.status ? item.status === filters.status : true)
                     )
                 );
             }

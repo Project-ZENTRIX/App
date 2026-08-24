@@ -15,7 +15,7 @@ const copy = {
         email: "邮箱",
         send: "发送重置链接",
         back: "返回登录",
-        note: "当前版本只展示找回密码入口，后续可接入真实邮件流程。",
+        note: "输入有效邮箱后，我们会把重置链接发到你的收件箱。",
     },
     "en-GB": {
         title: "Reset your password",
@@ -23,7 +23,7 @@ const copy = {
         email: "Email",
         send: "Send reset link",
         back: "Back to sign in",
-        note: "This page currently exposes the recovery entry point and can later connect to a real mail flow.",
+        note: "Enter a valid email address and we'll send a reset link to your inbox.",
     },
 } as const;
 
@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
                     <FieldGroup>
                         <Field>
                             <FieldLabel htmlFor="email">{text.email}</FieldLabel>
-                            <Input id="email" type="email" placeholder="m@example.com" />
+                            <Input id="email" type="email" />
                         </Field>
                         <Field>
                             <Button type="button" className="w-full">

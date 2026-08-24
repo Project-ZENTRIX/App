@@ -7,18 +7,20 @@ import {
     Crown,
     LayoutDashboard,
     MonitorSmartphone,
+    PanelLeftClose,
     ReceiptText,
-    Settings2,
     Store,
     Trophy,
     LibraryBig,
-    PanelLeftClose,
+    Files,
 } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip";
 import { cn } from "@workspace/ui/lib/utils";
-import { useDictionary } from "@/lib/i18n";
+import { useDictionary, useLocale } from "@/lib/i18n";
+import type { AccessProfile, AppRole } from "@/lib/api/endpoints/access-api";
+import { surfaceLabel } from "@/lib/app-routing";
 
 type MenuItem = {
     label: string;
@@ -37,6 +39,8 @@ type MenuGroup = {
 type LeftRailProps = {
     collapsed: boolean;
     onToggleAction: () => void;
+    accessProfile: AccessProfile | null;
+    surface: AppRole;
 };
 
 function MenuRow({
@@ -90,37 +94,66 @@ function MenuRow({
     );
 }
 
-export function LeftRail({ collapsed, onToggleAction }: LeftRailProps) {
-    const pathname = usePathname();
-    const t = useDictionary();
+function buildMenu(surface: AppRole, locale: "zh-CN" | "en-GB", t: ReturnType<typeof useDictionary>): MenuGroup[] {
+    if (surface === "teacher") {
+        return [
+            {
+                title: locale === "zh-CN" ? "教师导航" : "Teacher navigation",
+                items: [
+                    {
+                        label: locale === "zh-CN" ? "教师首页" : "Teacher home",
+                        href: "/app/teacher",
+                        icon: LayoutDashboard,
+                        detail: locale === "zh-CN" ? "课包与发布概览" : "Pack and release overview",
+                    },
+                    {
+                        label: locale === "zh-CN" ? "课包内容" : "Content packs",
+                        href: "/app/teacher/content-packs",
+                        icon: Files,
+                        detail: locale === "zh-CN" ? "Manifest / 课程 / 测验" : "Manifest / courses / quizzes",
+                    },
+                ],
+            },
+        ];
+    }
 
-    const menuGroups: MenuGroup[] = [
+    if (surface === "admin") {
+        return [
+            {
+                title: locale === "zh-CN" ? "管理员导航" : "Admin navigation",
+                items: [
+                    {
+                        label: locale === "zh-CN" ? "管理员首页" : "Admin home",
+                        href: "/app/admin",
+                        icon: LayoutDashboard,
+                        detail: locale === "zh-CN" ? "权限、租户与发布壳子" : "Permissions, tenants, and release shell",
+                    },
+                ],
+            },
+        ];
+    }
+
+    return [
         {
             title: t.shell.mainNavigation,
             items: [
                 {
-                    label: t.portal.dashboardTitle,
-                    href: "/app",
+                    label: locale === "zh-CN" ? "学生首页" : "Student home",
+                    href: "/app/student",
                     icon: LayoutDashboard,
                     detail: t.shell.overviewAndQuickAccess,
                 },
                 {
                     label: t.portal.courseMarket,
-                    href: "/app/courses",
+                    href: "/app/student/courses",
                     icon: Store,
                     detail: t.shell.browseAndBuyCourses,
                 },
                 {
                     label: t.portal.library,
-                    href: "/app/library",
+                    href: "/app/student/library",
                     icon: LibraryBig,
                     detail: t.shell.ownedContentAndAccess,
-                },
-                {
-                    label: t.portal.membershipTitle,
-                    href: "/app/membership",
-                    icon: Crown,
-                    detail: t.shell.subscriptionStatusAndPerks,
                 },
             ],
         },
@@ -128,33 +161,49 @@ export function LeftRail({ collapsed, onToggleAction }: LeftRailProps) {
             title: t.shell.management,
             items: [
                 {
+                    label: t.portal.membershipTitle,
+                    href: "/app/student/membership",
+                    icon: Crown,
+                    detail: t.shell.subscriptionStatusAndPerks,
+                },
+                {
                     label: t.portal.ordersTitle,
-                    href: "/app/orders",
+                    href: "/app/student/orders",
                     icon: ReceiptText,
                     detail: t.shell.orderAndPaymentStatus,
                 },
                 {
                     label: t.portal.progressTitle,
-                    href: "/app/progress",
+                    href: "/app/student/progress",
                     icon: Trophy,
                     detail: t.shell.achievementsAndLevels,
                 },
                 {
                     label: t.portal.devicesTitle,
-                    href: "/app/devices",
+                    href: "/app/student/devices",
                     icon: MonitorSmartphone,
                     detail: t.shell.licencesAndBindings,
-                },
-                {
-                    label: t.portal.settingsTitle,
-                    href: "/app/settings/profile",
-                    match: (path) => path.startsWith("/app/settings"),
-                    icon: Settings2,
-                    detail: t.shell.profilePasswordAndSessions,
                 },
             ],
         },
     ];
+}
+
+function buildSurfaceSwitcher(allowedSurfaces: AppRole[], currentSurface: AppRole, locale: "zh-CN" | "en-GB") {
+    return allowedSurfaces.map((surface) => ({
+        href: `/app/${surface}`,
+        label: surfaceLabel(surface, locale),
+        active: surface === currentSurface,
+    }));
+}
+
+export function LeftRail({ collapsed, onToggleAction, accessProfile, surface }: LeftRailProps) {
+    const pathname = usePathname();
+    const locale = useLocale();
+    const t = useDictionary();
+    const currentSurface = surface;
+    const menuGroups = buildMenu(currentSurface, locale, t);
+    const surfaceItems = buildSurfaceSwitcher(accessProfile?.allowedSurfaces ?? [currentSurface], currentSurface, locale);
 
     return (
         <aside
@@ -169,7 +218,7 @@ export function LeftRail({ collapsed, onToggleAction }: LeftRailProps) {
                 )}>
                 {!collapsed ? (
                     <div className="min-w-0 overflow-hidden">
-                        <div className="text-sm font-semibold">{t.shell.menu}</div>
+                        <div className="text-sm font-semibold">{surfaceLabel(currentSurface, locale)}</div>
                         <div className="text-muted-foreground text-xs">{t.shell.portalLabel}</div>
                     </div>
                 ) : null}
@@ -182,6 +231,21 @@ export function LeftRail({ collapsed, onToggleAction }: LeftRailProps) {
                     {collapsed ? <ChevronRight className="size-4" /> : <PanelLeftClose className="size-4" />}
                 </Button>
             </div>
+
+            {surfaceItems.length > 1 && !collapsed ? (
+                <div className="mb-4 flex flex-wrap gap-2">
+                    {surfaceItems.map((item) => (
+                        <Button
+                            key={item.href}
+                            asChild
+                            variant={item.active ? "secondary" : "outline"}
+                            size="sm"
+                            className="rounded-full">
+                            <Link href={item.href}>{item.label}</Link>
+                        </Button>
+                    ))}
+                </div>
+            ) : null}
 
             <div
                 className={cn(

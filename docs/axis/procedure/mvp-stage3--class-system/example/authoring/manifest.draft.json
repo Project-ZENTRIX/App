@@ -1,0 +1,64 @@
+{
+  "manifestVersion": "1.1",
+  "contentPackId": "pack_ai_foundation_demo",
+  "contentPackCode": "ai-foundation-demo",
+  "title": "AI 基础入门模拟课包",
+  "subtitle": "用于验证可编辑内容包结构的示例",
+  "summary": "这是一套可编辑的课包源文件，适合 Client 修改、保存和发布。",
+  "language": "zh-CN",
+  "packState": "draft",
+  "version": "0.1.0",
+  "revision": 2,
+  "sourceOfTruth": "authoring",
+  "stableIds": true,
+  "tenantScope": {
+    "mode": "shared",
+    "tenantIds": []
+  },
+  "audience": [
+    "零基础学习者",
+    "课程设计审阅者",
+    "本地 Client 开发者"
+  ],
+  "learningGoals": [
+    "验证 Client 是否可以直接修改课包源文件",
+    "验证索引文件是否足够稳定",
+    "验证发布态和编辑态是否能分离"
+  ],
+  "databaseRef": {
+    "packRowId": "db_pack_demo_001",
+    "courseRowIds": [
+      "db_course_demo_001",
+      "db_course_demo_002"
+    ],
+    "quizRowIds": [
+      "db_quiz_demo_001"
+    ],
+    "updatedAt": "2026-08-23T00:00:00Z",
+    "source": "content-editor"
+  },
+  "indexRef": "content-index.draft.json",
+  "contentRoots": {
+    "courses": "courses",
+    "lessons": "lessons",
+    "quizzes": "quizzes"
+  },
+  "delivery": {
+    "offlineFriendly": true,
+    "clientMinVersion": "0.9.0",
+    "supportedRenderers": [
+      "web",
+      "desktop",
+      "local"
+    ]
+  },
+  "integrity": {
+    "checksum": "sha256:demo-draft-placeholder",
+    "fileHashes": {}
+  },
+  "publishing": {
+    "targetManifest": "../published/manifest.json",
+    "targetIndex": "../published/content-index.json",
+    "releaseChannel": "stable"
+  }
+}

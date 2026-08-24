@@ -170,8 +170,8 @@ export const zhCN: Translations = {
         ctaDescription: "前往账号门户查看课程、会员、设备和进度。",
         signIn: "登录",
         viewPricing: "查看定价",
-        moreHelpTitle: "更多帮助即将上线",
-        moreHelpDescription: "未来可以在这里添加公告、文档和支持渠道。",
+        moreHelpTitle: "还需要帮助？",
+        moreHelpDescription: "在门户里查看公告、文档和支持渠道获取最新指引。",
     },
     pricing: {
         heroTitle: "查看我们的友好定价",

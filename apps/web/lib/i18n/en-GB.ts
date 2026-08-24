@@ -179,8 +179,8 @@ export const enGB: Translations = {
         ctaDescription: "Go to the account portal for courses, membership, devices, and progress.",
         signIn: "Sign in",
         viewPricing: "View pricing",
-        moreHelpTitle: "More help coming soon",
-        moreHelpDescription: "Announcements, docs, and support channels can be added here as the portal grows.",
+        moreHelpTitle: "Need more help?",
+        moreHelpDescription: "Check announcements, docs, and support channels from the portal for the latest guidance.",
     },
     pricing: {
         heroTitle: "View our affordable pricing",

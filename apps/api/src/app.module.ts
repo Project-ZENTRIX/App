@@ -10,6 +10,7 @@ import { LicensesModule } from "./licenses/licenses.module.js";
 import { DevicesModule } from "./devices/devices.module.js";
 import { AdminModule } from "./admin/admin.module.js";
 import { WebhooksModule } from "./webhooks/webhooks.module.js";
+import { ContentPacksModule } from "./content-packs/content-packs.module.js";
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { WebhooksModule } from "./webhooks/webhooks.module.js";
         DevicesModule,
         AdminModule,
         WebhooksModule,
+        ContentPacksModule,
     ],
 })
 export class AppModule {}

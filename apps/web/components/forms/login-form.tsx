@@ -59,7 +59,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="m@example.com"
                                     required
                                     autoComplete="email"
                                     value={email}
@@ -119,7 +118,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src="/static/images/account-page-deco.png"
-                            alt="Image"
+                            alt="Project ZENTRIX account artwork"
                             width={1024}
                             height={1536}
                             className="absolute inset-0 h-full w-full object-cover opacity-90 grayscale-50 dark:brightness-50"

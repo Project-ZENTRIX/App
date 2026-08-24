@@ -94,6 +94,90 @@ type AppUserRecord = {
     } | null;
 };
 
+type AppRole = "student" | "teacher" | "admin";
+
+type AccessProfile = {
+    primaryRole: AppRole;
+    roles: AppRole[];
+    allowedSurfaces: AppRole[];
+    permissions: string[];
+};
+
+type UserRoleRow = {
+    role_code: string;
+    created_at: string;
+};
+
+type TenantMembershipRow = {
+    role: string;
+    status: string;
+    created_at: string;
+};
+
+const rolePriority: AppRole[] = ["admin", "teacher", "student"];
+
+const permissionsByRole: Record<AppRole, string[]> = {
+    student: ["read:student", "read:manifest", "read:index", "read:course", "read:lesson", "read:quiz"],
+    teacher: ["read:student", "read:teacher", "read:authoring", "comment:content", "review:quiz", "manage:release-notes"],
+    admin: [
+        "read:student",
+        "read:teacher",
+        "read:admin",
+        "publish:content",
+        "archive:content",
+        "manage:tenant-scope",
+        "manage:storage-paths",
+    ],
+};
+
+const surfaceByRole: Record<AppRole, AppRole> = {
+    student: "student",
+    teacher: "teacher",
+    admin: "admin",
+};
+
+function normalizeRole(role: string): AppRole | null {
+    if (role === "admin" || role === "teacher" || role === "student") {
+        return role;
+    }
+
+    return null;
+}
+
+function mergeRoles(...roleGroups: Array<string[]>) {
+    const normalized = new Set<AppRole>();
+
+    for (const roleGroup of roleGroups) {
+        for (const role of roleGroup) {
+            const normalizedRole = normalizeRole(role);
+            if (normalizedRole) {
+                normalized.add(normalizedRole);
+            }
+        }
+    }
+
+    if (normalized.size === 0) {
+        normalized.add("student");
+    }
+
+    return rolePriority.filter((role) => normalized.has(role));
+}
+
+function resolveAccessProfile(roles: AppRole[]): AccessProfile {
+    const primaryRole = roles[0] ?? "student";
+
+    return {
+        primaryRole,
+        roles,
+        allowedSurfaces: roles.includes("admin")
+            ? ["student", "teacher", "admin"]
+            : roles.includes("teacher")
+              ? ["student", "teacher"]
+              : ["student"],
+        permissions: Array.from(new Set(roles.flatMap((role) => permissionsByRole[role]))),
+    };
+}
+
 function mapProfile(profile: SupabaseProfileRow | null, userId: string) {
     if (!profile) {
         return null;
@@ -147,6 +231,26 @@ export class AuthCoreService {
 
     private async loadUserProfile(userId: string) {
         return this.supabase.selectOne<SupabaseProfileRow>("public", "profiles", { id: userId });
+    }
+
+    private async loadAccessRoles(userId: string) {
+        const [userRoles, tenantMemberships] = await Promise.all([
+            this.supabase.selectRows<UserRoleRow>("public", "user_roles", { user_id: userId }, "role_code,created_at"),
+            this.supabase.selectRows<TenantMembershipRow>(
+                "public",
+                "tenant_memberships",
+                {
+                    user_id: userId,
+                    status: "active",
+                },
+                "role,status,created_at"
+            ),
+        ]);
+
+        return mergeRoles(
+            userRoles.map((item) => item.role_code),
+            tenantMemberships.map((item) => item.role)
+        );
     }
 
     private async loadCurrentUser(authorization?: string) {
@@ -252,6 +356,13 @@ export class AuthCoreService {
             token: session.token,
             user: session.user,
         };
+    }
+
+    async getAccessProfile(authorization?: string) {
+        const currentUser = await this.loadCurrentUser(authorization);
+        const roles = await this.loadAccessRoles(currentUser.id);
+
+        return resolveAccessProfile(roles);
     }
 
     async updateProfile(body: UpdateProfileDto, authorization?: string) {

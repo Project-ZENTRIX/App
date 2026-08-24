@@ -87,6 +87,11 @@ export class MeController {
         return this.authLicenseService.getLicenseOverview(authorization);
     }
 
+    @Get("access")
+    getAccessProfile(@Headers("authorization") authorization?: string) {
+        return this.authCoreService.getAccessProfile(authorization);
+    }
+
     @Get("license/history")
     getLicenseHistory(@Headers("authorization") authorization?: string) {
         return this.authLicenseService.getLicenseHistory(authorization);

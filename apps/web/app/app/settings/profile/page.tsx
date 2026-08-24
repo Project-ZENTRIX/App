@@ -21,8 +21,8 @@ const copy = {
         saving: "正在保存...",
         loadError: "无法加载资料",
         updateError: "无法更新资料",
-        placeholder: "输入名称",
-        bioPlaceholder: "简单介绍一下你最近在做什么",
+        placeholder: "你的资料名称",
+        bioPlaceholder: "简单写一句，介绍你正在做什么",
         updated: "资料已更新",
     },
     "en-GB": {
@@ -35,8 +35,8 @@ const copy = {
         saving: "Saving...",
         loadError: "Unable to load profile",
         updateError: "Failed to update profile",
-        placeholder: "Enter a name",
-        bioPlaceholder: "Write a short bio about what you're doing now",
+        placeholder: "Your profile name",
+        bioPlaceholder: "Add a short bio about your current work",
         updated: "Profile updated",
     },
 } as const;
@@ -105,23 +105,15 @@ export default function ProfileSettingsPage() {
                 <form className="grid gap-4 md:max-w-2xl" onSubmit={handleSubmit}>
                     <label className="grid gap-2">
                         <span className="text-sm font-medium">{text.name}</span>
-                        <Input
-                            value={name}
-                            onChange={(event) => setName(event.target.value)}
-                            placeholder={user?.email ?? text.placeholder}
-                        />
+                        <Input value={name} onChange={(event) => setName(event.target.value)} />
                     </label>
                     <label className="grid gap-2">
                         <span className="text-sm font-medium">{text.avatarUrl}</span>
-                        <Input value={image} onChange={(event) => setImage(event.target.value)} placeholder="https://" />
+                        <Input value={image} onChange={(event) => setImage(event.target.value)} />
                     </label>
                     <label className="grid gap-2">
                         <span className="text-sm font-medium">{text.bio}</span>
-                        <Textarea
-                            value={bio}
-                            onChange={(event) => setBio(event.target.value)}
-                            placeholder={text.bioPlaceholder}
-                        />
+                        <Textarea value={bio} onChange={(event) => setBio(event.target.value)} />
                     </label>
                     <div>
                         <Button type="submit" disabled={pending}>

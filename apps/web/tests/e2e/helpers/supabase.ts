@@ -93,3 +93,26 @@ export async function createSupabaseTestAccount(request: APIRequestContext, emai
         user: payload.user,
     };
 }
+
+export async function assignSupabaseUserRole(
+    request: APIRequestContext,
+    userId: string,
+    roleCode: "student" | "teacher" | "admin"
+) {
+    const response = await request.post(`${supabaseRestUrl}/user_roles`, {
+        headers: {
+            apikey: supabaseServiceRoleKey,
+            Authorization: `Bearer ${supabaseServiceRoleKey}`,
+            "Content-Type": "application/json",
+            Prefer: "return=representation",
+        },
+        data: [
+            {
+                user_id: userId,
+                role_code: roleCode,
+            },
+        ],
+    });
+
+    expect(response.ok(), `assigning ${roleCode} role should succeed`).toBeTruthy();
+}

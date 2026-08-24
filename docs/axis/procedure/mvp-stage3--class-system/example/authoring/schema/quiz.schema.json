@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Quiz File",
+  "type": "object",
+  "required": [
+    "quizId",
+    "quizCode",
+    "packId",
+    "courseId",
+    "lessonId",
+    "title",
+    "questionTemplates"
+  ],
+  "properties": {
+    "quizId": {
+      "type": "string"
+    },
+    "quizCode": {
+      "type": "string"
+    },
+    "packId": {
+      "type": "string"
+    },
+    "courseId": {
+      "type": "string"
+    },
+    "lessonId": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "questionTemplates": {
+      "type": "array"
+    },
+    "passingRule": {
+      "type": "object"
+    },
+    "grading": {
+      "type": "object"
+    }
+  }
+}

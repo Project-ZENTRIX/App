@@ -91,3 +91,29 @@ test("listSessions, revokeSession and updateNotificationPreferences work through
     const audit = await service.getAuditRecords("Bearer token-user-1");
     assert.deepEqual(audit.records, []);
 });
+
+test("getAccessProfile defaults to the student surface and resolves explicit roles", async () => {
+    const { supabase, service } = createService();
+    supabase.seed.user({ id: "user-1", email: "student@example.com", name: "Student", password: "passw0rd!" });
+    supabase.seed.userRole({ userId: "user-1", roleCode: "teacher" });
+    supabase.seed.tenantMembership({ userId: "user-1", role: "admin", status: "active" });
+
+    const accessProfile = await service.getAccessProfile("Bearer token-user-1");
+
+    assert.equal(accessProfile.primaryRole, "admin");
+    assert.deepEqual(accessProfile.roles, ["admin", "teacher"]);
+    assert.deepEqual(accessProfile.allowedSurfaces, ["student", "teacher", "admin"]);
+    assert.equal(accessProfile.permissions.includes("manage:tenant-scope"), true);
+});
+
+test("getAccessProfile falls back to the student surface when no roles are assigned", async () => {
+    const { supabase, service } = createService();
+    supabase.seed.user({ id: "user-1", email: "student@example.com", name: "Student", password: "passw0rd!" });
+
+    const accessProfile = await service.getAccessProfile("Bearer token-user-1");
+
+    assert.equal(accessProfile.primaryRole, "student");
+    assert.deepEqual(accessProfile.roles, ["student"]);
+    assert.deepEqual(accessProfile.allowedSurfaces, ["student"]);
+    assert.equal(accessProfile.permissions.includes("read:student"), true);
+});

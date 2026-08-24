@@ -54,7 +54,6 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="m@example.com"
                                     required
                                     autoComplete="email"
                                     value={email}
@@ -100,19 +99,19 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                             <Field className="grid grid-cols-4 gap-4">
                                 <Button variant="outline" type="button" disabled>
                                     <IconifyIcon icon="fa6-brands:apple" className="size-4.25 -translate-y-px" />
-                                    <span className="sr-only">Login with Apple</span>
+                                    <span className="sr-only">Continue with Apple</span>
                                 </Button>
                                 <Button variant="outline" type="button">
                                     <IconifyIcon icon="fa6-brands:google" className="size-3.5" />
-                                    <span className="sr-only">Login with Google</span>
+                                    <span className="sr-only">Continue with Google</span>
                                 </Button>
                                 <Button variant="outline" type="button">
                                     <IconifyIcon icon="fa6-brands:github" />
-                                    <span className="sr-only">Login with GitHub</span>
+                                    <span className="sr-only">Continue with GitHub</span>
                                 </Button>
                                 <Button variant="outline" type="button">
                                     <IconifyIcon icon="fa6-brands:meta" />
-                                    <span className="sr-only">Login with Meta</span>
+                                    <span className="sr-only">Continue with Meta</span>
                                 </Button>
                             </Field>
                             <FieldDescription className="text-center">
@@ -124,7 +123,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src="/static/images/account-page-deco.png"
-                            alt="Image"
+                            alt="Project ZENTRIX account artwork"
                             width={1024}
                             height={1536}
                             className="absolute inset-0 h-full w-full object-cover opacity-90 grayscale-50 dark:brightness-60"
