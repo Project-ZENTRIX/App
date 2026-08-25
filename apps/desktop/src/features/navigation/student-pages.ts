@@ -19,33 +19,33 @@ export const defaultStudentPageId: StudentPageId = "startup";
 export const studentPages: readonly StudentPage[] = [
     {
         id: "startup",
-        label: "启动与恢复",
-        title: "启动与恢复",
-        summary: "启动态检查、授权校验、本地缓存恢复都在这里完成。",
+        label: "连接与启动",
+        title: "连接与启动",
+        summary: "Web 登录、Device Flow / Auth Code Flow 授权接力、本地缓存恢复都在这里串起来。",
         sections: [
             {
-                heading: "启动检查",
-                items: ["登录态", "设备授权", "缓存完整性", "最近课包"],
+                heading: "验证接力",
+                items: ["Web 登录", "Device Flow / Auth Code Flow", "Desktop 授权确认", "会话落地"],
             },
             {
-                heading: "恢复动作",
-                items: ["继续上次学习", "刷新授权", "修复缓存", "重新同步"],
+                heading: "启动检查",
+                items: ["本地课包索引", "缓存完整性", "设备绑定", "最近学习位置"],
             },
         ],
     },
     {
         id: "pack-selection",
-        label: "课包选择",
-        title: "课包选择",
-        summary: "从已授权课包中选择今天要学习的内容。",
+        label: "本地课包",
+        title: "本地课包",
+        summary: "缓存状态、更新可用性和离线学习在这里集中呈现。",
         sections: [
             {
                 heading: "可用资产",
-                items: ["最近使用课包", "已授权课包", "已缓存包体", "更新可用包"],
+                items: ["最近使用课包", "已授权课包", "Manifest 版本", "离线可用包体"],
             },
             {
-                heading: "选择动作",
-                items: ["继续学习", "查看目录", "查看版本", "刷新列表"],
+                heading: "更新动作",
+                items: ["继续学习", "查看目录", "检查版本", "刷新缓存"],
             },
         ],
     },
@@ -57,18 +57,18 @@ export const studentPages: readonly StudentPage[] = [
         sections: [
             {
                 heading: "主区域",
-                items: ["课时说明", "代码编辑器", "文件视图", "实时输出"],
+                items: ["课时说明", "代码编辑器", "本地运行状态", "实时输出"],
             },
             {
                 heading: "辅助区",
-                items: ["题目要求", "提示说明", "运行日志", "提交结果"],
+                items: ["题目要求", "提示说明", "Rust 后端命令", "提交结果"],
             },
         ],
     },
     {
         id: "lesson-details",
-        label: "课时详情",
-        title: "课时详情",
+        label: "课时与验证",
+        title: "课时与验证",
         summary: "展示当前课时的目标、前置条件和完成要求。",
         sections: [
             {
@@ -99,8 +99,8 @@ export const studentPages: readonly StudentPage[] = [
     },
     {
         id: "sync-cache",
-        label: "同步与缓存",
-        title: "同步与缓存",
+        label: "同步与离线",
+        title: "同步与离线",
         summary: "管理离线内容、本地草稿和待同步队列。",
         sections: [
             {
@@ -115,9 +115,9 @@ export const studentPages: readonly StudentPage[] = [
     },
     {
         id: "settings",
-        label: "设置",
-        title: "设置",
-        summary: "调整编辑器、外观和诊断选项。",
+        label: "设备与配置",
+        title: "设备与配置",
+        summary: "调整设备、外观和诊断选项。",
         sections: [
             {
                 heading: "外观与编辑",

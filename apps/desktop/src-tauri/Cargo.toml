@@ -15,3 +15,7 @@ serde_json = { workspace = true }
 name = "zentrix_student_client"
 crate-type = ["staticlib", "cdylib", "rlib"]
 path = "src/lib.rs"
+
+[[test]]
+name = "client_snapshot"
+path = "test/client_snapshot.rs"
