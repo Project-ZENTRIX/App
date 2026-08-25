@@ -49,5 +49,8 @@ supabase/dev-info.md
 *.tsbuildinfo
 next-env.d.ts
 
+# rust
+target/
+
 # codex local sandbox environment
 .*-home
