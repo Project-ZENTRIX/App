@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../colors_and_type.css">
+  <style>
+    /* Page scaffold — NOT extracted */
+    body { margin: 0; padding: 12px; background: var(--color-background); font-family: var(--type-sans); color: var(--color-foreground); }
+    .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+    .label { min-width: 92px; flex-shrink: 0; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-muted-foreground); white-space: nowrap; }
+    .divider { border: none; border-top: 1px solid var(--color-border); margin: 12px 0; }
+
+    /* @component-css-start */
+    /* Component definitions — extracted to components.css by deterministic script */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 10px; border: 1px solid transparent; border-radius: var(--radius-lg); font-family: var(--type-sans); font-size: 14px; font-weight: 500; line-height: 1; white-space: nowrap; cursor: pointer; transition: background .15s, border-color .15s, filter .15s; flex-shrink: 0; min-width: 32px; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }
+    .btn-default { background: var(--color-primary); color: var(--color-primary-foreground); }
+    .btn-default:hover:not(:disabled) { filter: brightness(1.08); }
+    .btn-outline { background: transparent; color: var(--color-foreground); border-color: var(--color-border); }
+    .btn-outline:hover:not(:disabled) { background: var(--color-muted); }
+    .btn-secondary { background: var(--color-secondary); color: var(--color-secondary-foreground); }
+    .btn-secondary:hover:not(:disabled) { filter: brightness(1.08); }
+    .btn-ghost { background: transparent; color: var(--color-foreground); }
+    .btn-ghost:hover:not(:disabled) { background: var(--color-muted); }
+    .btn-destructive { background: var(--color-destructive); color: var(--color-background); }
+    .btn-destructive:hover:not(:disabled) { filter: brightness(1.08); }
+    .btn-link { background: transparent; color: var(--color-primary); border-color: transparent; text-decoration: none; padding: 0; height: auto; min-width: auto; }
+    .btn-link:hover:not(:disabled) { filter: brightness(1.08); text-decoration: underline; }
+    .btn-sm { height: 28px; padding: 0 8px; font-size: 13px; min-width: 28px; }
+    .btn-lg { height: 36px; padding: 0 16px; font-size: 15px; min-width: 36px; }
+    /* @component-css-end */
+  </style>
+</head>
+<body>
+  <div class="row">
+    <span class="label">Primary</span>
+    <button class="btn btn-default" type="button">创建项目</button>
+    <button class="btn btn-default" type="button" disabled>创建项目</button>
+  </div>
+  <div class="row">
+    <span class="label">Outline</span>
+    <button class="btn btn-outline" type="button">查看详情</button>
+    <button class="btn btn-outline" type="button" disabled>查看详情</button>
+  </div>
+  <div class="row">
+    <span class="label">Secondary</span>
+    <button class="btn btn-secondary" type="button">取消</button>
+    <button class="btn btn-secondary" type="button" disabled>取消</button>
+  </div>
+  <div class="row">
+    <span class="label">Ghost</span>
+    <button class="btn btn-ghost" type="button">编辑</button>
+    <button class="btn btn-ghost" type="button" disabled>编辑</button>
+  </div>
+  <div class="row">
+    <span class="label">Destructive</span>
+    <button class="btn btn-destructive" type="button">删除</button>
+    <button class="btn btn-destructive" type="button" disabled>删除</button>
+  </div>
+  <div class="row">
+    <span class="label">Link</span>
+    <button class="btn btn-link" type="button">了解更多</button>
+    <button class="btn btn-link" type="button" disabled>了解更多</button>
+  </div>
+
+  <hr class="divider">
+
+  <div class="row">
+    <span class="label">Sizes</span>
+    <button class="btn btn-default btn-sm" type="button">保存</button>
+    <button class="btn btn-default" type="button">保存</button>
+    <button class="btn btn-default btn-lg" type="button">保存</button>
+  </div>
+</body>
+</html>

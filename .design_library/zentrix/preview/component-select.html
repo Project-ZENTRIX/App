@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  /* Page scaffold — NOT extracted */
+  body { margin: 0; padding: 12px; background: var(--color-background); font-family: var(--type-sans); color: var(--color-foreground); font-size: 14px; }
+  .row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; }
+  .label { flex-shrink: 0; width: 92px; font-size: 12px; line-height: 32px; color: var(--color-muted-foreground); text-transform: uppercase; letter-spacing: 0.02em; }
+  .divider { border: 0; border-top: 1px solid var(--color-border); margin: 12px 0; }
+
+  /* @component-css-start */
+  .select-root { position: relative; display: inline-flex; flex-direction: column; min-width: 120px; width: 180px; flex-shrink: 0; }
+  .select-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: transparent; color: var(--color-foreground); cursor: pointer; transition: background .15s, border-color .15s; }
+  .select-trigger[data-size="default"] { height: 32px; padding: 0 12px; }
+  .select-trigger[data-size="sm"] { height: 28px; padding: 0 10px; font-size: 13px; }
+  .select-trigger:hover { filter: brightness(1.08); }
+  .select-trigger:focus { outline: 2px solid var(--color-ring); outline-offset: 2px; }
+  .select-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .select-value[data-placeholder] { color: var(--color-muted-foreground); }
+  .select-icon { flex-shrink: 0; width: 16px; height: 16px; opacity: 0.6; }
+  .select-content { position: absolute; top: calc(100% + 4px); left: 0; z-index: 50; width: 100%; display: none; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-popover); color: var(--color-popover-foreground); padding: 4px; }
+  .select-root.is-open .select-content { display: block; }
+  .select-viewport { max-height: 200px; overflow: auto; }
+  .select-group { padding: 4px 0; }
+  .select-label { padding: 4px 8px; font-size: 12px; color: var(--color-muted-foreground); }
+  .select-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-radius: var(--radius-md); padding: 6px 8px; cursor: pointer; transition: background .15s; }
+  .select-item:hover { filter: brightness(1.08); }
+  .select-item[data-state="checked"] { background: var(--color-accent); color: var(--color-accent-foreground); }
+  .select-item-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .select-item-indicator { flex-shrink: 0; width: 16px; height: 16px; }
+  .select-separator { height: 1px; background: var(--color-border); margin: 4px 0; }
+  /* @component-css-end */
+</style>
+</head>
+<body>
+  <div class="row">
+    <span class="label">默认尺寸</span>
+    <div class="select-root" data-evidence-sample="default-default">
+      <button class="select-trigger" data-size="default" type="button">
+        <span class="select-value">管理员</span>
+        <img class="select-icon" src="https://cdn.jsdelivr.net/npm/lucide-static@1.8.0/icons/chevron-down.svg" width="16" height="16" alt="">
+      </button>
+    </div>
+    <div class="select-root" data-evidence-sample="sm-default">
+      <button class="select-trigger" data-size="sm" type="button">
+        <span class="select-value">管理员</span>
+        <img class="select-icon" src="https://cdn.jsdelivr.net/npm/lucide-static@1.8.0/icons/chevron-down.svg" width="16" height="16" alt="">
+      </button>
+    </div>
+  </div>
+  <hr class="divider">
+  <div class="row">
+    <span class="label">展开状态</span>
+    <div class="select-root is-open" data-evidence-sample="default-open">
+      <button class="select-trigger" data-size="default" type="button">
+        <span class="select-value">管理员</span>
+        <img class="select-icon" src="https://cdn.jsdelivr.net/npm/lucide-static@1.8.0/icons/chevron-down.svg" width="16" height="16" alt="">
+      </button>
+      <div class="select-content">
+        <div class="select-viewport">
+          <div class="select-group">
+            <div class="select-label">账户类型</div>
+            <div class="select-item" data-state="checked">
+              <span class="select-item-text">管理员</span>
+              <img class="select-item-indicator" src="https://cdn.jsdelivr.net/npm/lucide-static@1.8.0/icons/check.svg" width="16" height="16" alt="">
+            </div>
+            <div class="select-item">
+              <span class="select-item-text">编辑者</span>
+            </div>
+          </div>
+          <div class="select-separator"></div>
+          <div class="select-group">
+            <div class="select-item">
+              <span class="select-item-text">访客</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

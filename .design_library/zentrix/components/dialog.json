@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 2,
+  "sourceKind": "structured-spec",
+  "confidence": "medium",
+  "name": "Dialog",
+  "slug": "dialog",
+  "semanticTypeCandidates": ["dialog", "modal", "overlay"],
+  "variantDimensions": {
+    "showCloseButton": ["true", "false"]
+  },
+  "representativeVariants": [
+    { "showCloseButton": "true" }
+  ],
+  "anatomy": {
+    "root": "dialog",
+    "children": ["trigger", "overlay", "content", "header", "title", "description", "footer", "close"],
+    "parts": {
+      "root": "Root state container",
+      "trigger": "Element that opens the dialog",
+      "overlay": "Backdrop with blur and fade animation",
+      "content": "Centered panel with ring border",
+      "header": "Title + description block",
+      "title": "Dialog heading",
+      "description": "Muted explanatory text",
+      "footer": "Action buttons band with border-top",
+      "close": "Icon button in top-right corner"
+    }
+  },
+  "structurePatterns": {
+    "layout": "fixed inset-0 grid overlay; centered content panel",
+    "sizing": "w-full max-w-[calc(100%-2rem)] sm:max-w-sm p-4",
+    "radius": "rounded-xl",
+    "surface": "bg-popover text-popover-foreground ring-1 ring-foreground/10"
+  },
+  "usageHints": {
+    "purpose": "Interrupt user flow for critical decisions or focused tasks",
+    "accessibility": "Trap focus; close on Esc and overlay click; aria-describedby on description",
+    "composition": "Compose Header + Content + Footer; keep footer actions limited to 1-2 buttons"
+  },
+  "doNotInvent": ["Do not add size variants beyond source", "Do not invent side sheet layout"],
+  "unknowns": [],
+  "cssVariables": ["popover", "popover-foreground", "muted", "foreground", "ring", "radius-xl"],
+  "sourceSignals": {
+    "file": "packages/ui/src/components/dialog.tsx",
+    "framework": "React + Tailwind CSS v4 + Radix Dialog"
+  }
+}

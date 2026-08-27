@@ -1,0 +1,7 @@
+{
+  "writtenFiles": ["SKILL.md", "library-consumption.json"],
+  "warnings": [
+    "uikit-plan.json and ui_kits/dashboard/index.html are referenced in library-consumption.json and SKILL.md Quick map as '(when available)'; neither is present in this phase's generatedArtifacts (structured-spec route). Downstream consumers should treat absence as expected, not a defect.",
+    "ReturnReportFileAbs (c:\\Users\\Jim Lin\\.trae-cn\\work\\...\\agent-reports\\phase4-docs-skill.json) is outside the writable working directory; report relocated to .design_library/zentrix/agent-reports/phase4-docs-skill.json."
+  ]
+}

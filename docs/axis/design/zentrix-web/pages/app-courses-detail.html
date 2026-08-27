@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程详情 - Zentrix</title>
+    <style id="theme-vars">
+/* Zentrix Design Library — Colors & Typography Tokens */
+/* Source: structured-spec */
+/* Mode: light-dark */
+/* @max-group-size: 50 */
+
+/* ─────────────────────────────────────────────────────────────── */
+/* PRIMITIVE TOKENS                                               */
+/* ─────────────────────────────────────────────────────────────── */
+
+:root {
+    /* Background */
+    --background: #fff;
+
+    /* Foreground */
+    --foreground: #09090b;
+
+    /* Card */
+    --card: #fff;
+    --card-foreground: #09090b;
+
+    /* Popover */
+    --popover: #fff;
+    --popover-foreground: #09090b;
+
+    /* Primary */
+    --primary: #008235;
+    --primary-foreground: #f0fdf4;
+
+    /* Secondary */
+    --secondary: #f4f4f5;
+    --secondary-foreground: #18181b;
+
+    /* Muted */
+    --muted: #f4f4f5;
+    --muted-foreground: #71717b;
+
+    /* Accent */
+    --accent: #f4f4f5;
+    --accent-foreground: #18181b;
+
+    /* Destructive */
+    --destructive: #e7000b;
+
+    /* Border */
+    --border: #e4e4e7;
+
+    /* Input */
+    --input: #e4e4e7;
+
+    /* Ring */
+    --ring: #9f9fa9;
+
+    /* Chart */
+    --chart-1: #7bf1a7;
+    --chart-2: #00c950;
+    --chart-3: #00a63e;
+    --chart-4: #008235;
+    --chart-5: #026630;
+
+    /* Sidebar */
+    --sidebar: #fafafa;
+    --sidebar-foreground: #09090b;
+    --sidebar-primary: #00a63e;
+    --sidebar-primary-foreground: #f0fdf4;
+    --sidebar-accent: #f4f4f5;
+    --sidebar-accent-foreground: #18181b;
+    --sidebar-border: #e4e4e7;
+    --sidebar-ring: #9f9fa9;
+
+    /* Radius */
+    --radius: 0.45rem;
+    --radius-sm: 4.3px;
+    --radius-md: 5.8px;
+    --radius-lg: 7.2px;
+    --radius-xl: 10.1px;
+    --radius-2xl: 13px;
+    --radius-3xl: 15.8px;
+    --radius-4xl: 18.7px;
+
+    /* Font */
+    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-heading: var(--font-sans);
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* DARK MODE TOKENS                                               */
+/* ─────────────────────────────────────────────────────────────── */
+
+.dark {
+    /* Background */
+    --background: #09090b;
+
+    /* Foreground */
+    --foreground: #fafafa;
+
+    /* Card */
+    --card: #18181b;
+    --card-foreground: #fafafa;
+
+    /* Popover */
+    --popover: #18181b;
+    --popover-foreground: #fafafa;
+
+    /* Primary */
+    --primary: #026630;
+    --primary-foreground: #f0fdf4;
+
+    /* Secondary */
+    --secondary: #27272a;
+    --secondary-foreground: #fafafa;
+
+    /* Muted */
+    --muted: #27272a;
+    --muted-foreground: #9f9fa9;
+
+    /* Accent */
+    --accent: #27272a;
+    --accent-foreground: #fafafa;
+
+    /* Destructive */
+    --destructive: #ff6467;
+
+    /* Border */
+    --border: rgba(255, 255, 255, 0.1);
+
+    /* Input */
+    --input: rgba(255, 255, 255, 0.15);
+
+    /* Ring */
+    --ring: #71717b;
+
+    /* Chart */
+    --chart-1: #7bf1a7;
+    --chart-2: #00c950;
+    --chart-3: #00a63e;
+    --chart-4: #008235;
+    --chart-5: #026630;
+
+    /* Sidebar */
+    --sidebar: #18181b;
+    --sidebar-foreground: #fafafa;
+    --sidebar-primary: #00c950;
+    --sidebar-primary-foreground: #f0fdf4;
+    --sidebar-accent: #27272a;
+    --sidebar-accent-foreground: #fafafa;
+    --sidebar-border: rgba(255, 255, 255, 0.1);
+    --sidebar-ring: #71717b;
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* PORTABLE ALIAS LAYER                                           */
+/* ─────────────────────────────────────────────────────────────── */
+
+:root {
+    /* Color */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+    /* Typography */
+    --type-heading: var(--font-heading);
+    --type-sans: var(--font-sans);
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --radius-sm: var(--radius-sm);
+    --radius-md: var(--radius-md);
+    --radius-lg: var(--radius-lg);
+    --radius-xl: var(--radius-xl);
+  }
+  @layer base {
+    body { background: var(--color-background); color: var(--color-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--background); }
+      .text-background { color: var(--background); }
+      .border-background { border-color: var(--background); }
+      .ring-background { --tw-ring-color: var(--background); }
+      .bg-foreground { background-color: var(--foreground); }
+      .text-foreground { color: var(--foreground); }
+      .border-foreground { border-color: var(--foreground); }
+      .ring-foreground { --tw-ring-color: var(--foreground); }
+      .bg-card { background-color: var(--card); }
+      .text-card { color: var(--card); }
+      .border-card { border-color: var(--card); }
+      .ring-card { --tw-ring-color: var(--card); }
+      .bg-card-foreground { background-color: var(--card-foreground); }
+      .text-card-foreground { color: var(--card-foreground); }
+      .border-card-foreground { border-color: var(--card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--card-foreground); }
+      .bg-popover { background-color: var(--popover); }
+      .text-popover { color: var(--popover); }
+      .border-popover { border-color: var(--popover); }
+      .ring-popover { --tw-ring-color: var(--popover); }
+      .bg-popover-foreground { background-color: var(--popover-foreground); }
+      .text-popover-foreground { color: var(--popover-foreground); }
+      .border-popover-foreground { border-color: var(--popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--popover-foreground); }
+      .bg-primary { background-color: var(--primary); }
+      .text-primary { color: var(--primary); }
+      .border-primary { border-color: var(--primary); }
+      .ring-primary { --tw-ring-color: var(--primary); }
+      .bg-primary-foreground { background-color: var(--primary-foreground); }
+      .text-primary-foreground { color: var(--primary-foreground); }
+      .border-primary-foreground { border-color: var(--primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--primary-foreground); }
+      .bg-secondary { background-color: var(--secondary); }
+      .text-secondary { color: var(--secondary); }
+      .border-secondary { border-color: var(--secondary); }
+      .ring-secondary { --tw-ring-color: var(--secondary); }
+      .bg-secondary-foreground { background-color: var(--secondary-foreground); }
+      .text-secondary-foreground { color: var(--secondary-foreground); }
+      .border-secondary-foreground { border-color: var(--secondary-foreground); }
+      .ring-secondary-foreground { --tw-ring-color: var(--secondary-foreground); }
+      .bg-muted { background-color: var(--muted); }
+      .text-muted { color: var(--muted); }
+      .border-muted { border-color: var(--muted); }
+      .ring-muted { --tw-ring-color: var(--muted); }
+      .bg-muted-foreground { background-color: var(--muted-foreground); }
+      .text-muted-foreground { color: var(--muted-foreground); }
+      .border-muted-foreground { border-color: var(--muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--muted-foreground); }
+      .bg-accent { background-color: var(--accent); }
+      .text-accent { color: var(--accent); }
+      .border-accent { border-color: var(--accent); }
+      .ring-accent { --tw-ring-color: var(--accent); }
+      .bg-accent-foreground { background-color: var(--accent-foreground); }
+      .text-accent-foreground { color: var(--accent-foreground); }
+      .border-accent-foreground { border-color: var(--accent-foreground); }
+      .ring-accent-foreground { --tw-ring-color: var(--accent-foreground); }
+      .bg-destructive { background-color: var(--destructive); }
+      .text-destructive { color: var(--destructive); }
+      .border-destructive { border-color: var(--destructive); }
+      .ring-destructive { --tw-ring-color: var(--destructive); }
+      .bg-border { background-color: var(--border); }
+      .text-border { color: var(--border); }
+      .border-border { border-color: var(--border); }
+      .ring-border { --tw-ring-color: var(--border); }
+      .bg-input { background-color: var(--input); }
+      .text-input { color: var(--input); }
+      .border-input { border-color: var(--input); }
+      .ring-input { --tw-ring-color: var(--input); }
+      .bg-ring { background-color: var(--ring); }
+      .text-ring { color: var(--ring); }
+      .border-ring { border-color: var(--ring); }
+      .ring-ring { --tw-ring-color: var(--ring); }
+      .bg-chart-1 { background-color: var(--chart-1); }
+      .text-chart-1 { color: var(--chart-1); }
+      .border-chart-1 { border-color: var(--chart-1); }
+      .ring-chart-1 { --tw-ring-color: var(--chart-1); }
+      .bg-chart-2 { background-color: var(--chart-2); }
+      .text-chart-2 { color: var(--chart-2); }
+      .border-chart-2 { border-color: var(--chart-2); }
+      .ring-chart-2 { --tw-ring-color: var(--chart-2); }
+      .bg-chart-3 { background-color: var(--chart-3); }
+      .text-chart-3 { color: var(--chart-3); }
+      .border-chart-3 { border-color: var(--chart-3); }
+      .ring-chart-3 { --tw-ring-color: var(--chart-3); }
+      .bg-chart-4 { background-color: var(--chart-4); }
+      .text-chart-4 { color: var(--chart-4); }
+      .border-chart-4 { border-color: var(--chart-4); }
+      .ring-chart-4 { --tw-ring-color: var(--chart-4); }
+      .bg-chart-5 { background-color: var(--chart-5); }
+      .text-chart-5 { color: var(--chart-5); }
+      .border-chart-5 { border-color: var(--chart-5); }
+      .ring-chart-5 { --tw-ring-color: var(--chart-5); }
+      .bg-sidebar { background-color: var(--sidebar); }
+      .text-sidebar { color: var(--sidebar); }
+      .border-sidebar { border-color: var(--sidebar); }
+      .ring-sidebar { --tw-ring-color: var(--sidebar); }
+      .bg-sidebar-foreground { background-color: var(--sidebar-foreground); }
+      .text-sidebar-foreground { color: var(--sidebar-foreground); }
+      .border-sidebar-foreground { border-color: var(--sidebar-foreground); }
+      .ring-sidebar-foreground { --tw-ring-color: var(--sidebar-foreground); }
+      .bg-sidebar-primary { background-color: var(--sidebar-primary); }
+      .text-sidebar-primary { color: var(--sidebar-primary); }
+      .border-sidebar-primary { border-color: var(--sidebar-primary); }
+      .ring-sidebar-primary { --tw-ring-color: var(--sidebar-primary); }
+      .bg-sidebar-primary-foreground { background-color: var(--sidebar-primary-foreground); }
+      .text-sidebar-primary-foreground { color: var(--sidebar-primary-foreground); }
+      .border-sidebar-primary-foreground { border-color: var(--sidebar-primary-foreground); }
+      .ring-sidebar-primary-foreground { --tw-ring-color: var(--sidebar-primary-foreground); }
+      .bg-sidebar-accent { background-color: var(--sidebar-accent); }
+      .text-sidebar-accent { color: var(--sidebar-accent); }
+      .border-sidebar-accent { border-color: var(--sidebar-accent); }
+      .ring-sidebar-accent { --tw-ring-color: var(--sidebar-accent); }
+      .bg-sidebar-accent-foreground { background-color: var(--sidebar-accent-foreground); }
+      .text-sidebar-accent-foreground { color: var(--sidebar-accent-foreground); }
+      .border-sidebar-accent-foreground { border-color: var(--sidebar-accent-foreground); }
+      .ring-sidebar-accent-foreground { --tw-ring-color: var(--sidebar-accent-foreground); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+  <div class="app-shell" data-layout-guard="zentrix-shell-v1">
+  <aside class="app-sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">Z</span>
+      <span class="brand-name">Zentrix</span>
+    </div>
+    <nav class="sidebar-nav" aria-label="主导航">
+      <div class="nav-section">
+        <span class="nav-section-title">仪表盘</span>
+        <a href="./app.html" data-dom-id="nav-overview" class="nav-link active" data-active-match="app">
+          <i data-lucide="layout-dashboard" class="nav-icon"></i>
+          <span>总览</span>
+        </a>
+        <a href="./app-student.html" data-dom-id="nav-student" class="nav-link" data-active-match="app-student">
+          <i data-lucide="graduation-cap" class="nav-icon"></i>
+          <span>学生</span>
+        </a>
+        <a href="./app-teacher.html" data-dom-id="nav-teacher" class="nav-link" data-active-match="app-teacher">
+          <i data-lucide="users" class="nav-icon"></i>
+          <span>教师</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">学习</span>
+        <a href="./app-library.html" data-dom-id="nav-library" class="nav-link" data-active-match="app-library">
+          <i data-lucide="library" class="nav-icon"></i>
+          <span>资料库</span>
+        </a>
+        <a href="./app-courses.html" data-dom-id="nav-courses" class="nav-link active" data-active-match="app-courses">
+          <i data-lucide="book-open" class="nav-icon"></i>
+          <span>课程</span>
+        </a>
+        <a href="./app-progress.html" data-dom-id="nav-progress" class="nav-link" data-active-match="app-progress">
+          <i data-lucide="trending-up" class="nav-icon"></i>
+          <span>进度</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">账户</span>
+        <a href="./app-membership.html" data-dom-id="nav-membership" class="nav-link" data-active-match="app-membership">
+          <i data-lucide="crown" class="nav-icon"></i>
+          <span>会员</span>
+        </a>
+        <a href="./app-orders.html" data-dom-id="nav-orders" class="nav-link" data-active-match="app-orders">
+          <i data-lucide="receipt" class="nav-icon"></i>
+          <span>订单</span>
+        </a>
+        <a href="./app-devices.html" data-dom-id="nav-devices" class="nav-link" data-active-match="app-devices">
+          <i data-lucide="monitor" class="nav-icon"></i>
+          <span>设备</span>
+        </a>
+      </div>
+      <div class="nav-section nav-section-admin">
+        <span class="nav-section-title">管理</span>
+        <a href="./app-admin.html" data-dom-id="nav-admin" class="nav-link" data-active-match="app-admin">
+          <i data-lucide="shield" class="nav-icon"></i>
+          <span>管理员</span>
+        </a>
+        <a href="./app-content-packs.html" data-dom-id="nav-content-packs" class="nav-link" data-active-match="app-content-packs">
+          <i data-lucide="package" class="nav-icon"></i>
+          <span>内容包</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">设置</span>
+        <a href="./app-settings-profile.html" data-dom-id="nav-settings" class="nav-link" data-active-match="app-settings">
+          <i data-lucide="settings" class="nav-icon"></i>
+          <span>设置</span>
+        </a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-mini">
+        <div class="user-avatar">JL</div>
+        <div class="user-info">
+          <div class="user-name">Jim Lin</div>
+          <div class="user-role">管理员</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-topbar">
+      <div class="topbar-left">
+        <button type="button" class="btn btn-ghost btn-icon mobile-menu-toggle" aria-label="展开菜单">
+          <i data-lucide="menu" class="btn-icon-inner"></i>
+        </button>
+        <div class="page-breadcrumbs" id="page-breadcrumbs">
+          <span class="bc-root">应用</span>
+          <i data-lucide="chevron-right" class="bc-sep"></i>
+          <span class="bc-current" id="page-title">页面标题</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button type="button" class="btn btn-ghost btn-icon" aria-label="通知" style="position:relative;">
+          <i data-lucide="bell" class="btn-icon-inner"></i>
+          <span class="indicator-dot"></span>
+        </button>
+        <button type="button" class="btn btn-ghost btn-icon" aria-label="帮助">
+          <i data-lucide="help-circle" class="btn-icon-inner"></i>
+        </button>
+        <div class="user-menu">
+          <button type="button" class="btn btn-ghost user-menu-trigger">
+            <span class="user-name">Jim Lin</span>
+            <i data-lucide="chevron-down" class="btn-icon-inner"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-content" id="app-content">
+
+        <header class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">Python 数据分析入门</h1>
+            <p class="page-subtitle">课程详情与版本管理</p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn btn-outline">编辑</button>
+            <button type="button" class="btn btn-default">发布新版本</button>
+          </div>
+        </header>
+        <div class="content-grid">
+          <div class="col-8">
+            <div class="card">
+              <div class="course-image"></div>
+              <h3 class="card__title">课程简介</h3>
+              <p class="card__description">本课程从 Python 基础语法出发，系统讲解 pandas 数据处理、numpy 数值计算、matplotlib 与 seaborn 可视化，并通过真实案例带你完成完整的数据分析流程。</p>
+              <ul class="card__list" style="font-size:.75rem;color:var(--color-muted-foreground);">
+                <li><i data-lucide="check" style="width:14px;height:14px;"></i> 适合零基础与转行人员</li>
+                <li><i data-lucide="check" style="width:14px;height:14px;"></i> 12 课时，包含 8 个实战练习</li>
+                <li><i data-lucide="check" style="width:14px;height:14px;"></i> 配套讲义与数据集</li>
+              </ul>
+            </div>
+            <div class="card" style="margin-top:1rem;">
+              <h3 class="card__title">章节列表</h3>
+              <div class="chapter-row"><span class="chapter-num">1</span><span>Python 环境与基础语法</span></div>
+              <div class="chapter-row"><span class="chapter-num">2</span><span>NumPy 数组与矩阵运算</span></div>
+              <div class="chapter-row"><span class="chapter-num">3</span><span>Pandas 数据清洗与聚合</span></div>
+              <div class="chapter-row"><span class="chapter-num">4</span><span>数据可视化实战</span></div>
+              <div class="chapter-row"><span class="chapter-num">5</span><span>综合案例：销售数据分析</span></div>
+            </div>
+            <div class="card" style="margin-top:1rem;">
+              <h3 class="card__title">课程资源</h3>
+              <ul class="card__list">
+                <li style="display:flex;align-items:center;gap:.5rem;"><i data-lucide="file-text" style="width:14px;height:14px;"></i> 课程讲义.pdf</li>
+                <li style="display:flex;align-items:center;gap:.5rem;"><i data-lucide="database" style="width:14px;height:14px;"></i> 示例数据集.zip</li>
+                <li style="display:flex;align-items:center;gap:.5rem;"><i data-lucide="code" style="width:14px;height:14px;"></i> 练习代码.ipynb</li>
+                <li style="display:flex;align-items:center;gap:.5rem;"><i data-lucide="video" style="width:14px;height:14px;"></i> 参考视频 3 个</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="card">
+              <h3 class="card__title">发布状态</h3>
+              <p class="card__description"><span class="badge badge-default">已发布</span> 当前版本 v1.2.0</p>
+              <div style="margin-top:.75rem;"><div style="font-size:.75rem;color:var(--color-muted-foreground);">学员人数</div><div style="font-size:1.25rem;font-weight:600;">1,248</div></div>
+              <div style="margin-top:.75rem;"><div style="font-size:.75rem;color:var(--color-muted-foreground);">平均完成度</div><div style="font-size:1.25rem;font-weight:600;">78%</div></div>
+            </div>
+            <div class="card" style="margin-top:1rem;">
+              <h3 class="card__title">版本记录</h3>
+              <div class="chapter-row"><span>v1.2.0</span><span class="course-meta">2024-06-12</span></div>
+              <div class="chapter-row"><span>v1.1.0</span><span class="course-meta">2024-05-20</span></div>
+              <div class="chapter-row"><span>v1.0.0</span><span class="course-meta">2024-04-10</span></div>
+            </div>
+          </div>
+        </div>
+    </main>
+  </div>
+</div>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 2,
+  "sourceKind": "structured-spec",
+  "slug": "alert",
+  "name": "Alert",
+  "confidence": "high",
+  "description": "Inline feedback message component with CVA variants. Uses grid layout with optional icon. Used for error messages, warnings, sync failures, and informational notices.",
+  "semanticTypeCandidates": ["feedback", "notice", "error-message", "warning"],
+  "variantDimensions": [
+    {
+      "name": "variant",
+      "values": ["default", "destructive"],
+      "description": "Default uses card background; destructive highlights text in destructive red while keeping card background."
+    }
+  ],
+  "representativeVariants": [
+    { "variant": "default", "title": "Sync Complete", "description": "Your progress has been synchronized." },
+    { "variant": "destructive", "title": "Authorization Expired", "description": "Please rebind your device to continue." },
+    { "variant": "default", "title": "Update Available", "description": "A new version of this course pack is ready." }
+  ],
+  "anatomy": [
+    { "slot": "alert", "element": "div", "description": "Root with role='alert', grid layout, rounded-lg, border, px-2.5, py-2" },
+    { "slot": "alert-title", "element": "div", "description": "Font-medium, col-start-2 (when icon present)" },
+    { "slot": "alert-description", "element": "div", "description": "Text-muted-foreground, text-sm, text-balance" },
+    { "slot": "alert-action", "element": "div", "description": "Optional action area, absolute end-2 top-2" },
+    { "slot": "icon", "element": "svg", "description": "Optional icon, row-span-2, size-4, text-current" }
+  ],
+  "structurePatterns": [
+    "Grid w-full gap-0.5",
+    "Rounded-lg border px-2.5 py-2 text-start text-sm",
+    "Has-[>svg]: grid-cols-[auto_1fr] gap-x-2",
+    "Icon: row-span-2, translate-y-0.5, text-current, size-4",
+    "Alert-action: absolute end-2 top-2, pe-18 on parent when present",
+    "Destructive: text-destructive, description gets text-destructive/90"
+  ],
+  "tokenUsage": {
+    "colors": ["--color-card", "--color-card-foreground", "--color-destructive", "--color-muted-foreground", "--color-foreground"],
+    "radius": ["--radius-lg"]
+  },
+  "usageHints": [
+    "Use default for informational notices (sync complete, update available)",
+    "Use destructive for errors and warnings (auth expired, sync failed, run failed)",
+    "Include an icon for visual scanning (Lucide icons recommended)",
+    "Use alert-action for inline dismiss or retry buttons",
+    "Place alerts close to the relevant content, not just as global toasts"
+  ],
+  "doNotInvent": [
+    "Do not use success or warning variants (only default and destructive exist)",
+    "Do not add background colors beyond card background",
+    "Do not use rounded-xl (alert uses rounded-lg)"
+  ],
+  "unknowns": [
+    "Success variant not defined (use default with success icon)",
+    "Warning variant not defined (use default or destructive depending on severity)"
+  ]
+}
