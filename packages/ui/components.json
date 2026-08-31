@@ -14,11 +14,11 @@
   "menuColor": "default",
   "menuAccent": "subtle",
   "aliases": {
-    "components": "@workspace/ui/components",
-    "utils": "@workspace/ui/lib/utils",
-    "ui": "@workspace/ui/components",
-    "lib": "@workspace/ui/lib",
-    "hooks": "@workspace/ui/hooks"
+    "components": "@shared/ui/components",
+    "utils": "@shared/ui/lib/utils",
+    "ui": "@shared/ui/components",
+    "lib": "@shared/ui/lib",
+    "hooks": "@shared/ui/hooks"
   },
   "registries": {
     "@react-bits": "https://reactbits.dev/r/{name}.json"

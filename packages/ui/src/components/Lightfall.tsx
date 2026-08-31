@@ -381,9 +381,11 @@ const Lightfall: React.FC<LightfallProps> = ({
     return (
         <div
             ref={containerRef}
-            className={`relative h-full w-full overflow-hidden ${className ?? ""}`}
+            className={`overflow-hidden ${className ?? ""}`}
             style={{
-                ...(mixBlendMode && { mixBlendMode: mixBlendMode as React.CSSProperties["mixBlendMode"] }),
+                ...(mixBlendMode && {
+                    mixBlendMode: mixBlendMode as React.CSSProperties["mixBlendMode"],
+                }),
             }}
         />
     );

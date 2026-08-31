@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "@shared/ui/lib/utils";
 
 function MessageGroup({ className, ...props }: React.ComponentProps<"div">) {
     return <div data-slot="message-group" className={cn("flex min-w-0 flex-col gap-2", className)} {...props} />;

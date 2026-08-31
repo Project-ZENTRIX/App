@@ -4,14 +4,14 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
 
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
-import { cn } from "@workspace/ui/lib/utils";
-import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
-import { Separator } from "@workspace/ui/components/separator";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@workspace/ui/components/sheet";
-import { Skeleton } from "@workspace/ui/components/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip";
+import { useIsMobile } from "@shared/ui/hooks/use-mobile";
+import { cn } from "@shared/ui/lib/utils";
+import { Button } from "@shared/ui/components/button";
+import { Input } from "@shared/ui/components/input";
+import { Separator } from "@shared/ui/components/separator";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@shared/ui/components/sheet";
+import { Skeleton } from "@shared/ui/components/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@shared/ui/components/tooltip";
 import { PanelLeftIcon } from "lucide-react";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
