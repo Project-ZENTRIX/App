@@ -1,0 +1,662 @@
+{
+    "dashboard": {
+        "header": {
+            "eyebrow": "仪表盘",
+            "title": "工作区概览",
+            "description": "在一个位置跟踪学习活动、审核队列和运营信号。",
+            "exportReport": "导出报告",
+            "openLearningPath": "打开学习路径"
+        },
+        "metrics": {
+            "activeLearners": {
+                "label": "活跃学习者",
+                "detail": "本周 +9.2%"
+            },
+            "inReview": {
+                "label": "审核中",
+                "detail": "6 项需要关注"
+            },
+            "publishedPacks": {
+                "label": "已发布内容包",
+                "detail": "今天安排了 3 项"
+            },
+            "openSessions": {
+                "label": "打开的会话",
+                "detail": "24 台设备待处理"
+            }
+        },
+        "quickActions": {
+            "panel": {
+                "title": "快速操作",
+                "description": "直接进入需要处理的工作。"
+            },
+            "continueLearning": {
+                "title": "继续学习",
+                "description": "回到当前学习路径"
+            },
+            "openContentStudio": {
+                "title": "打开内容工作台",
+                "description": "查看草稿和发布内容"
+            },
+            "checkAdminQueue": {
+                "title": "查看管理队列",
+                "description": "检查用户和系统信号"
+            }
+        },
+        "recentStatus": {
+            "title": "最近状态",
+            "description": "来自学习和运营的当前信号。",
+            "weeklyStreak": {
+                "title": "每周连胜",
+                "detail": "连续 6 天"
+            },
+            "readingBacklog": {
+                "title": "阅读积压",
+                "detail": "排队 4 节课"
+            },
+            "practiceDue": {
+                "title": "待完成练习",
+                "detail": "今晚到期 1 项评估"
+            }
+        }
+    },
+    "learning": {
+        "home": {
+            "header": {
+                "eyebrow": "学习",
+                "title": "学习中心",
+                "description": "查看课程、节奏和最新学习进度。",
+                "startNewLesson": "开始新课程"
+            },
+            "metrics": {
+                "enrolledCourses": {
+                    "label": "已报名课程",
+                    "detail": "今天更新了 3 个"
+                },
+                "lessonsCompleted": {
+                    "label": "已完成课程",
+                    "detail": "本周 +12%"
+                },
+                "atRiskLearners": {
+                    "label": "高风险学习者",
+                    "detail": "需要跟进"
+                },
+                "assessmentsDue": {
+                    "label": "待完成评估",
+                    "detail": "48 小时内到期"
+                }
+            },
+            "panel": {
+                "title": "当前课程",
+                "description": "这是当前生效的学习路径集合。"
+            },
+            "table": {
+                "course": "课程",
+                "audience": "对象",
+                "progress": "进度",
+                "state": "状态"
+            }
+        },
+        "courses": {
+            "header": {
+                "eyebrow": "课程",
+                "title": "课程目录",
+                "description": "管理当前课程列表并查看每条路径的状态。",
+                "createCourse": "创建课程"
+            },
+            "panel": {
+                "title": "课程",
+                "description": "当前学习路径的紧凑列表。",
+                "liveSync": "实时同步"
+            },
+            "table": {
+                "title": "标题",
+                "owner": "负责人",
+                "progress": "进度",
+                "status": "状态"
+            }
+        },
+        "progress": {
+            "header": {
+                "eyebrow": "进度",
+                "title": "学习进度",
+                "description": "关注连胜、待办任务和需要干预的事项。",
+                "openCheckIn": "打开检查"
+            },
+            "panel": {
+                "title": "进度信号",
+                "description": "本周最重要的标记。"
+            },
+            "signals": {
+                "weeklyStreak": {
+                    "title": "每周连胜",
+                    "detail": "连续 6 天",
+                    "tone": "success"
+                },
+                "readingBacklog": {
+                    "title": "阅读积压",
+                    "detail": "排队 4 节课",
+                    "tone": "warning"
+                },
+                "practiceDue": {
+                    "title": "待完成练习",
+                    "detail": "今晚到期 1 项评估",
+                    "tone": "destructive"
+                }
+            }
+        }
+    },
+    "content": {
+        "home": {
+            "header": {
+                "eyebrow": "内容管理",
+                "title": "内容工作区",
+                "description": "在一个统一的运营视图里完成从草稿到发布的流程。",
+                "newPackage": "新建内容包"
+            },
+            "metrics": {
+                "drafts": {
+                    "label": "草稿",
+                    "detail": "2 项被阻塞"
+                },
+                "inReview": {
+                    "label": "审核中",
+                    "detail": "还剩 4 条评论"
+                },
+                "published": {
+                    "label": "已发布",
+                    "detail": "今天发布了 3 项"
+                },
+                "libraryAssets": {
+                    "label": "资料库资产",
+                    "detail": "本周新增 8 项"
+                }
+            },
+            "panels": {
+                "pipeline": {
+                    "title": "内容包流程",
+                    "description": "草稿、审核和发布状态。"
+                },
+                "queue": {
+                    "title": "发布队列",
+                    "description": "下一批要发布的内容。"
+                }
+            },
+            "table": {
+                "package": "内容包",
+                "status": "状态",
+                "version": "版本",
+                "note": "备注",
+                "state": "阶段",
+                "timing": "时间"
+            }
+        },
+        "packages": {
+            "header": {
+                "eyebrow": "内容包",
+                "title": "内容包列表",
+                "description": "查看内容包状态、版本和发布时间。",
+                "draftPackage": "草拟内容包"
+            },
+            "panel": {
+                "title": "内容包列表",
+                "description": "当前内容包及其状态。"
+            },
+            "table": {
+                "package": "内容包",
+                "status": "状态",
+                "version": "版本",
+                "updated": "更新时间"
+            }
+        },
+        "new": {
+            "header": {
+                "eyebrow": "内容包",
+                "title": "新建内容包",
+                "description": "准备草稿、附加资源，并交付审核。",
+                "saveDraft": "保存草稿",
+                "submitReview": "提交审核"
+            },
+            "checklist": {
+                "title": "草稿清单",
+                "description": "确保内容包已准备好审核。",
+                "outline": {
+                    "title": "大纲",
+                    "detail": "已定义 3 个模块"
+                },
+                "assets": {
+                    "title": "资源",
+                    "detail": "上传两个媒体文件"
+                },
+                "review": {
+                    "title": "审核",
+                    "detail": "分配一位审核人"
+                }
+            },
+            "preview": {
+                "title": "预览",
+                "description": "内容包摘要的显示效果。",
+                "packageName": "内容包名称",
+                "owner": "负责人",
+                "releaseTarget": "发布目标"
+            }
+        },
+        "library": {
+            "header": {
+                "eyebrow": "资料库",
+                "title": "资源库",
+                "description": "存放可复用资源并查看它们的使用位置。",
+                "uploadAsset": "上传资源"
+            },
+            "panel": {
+                "title": "资源",
+                "description": "工作区可用的共享文件。"
+            },
+            "table": {
+                "asset": "资源",
+                "type": "类型",
+                "size": "大小",
+                "access": "访问权限"
+            }
+        },
+        "publishing": {
+            "header": {
+                "eyebrow": "发布",
+                "title": "发布看板",
+                "description": "跟踪计划中的发布和当前交接阶段。",
+                "scheduleRelease": "安排发布"
+            },
+            "panel": {
+                "title": "发布队列",
+                "description": "即将发布和正在进行的项目。"
+            },
+            "table": {
+                "package": "内容包",
+                "status": "状态",
+                "window": "窗口",
+                "note": "备注"
+            }
+        },
+        "review": {
+            "header": {
+                "eyebrow": "审核",
+                "title": "审核队列",
+                "description": "查看待处理、需修改和已就绪的内容。",
+                "openNextReview": "打开下一个审核"
+            },
+            "panel": {
+                "title": "审核项目",
+                "description": "当前的审核队列。"
+            },
+            "table": {
+                "item": "项目",
+                "owner": "负责人",
+                "state": "状态",
+                "notes": "备注"
+            }
+        }
+    },
+    "admin": {
+        "home": {
+            "header": {
+                "eyebrow": "管理",
+                "title": "控制台",
+                "description": "在一个控制台中跟踪系统健康、用户访问和许可证。",
+                "openSystemStatus": "打开系统状态"
+            },
+            "metrics": {
+                "managedUsers": {
+                    "label": "管理用户",
+                    "detail": "今天变更了 48 个"
+                },
+                "openIncidents": {
+                    "label": "未解决事件",
+                    "detail": "1 项已升级"
+                },
+                "activeLicenses": {
+                    "label": "活跃许可证",
+                    "detail": "使用率 92%"
+                },
+                "blockedActions": {
+                    "label": "被阻止操作",
+                    "detail": "等待策略复核"
+                }
+            },
+            "panels": {
+                "users": {
+                    "title": "用户",
+                    "description": "近期账户状态。"
+                },
+                "licenses": {
+                    "title": "许可证",
+                    "description": "工作区许可概览。"
+                },
+                "system": {
+                    "title": "系统健康",
+                    "description": "需要关注的服务。"
+                }
+            },
+            "table": {
+                "name": "姓名",
+                "role": "角色",
+                "access": "访问",
+                "note": "备注",
+                "tier": "套餐",
+                "seats": "席位",
+                "usage": "使用量",
+                "service": "服务",
+                "state": "状态",
+                "slo": "SLO"
+            }
+        },
+        "users": {
+            "header": {
+                "eyebrow": "管理",
+                "title": "用户管理",
+                "description": "查看角色、访问权限和账户状态。"
+            },
+            "panel": {
+                "title": "用户",
+                "description": "当前工作区用户。"
+            },
+            "table": {
+                "name": "姓名",
+                "role": "角色",
+                "access": "访问",
+                "note": "备注"
+            }
+        },
+        "content": {
+            "header": {
+                "eyebrow": "管理",
+                "title": "内容审核",
+                "description": "批准、拒绝或请求修改内容包。"
+            },
+            "panel": {
+                "title": "审核队列",
+                "description": "当前内容审核项目。"
+            },
+            "table": {
+                "item": "项目",
+                "owner": "负责人",
+                "state": "状态",
+                "notes": "备注"
+            }
+        },
+        "licenses": {
+            "header": {
+                "eyebrow": "管理",
+                "title": "许可证概览",
+                "description": "检查各套餐的席位使用和续订情况。"
+            },
+            "panel": {
+                "title": "许可证套餐",
+                "description": "当前工作区许可证计划概览。"
+            },
+            "table": {
+                "tier": "套餐",
+                "seats": "席位",
+                "usage": "使用量",
+                "note": "备注"
+            }
+        },
+        "system": {
+            "header": {
+                "eyebrow": "管理",
+                "title": "系统状态",
+                "description": "检查主要服务及其当前健康状况。"
+            },
+            "panel": {
+                "title": "服务健康",
+                "description": "工作区服务的运行状态。"
+            },
+            "table": {
+                "service": "服务",
+                "state": "状态",
+                "slo": "SLO",
+                "note": "备注"
+            }
+        }
+    },
+    "account": {
+        "home": {
+            "header": {
+                "eyebrow": "账户",
+                "title": "账户中心",
+                "description": "管理身份、会话、账单和个人设置。",
+                "editProfile": "编辑资料"
+            },
+            "panels": {
+                "profile": {
+                    "title": "资料",
+                    "description": "您当前的账户详情。"
+                },
+                "membership": {
+                    "title": "账单与会员",
+                    "description": "您当前账户的状态。"
+                }
+            },
+            "table": {
+                "field": "字段",
+                "value": "值",
+                "item": "项目"
+            }
+        },
+        "profile": {
+            "header": {
+                "eyebrow": "账户",
+                "title": "资料",
+                "description": "保持公开身份和工作区身份最新。"
+            },
+            "panel": {
+                "title": "资料详情",
+                "description": "可编辑的身份字段。"
+            },
+            "table": {
+                "field": "字段",
+                "value": "值"
+            }
+        },
+        "notifications": {
+            "header": {
+                "eyebrow": "账户",
+                "title": "通知",
+                "description": "控制您想接收的提醒。"
+            },
+            "panel": {
+                "title": "通知渠道",
+                "description": "当前提醒设置。"
+            },
+            "table": {
+                "type": "类型",
+                "setting": "设置"
+            }
+        },
+        "security": {
+            "header": {
+                "eyebrow": "账户",
+                "title": "安全",
+                "description": "查看登录、MFA 和恢复设置。"
+            },
+            "panels": {
+                "checks": {
+                    "title": "安全检查",
+                    "description": "当前的账户防护信号。"
+                },
+                "devices": {
+                    "title": "受信任设备",
+                    "description": "账户登录的位置。"
+                }
+            },
+            "signals": {
+                "mfa": {
+                    "title": "MFA",
+                    "detail": "已启用验证器应用",
+                    "tone": "success"
+                },
+                "recoveryEmail": {
+                    "title": "恢复邮箱",
+                    "detail": "3 天前已验证",
+                    "tone": "success"
+                },
+                "passwordAge": {
+                    "title": "密码时长",
+                    "detail": "距上次修改 74 天",
+                    "tone": "warning"
+                }
+            },
+            "table": {
+                "device": "设备",
+                "location": "位置",
+                "state": "状态"
+            }
+        },
+        "sessions": {
+            "header": {
+                "eyebrow": "账户",
+                "title": "会话",
+                "description": "查看活跃登录并撤销不信任的会话。",
+                "signOutAll": "全部退出"
+            },
+            "panel": {
+                "title": "会话列表",
+                "description": "账户已知的登录会话。"
+            },
+            "table": {
+                "device": "设备",
+                "location": "位置",
+                "status": "状态"
+            }
+        },
+        "orders": {
+            "header": {
+                "eyebrow": "账户",
+                "title": "订单",
+                "description": "查看购买、退款和支付状态。"
+            },
+            "panel": {
+                "title": "订单",
+                "description": "最近的账单活动。"
+            },
+            "table": {
+                "order": "订单",
+                "product": "产品",
+                "amount": "金额",
+                "status": "状态"
+            }
+        },
+        "membership": {
+            "header": {
+                "eyebrow": "账户",
+                "title": "会员",
+                "description": "查看当前计划和续订详情。",
+                "upgradePlan": "升级计划"
+            },
+            "panel": {
+                "title": "计划概览",
+                "description": "当前会员状态。"
+            },
+            "table": {
+                "field": "字段",
+                "value": "值"
+            }
+        }
+    },
+    "settings": {
+        "home": {
+            "header": {
+                "eyebrow": "设置",
+                "title": "设置中心",
+                "description": "使用子页面管理工作区偏好和默认值。"
+            },
+            "actions": {
+                "general": {
+                    "title": "通用",
+                    "description": "工作区标识和日期格式"
+                },
+                "preferences": {
+                    "title": "偏好",
+                    "description": "密度、动效和草稿行为"
+                }
+            }
+        },
+        "general": {
+            "header": {
+                "eyebrow": "设置",
+                "title": "通用",
+                "description": "更改应用于工作区的默认设置。"
+            },
+            "panel": {
+                "title": "通用设置",
+                "description": "共享的工作区默认值。"
+            },
+            "table": {
+                "setting": "设置",
+                "value": "值"
+            }
+        },
+        "preferences": {
+            "header": {
+                "eyebrow": "设置",
+                "title": "偏好",
+                "description": "微调工作区界面的行为。"
+            },
+            "panel": {
+                "title": "用户偏好",
+                "description": "个人显示和工作流设置。"
+            },
+            "table": {
+                "preference": "偏好",
+                "value": "值"
+            }
+        }
+    },
+    "appLanding": {
+        "header": {
+            "eyebrow": "应用",
+            "title": "应用首页",
+            "description": "此路由是进入仪表盘体验的简单入口。",
+            "openDashboard": "打开仪表盘"
+        },
+        "panels": {
+            "continue": {
+                "title": "继续",
+                "description": "回到主工作区。"
+            },
+            "status": {
+                "title": "状态",
+                "description": "当前工作区摘要。"
+            }
+        },
+        "actions": {
+            "courses": "课程",
+            "packages": "内容包"
+        }
+    },
+    "notFound": {
+        "header": {
+            "eyebrow": "缺失",
+            "title": "未找到页面",
+            "description": "请求的路由不属于当前工作区地图。",
+            "backToDashboard": "返回仪表盘"
+        },
+        "panel": {
+            "title": "常用路由",
+            "description": "工作区的常见入口。"
+        },
+        "actions": {
+            "dashboard": {
+                "title": "仪表盘",
+                "description": "概览和信号"
+            },
+            "learning": {
+                "title": "学习",
+                "description": "课程和进度"
+            },
+            "content": {
+                "title": "内容",
+                "description": "内容包和资料库"
+            }
+        }
+    }
+}

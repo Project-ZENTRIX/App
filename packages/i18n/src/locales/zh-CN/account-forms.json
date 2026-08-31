@@ -1,0 +1,61 @@
+{
+    "login": {
+        "title": "登录到您的账户",
+        "description": "在下方输入您的邮箱以登录到您的账户",
+        "email": {
+            "label": "邮箱"
+        },
+        "password": {
+            "label": "密码",
+            "extra": {
+                "forgot": "忘记密码？"
+            }
+        },
+        "action": "登录",
+        "oauth": {
+            "separator": "或者继续...",
+            "button": "使用 {{provider}} 登录"
+        },
+        "jumps": {
+            "noAccount": "没有账户？"
+        }
+    },
+    "signup": {
+        "title": "创建您的账户",
+        "description": "在下方填写表格以创建您的账户",
+        "fullname": {
+            "label": "用户名"
+        },
+        "email": {
+            "label": "邮箱",
+            "description": "我们将使用此邮箱与您联系。我们不会与任何人分享您的邮箱。"
+        },
+        "password": {
+            "label": "密码",
+            "description": "必须至少包含8个字符。"
+        },
+        "confirm-password": {
+            "label": "确认密码",
+            "description": "请确认您的密码。"
+        },
+        "action": "创建账户",
+        "oauth": {
+            "separator": "或者继续...",
+            "button": "使用 {{provider}} 注册"
+        },
+        "jumps": {
+            "hasAccount": "已经有账户了？"
+        }
+    },
+    "forgot-password": {
+        "title": "忘记密码？",
+        "description": "在下方输入您的邮箱以重置密码",
+        "email": {
+            "label": "邮箱"
+        },
+        "action": "重置密码",
+        "jumps": {
+            "remember": "记得您的密码了？"
+        }
+    }
+}

@@ -1,0 +1,74 @@
+{
+    "breadcrumb": {
+        "buildYourApplication": "构建您的应用",
+        "dataFetching": "数据获取"
+    },
+    "sidebar": {
+        "platform": "平台",
+        "teams": "团队",
+        "roles": "角色",
+        "currentRole": "当前角色：",
+        "addTeam": "添加团队"
+    },
+    "rolesConfig": {
+        "student": "学生",
+        "teacher": "教师",
+        "admin": "管理员"
+    },
+    "teams": {
+        "nexoraStudios": "NEXORA Studios",
+        "acmeCorp": "Acme Corp.",
+        "evilCorp": "Evil Corp.",
+        "plans": {
+            "enterprise": "企业版",
+            "startup": "初创版",
+            "free": "免费版"
+        }
+    },
+    "nav": {
+        "dashboard": "仪表盘",
+        "learning": "学习",
+        "learningChildren": {
+            "myCourses": "我的课程",
+            "progress": "进度",
+            "courses": "课程"
+        },
+        "content": "内容管理",
+        "contentChildren": {
+            "packages": "内容包",
+            "newPackage": "新建内容包",
+            "library": "资料库",
+            "publishing": "发布",
+            "review": "审核状态"
+        },
+        "admin": "管理",
+        "adminChildren": {
+            "console": "控制台",
+            "users": "用户管理",
+            "content": "内容审核",
+            "licenses": "许可证",
+            "system": "系统状态"
+        },
+        "account": "账户",
+        "accountChildren": {
+            "profile": "资料",
+            "notifications": "通知",
+            "security": "安全",
+            "sessions": "会话",
+            "orders": "订单",
+            "membership": "会员"
+        },
+        "settings": "设置",
+        "settingsChildren": {
+            "general": "通用",
+            "preferences": "偏好"
+        }
+    },
+    "userMenu": {
+        "upgradeToPro": "升级为专业版",
+        "account": "账户",
+        "billing": "账单",
+        "notifications": "通知",
+        "logOut": "退出登录"
+    }
+}

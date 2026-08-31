@@ -1,0 +1,74 @@
+{
+    "breadcrumb": {
+        "buildYourApplication": "Build Your Application",
+        "dataFetching": "Data Fetching"
+    },
+    "sidebar": {
+        "platform": "Platform",
+        "teams": "Teams",
+        "roles": "Roles",
+        "currentRole": "Current Role:",
+        "addTeam": "Add team"
+    },
+    "rolesConfig": {
+        "student": "Student",
+        "teacher": "Teacher",
+        "admin": "Admin"
+    },
+    "teams": {
+        "nexoraStudios": "NEXORA Studios",
+        "acmeCorp": "Acme Corp.",
+        "evilCorp": "Evil Corp.",
+        "plans": {
+            "enterprise": "Enterprise",
+            "startup": "Startup",
+            "free": "Free"
+        }
+    },
+    "nav": {
+        "dashboard": "Dashboard",
+        "learning": "Learning",
+        "learningChildren": {
+            "myCourses": "My courses",
+            "progress": "Progress",
+            "courses": "Courses"
+        },
+        "content": "Content management",
+        "contentChildren": {
+            "packages": "Content packages",
+            "newPackage": "New content package",
+            "library": "Library",
+            "publishing": "Publishing",
+            "review": "Review status"
+        },
+        "admin": "Management",
+        "adminChildren": {
+            "console": "Console",
+            "users": "User management",
+            "content": "Content review",
+            "licenses": "Licenses",
+            "system": "System status"
+        },
+        "account": "Account",
+        "accountChildren": {
+            "profile": "Profile",
+            "notifications": "Notifications",
+            "security": "Security",
+            "sessions": "Sessions",
+            "orders": "Orders",
+            "membership": "Membership"
+        },
+        "settings": "Settings",
+        "settingsChildren": {
+            "general": "General",
+            "preferences": "Preferences"
+        }
+    },
+    "userMenu": {
+        "upgradeToPro": "Upgrade to Pro",
+        "account": "Account",
+        "billing": "Billing",
+        "notifications": "Notifications",
+        "logOut": "Log out"
+    }
+}

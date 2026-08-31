@@ -1,0 +1,44 @@
+{
+    "folders": [
+        {
+            "name": "[ROOT] Project ZENTRIX",
+            "path": ".",
+        },
+        {
+            "name": "[Docs] Axis",
+            "path": "./docs/axis",
+        },
+        {
+            "name": "[App] API",
+            "path": "./apps/api",
+        },
+        {
+            "name": "[App] Web",
+            "path": "./apps/web",
+        },
+        {
+            "name": "[Shared] UI",
+            "path": "./packages/ui",
+        },
+        {
+            "name": "[Shared] I18n",
+            "path": "./packages/i18n",
+        },
+        {
+            "name": "[Config] TSC",
+            "path": "./packages/typescript-config",
+        },
+        {
+            "name": "[Config] ESLint",
+            "path": "./packages/eslint-config",
+        },
+        {
+            "name": "[External] Supabase",
+            "path": "./supabase",
+        },
+    ],
+    "settings": {
+        "i18n-ally.localesPaths": ["packages/i18n", "packages/i18n/src/locales"],
+    },
+}
+

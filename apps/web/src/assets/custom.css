@@ -1,0 +1,19 @@
+@layer base {
+    img:not(.draggable) {
+        pointer-events: none;
+        user-select: none;
+    }
+}
+
+@layer theme {
+    .animate-blink {
+        animation: blink var(--blink-duration) ease-in-out infinite;
+        animation-delay: var(--blink-delay);
+    }
+}
+
+@keyframes blink {
+    50% {
+        opacity: var(--blink-opacity);
+    }
+}

@@ -1,0 +1,662 @@
+{
+    "dashboard": {
+        "header": {
+            "eyebrow": "Dashboard",
+            "title": "Workspace overview",
+            "description": "Track learning activity, review queues, and operational signals in one place.",
+            "exportReport": "Export report",
+            "openLearningPath": "Open learning path"
+        },
+        "metrics": {
+            "activeLearners": {
+                "label": "Active learners",
+                "detail": "+9.2% this week"
+            },
+            "inReview": {
+                "label": "In review",
+                "detail": "6 need attention"
+            },
+            "publishedPacks": {
+                "label": "Published packs",
+                "detail": "3 scheduled today"
+            },
+            "openSessions": {
+                "label": "Open sessions",
+                "detail": "24 devices pending"
+            }
+        },
+        "quickActions": {
+            "panel": {
+                "title": "Quick actions",
+                "description": "Go straight to the work that needs attention."
+            },
+            "continueLearning": {
+                "title": "Continue learning",
+                "description": "Resume the current path"
+            },
+            "openContentStudio": {
+                "title": "Open content studio",
+                "description": "Review drafts and releases"
+            },
+            "checkAdminQueue": {
+                "title": "Check admin queue",
+                "description": "Inspect user and system signals"
+            }
+        },
+        "recentStatus": {
+            "title": "Recent status",
+            "description": "Current signals from learning and operations.",
+            "weeklyStreak": {
+                "title": "Weekly streak",
+                "detail": "6 days in a row"
+            },
+            "readingBacklog": {
+                "title": "Reading backlog",
+                "detail": "4 lessons queued"
+            },
+            "practiceDue": {
+                "title": "Practice due",
+                "detail": "1 assessment due tonight"
+            }
+        }
+    },
+    "learning": {
+        "home": {
+            "header": {
+                "eyebrow": "Learning",
+                "title": "Learning hub",
+                "description": "Review courses, pacing, and recent learner progress.",
+                "startNewLesson": "Start new lesson"
+            },
+            "metrics": {
+                "enrolledCourses": {
+                    "label": "Enrolled courses",
+                    "detail": "3 updated today"
+                },
+                "lessonsCompleted": {
+                    "label": "Lessons completed",
+                    "detail": "+12% this week"
+                },
+                "atRiskLearners": {
+                    "label": "At-risk learners",
+                    "detail": "Needs check-in"
+                },
+                "assessmentsDue": {
+                    "label": "Assessments due",
+                    "detail": "Due within 48h"
+                }
+            },
+            "panel": {
+                "title": "Current curriculum",
+                "description": "This is the active set of learning paths."
+            },
+            "table": {
+                "course": "Course",
+                "audience": "Audience",
+                "progress": "Progress",
+                "state": "State"
+            }
+        },
+        "courses": {
+            "header": {
+                "eyebrow": "Courses",
+                "title": "Course catalog",
+                "description": "Manage the active course list and scan the current status of each path.",
+                "createCourse": "Create course"
+            },
+            "panel": {
+                "title": "Courses",
+                "description": "A compact list of the current learning paths.",
+                "liveSync": "Live sync"
+            },
+            "table": {
+                "title": "Title",
+                "owner": "Owner",
+                "progress": "Progress",
+                "status": "Status"
+            }
+        },
+        "progress": {
+            "header": {
+                "eyebrow": "Progress",
+                "title": "Learner progress",
+                "description": "Watch streaks, pending work, and items that need intervention.",
+                "openCheckIn": "Open check-in"
+            },
+            "panel": {
+                "title": "Progress signals",
+                "description": "The most important flags for the current week."
+            },
+            "signals": {
+                "weeklyStreak": {
+                    "title": "Weekly streak",
+                    "detail": "6 days in a row",
+                    "tone": "success"
+                },
+                "readingBacklog": {
+                    "title": "Reading backlog",
+                    "detail": "4 lessons queued",
+                    "tone": "warning"
+                },
+                "practiceDue": {
+                    "title": "Practice due",
+                    "detail": "1 assessment due tonight",
+                    "tone": "destructive"
+                }
+            }
+        }
+    },
+    "content": {
+        "home": {
+            "header": {
+                "eyebrow": "Content management",
+                "title": "Content workspace",
+                "description": "Move from drafts to published packs with a single operational view.",
+                "newPackage": "New package"
+            },
+            "metrics": {
+                "drafts": {
+                    "label": "Drafts",
+                    "detail": "2 blocked"
+                },
+                "inReview": {
+                    "label": "In review",
+                    "detail": "4 comments left"
+                },
+                "published": {
+                    "label": "Published",
+                    "detail": "3 released today"
+                },
+                "libraryAssets": {
+                    "label": "Library assets",
+                    "detail": "8 added this week"
+                }
+            },
+            "panels": {
+                "pipeline": {
+                    "title": "Package pipeline",
+                    "description": "Draft, review, and publish states."
+                },
+                "queue": {
+                    "title": "Publishing queue",
+                    "description": "What is next to ship."
+                }
+            },
+            "table": {
+                "package": "Package",
+                "status": "Status",
+                "version": "Version",
+                "note": "Note",
+                "state": "State",
+                "timing": "Timing"
+            }
+        },
+        "packages": {
+            "header": {
+                "eyebrow": "Packages",
+                "title": "Content packages",
+                "description": "Inspect package states, versions, and release timing.",
+                "draftPackage": "Draft package"
+            },
+            "panel": {
+                "title": "Package list",
+                "description": "The current content packages and their state."
+            },
+            "table": {
+                "package": "Package",
+                "status": "Status",
+                "version": "Version",
+                "updated": "Updated"
+            }
+        },
+        "new": {
+            "header": {
+                "eyebrow": "Packages",
+                "title": "New content package",
+                "description": "Prepare a draft package, attach assets, and hand it off for review.",
+                "saveDraft": "Save draft",
+                "submitReview": "Submit for review"
+            },
+            "checklist": {
+                "title": "Draft checklist",
+                "description": "Keep the package ready for review.",
+                "outline": {
+                    "title": "Outline",
+                    "detail": "Three modules defined"
+                },
+                "assets": {
+                    "title": "Assets",
+                    "detail": "Upload two media files"
+                },
+                "review": {
+                    "title": "Review",
+                    "detail": "Assign one reviewer"
+                }
+            },
+            "preview": {
+                "title": "Preview",
+                "description": "What the package summary will look like.",
+                "packageName": "Package name",
+                "owner": "Owner",
+                "releaseTarget": "Release target"
+            }
+        },
+        "library": {
+            "header": {
+                "eyebrow": "Library",
+                "title": "Asset library",
+                "description": "Store reusable assets and review where they are used.",
+                "uploadAsset": "Upload asset"
+            },
+            "panel": {
+                "title": "Assets",
+                "description": "Shared files available to the workspace."
+            },
+            "table": {
+                "asset": "Asset",
+                "type": "Type",
+                "size": "Size",
+                "access": "Access"
+            }
+        },
+        "publishing": {
+            "header": {
+                "eyebrow": "Publishing",
+                "title": "Publishing board",
+                "description": "Track scheduled releases and the current handoff stage.",
+                "scheduleRelease": "Schedule release"
+            },
+            "panel": {
+                "title": "Release queue",
+                "description": "Upcoming and active publishing items."
+            },
+            "table": {
+                "package": "Package",
+                "status": "Status",
+                "window": "Window",
+                "note": "Note"
+            }
+        },
+        "review": {
+            "header": {
+                "eyebrow": "Review",
+                "title": "Review queue",
+                "description": "See what is pending, what needs changes, and what is ready.",
+                "openNextReview": "Open next review"
+            },
+            "panel": {
+                "title": "Review items",
+                "description": "The current moderation queue."
+            },
+            "table": {
+                "item": "Item",
+                "owner": "Owner",
+                "state": "State",
+                "notes": "Notes"
+            }
+        }
+    },
+    "admin": {
+        "home": {
+            "header": {
+                "eyebrow": "Admin",
+                "title": "Control console",
+                "description": "Track system health, user access, and licensing from one console.",
+                "openSystemStatus": "Open system status"
+            },
+            "metrics": {
+                "managedUsers": {
+                    "label": "Managed users",
+                    "detail": "48 changed today"
+                },
+                "openIncidents": {
+                    "label": "Open incidents",
+                    "detail": "1 escalated"
+                },
+                "activeLicenses": {
+                    "label": "Active licenses",
+                    "detail": "92% utilization"
+                },
+                "blockedActions": {
+                    "label": "Blocked actions",
+                    "detail": "Policy review pending"
+                }
+            },
+            "panels": {
+                "users": {
+                    "title": "Users",
+                    "description": "Recent account states."
+                },
+                "licenses": {
+                    "title": "Licenses",
+                    "description": "Workspace licensing summary."
+                },
+                "system": {
+                    "title": "System health",
+                    "description": "Services that need attention."
+                }
+            },
+            "table": {
+                "name": "Name",
+                "role": "Role",
+                "access": "Access",
+                "note": "Note",
+                "tier": "Tier",
+                "seats": "Seats",
+                "usage": "Usage",
+                "service": "Service",
+                "state": "State",
+                "slo": "SLO"
+            }
+        },
+        "users": {
+            "header": {
+                "eyebrow": "Admin",
+                "title": "User management",
+                "description": "Review roles, access, and account states."
+            },
+            "panel": {
+                "title": "Users",
+                "description": "The current workspace users."
+            },
+            "table": {
+                "name": "Name",
+                "role": "Role",
+                "access": "Access",
+                "note": "Note"
+            }
+        },
+        "content": {
+            "header": {
+                "eyebrow": "Admin",
+                "title": "Content moderation",
+                "description": "Approve, reject, or request changes for content packs."
+            },
+            "panel": {
+                "title": "Review queue",
+                "description": "Current content moderation items."
+            },
+            "table": {
+                "item": "Item",
+                "owner": "Owner",
+                "state": "State",
+                "notes": "Notes"
+            }
+        },
+        "licenses": {
+            "header": {
+                "eyebrow": "Admin",
+                "title": "License overview",
+                "description": "Check seat usage and renewals across tiers."
+            },
+            "panel": {
+                "title": "License tiers",
+                "description": "The current workspace license plan summary."
+            },
+            "table": {
+                "tier": "Tier",
+                "seats": "Seats",
+                "usage": "Usage",
+                "note": "Note"
+            }
+        },
+        "system": {
+            "header": {
+                "eyebrow": "Admin",
+                "title": "System status",
+                "description": "Inspect the main services and their current health."
+            },
+            "panel": {
+                "title": "Service health",
+                "description": "Operational state of the workspace services."
+            },
+            "table": {
+                "service": "Service",
+                "state": "State",
+                "slo": "SLO",
+                "note": "Note"
+            }
+        }
+    },
+    "account": {
+        "home": {
+            "header": {
+                "eyebrow": "Account",
+                "title": "Account hub",
+                "description": "Manage identity, sessions, billing, and personal settings.",
+                "editProfile": "Edit profile"
+            },
+            "panels": {
+                "profile": {
+                    "title": "Profile",
+                    "description": "Your current account details."
+                },
+                "membership": {
+                    "title": "Billing and membership",
+                    "description": "Where your account stands right now."
+                }
+            },
+            "table": {
+                "field": "Field",
+                "value": "Value",
+                "item": "Item"
+            }
+        },
+        "profile": {
+            "header": {
+                "eyebrow": "Account",
+                "title": "Profile",
+                "description": "Keep the public identity and workspace identity current."
+            },
+            "panel": {
+                "title": "Profile details",
+                "description": "Editable identity fields."
+            },
+            "table": {
+                "field": "Field",
+                "value": "Value"
+            }
+        },
+        "notifications": {
+            "header": {
+                "eyebrow": "Account",
+                "title": "Notifications",
+                "description": "Control the alerts you want to receive."
+            },
+            "panel": {
+                "title": "Notification channels",
+                "description": "Current alert settings."
+            },
+            "table": {
+                "type": "Type",
+                "setting": "Setting"
+            }
+        },
+        "security": {
+            "header": {
+                "eyebrow": "Account",
+                "title": "Security",
+                "description": "Review sign-in, MFA, and recovery settings."
+            },
+            "panels": {
+                "checks": {
+                    "title": "Security checks",
+                    "description": "Current account protection signals."
+                },
+                "devices": {
+                    "title": "Trusted devices",
+                    "description": "Where the account is signed in."
+                }
+            },
+            "signals": {
+                "mfa": {
+                    "title": "MFA",
+                    "detail": "Enabled with authenticator app",
+                    "tone": "success"
+                },
+                "recoveryEmail": {
+                    "title": "Recovery email",
+                    "detail": "Verified 3 days ago",
+                    "tone": "success"
+                },
+                "passwordAge": {
+                    "title": "Password age",
+                    "detail": "Last changed 74 days ago",
+                    "tone": "warning"
+                }
+            },
+            "table": {
+                "device": "Device",
+                "location": "Location",
+                "state": "State"
+            }
+        },
+        "sessions": {
+            "header": {
+                "eyebrow": "Account",
+                "title": "Sessions",
+                "description": "Review active logins and revoke the ones you do not trust.",
+                "signOutAll": "Sign out all"
+            },
+            "panel": {
+                "title": "Session list",
+                "description": "Known login sessions for the account."
+            },
+            "table": {
+                "device": "Device",
+                "location": "Location",
+                "status": "Status"
+            }
+        },
+        "orders": {
+            "header": {
+                "eyebrow": "Account",
+                "title": "Orders",
+                "description": "Check purchases, refunds, and payment states."
+            },
+            "panel": {
+                "title": "Orders",
+                "description": "Recent billing activity."
+            },
+            "table": {
+                "order": "Order",
+                "product": "Product",
+                "amount": "Amount",
+                "status": "Status"
+            }
+        },
+        "membership": {
+            "header": {
+                "eyebrow": "Account",
+                "title": "Membership",
+                "description": "See the current plan and renewal details.",
+                "upgradePlan": "Upgrade plan"
+            },
+            "panel": {
+                "title": "Plan summary",
+                "description": "The active membership state."
+            },
+            "table": {
+                "field": "Field",
+                "value": "Value"
+            }
+        }
+    },
+    "settings": {
+        "home": {
+            "header": {
+                "eyebrow": "Settings",
+                "title": "Settings hub",
+                "description": "Use subpages for workspace preferences and defaults."
+            },
+            "actions": {
+                "general": {
+                    "title": "General",
+                    "description": "Workspace identity and date formats"
+                },
+                "preferences": {
+                    "title": "Preferences",
+                    "description": "Density, motion, and draft behavior"
+                }
+            }
+        },
+        "general": {
+            "header": {
+                "eyebrow": "Settings",
+                "title": "General",
+                "description": "Change the defaults that apply to the workspace."
+            },
+            "panel": {
+                "title": "General settings",
+                "description": "Shared workspace defaults."
+            },
+            "table": {
+                "setting": "Setting",
+                "value": "Value"
+            }
+        },
+        "preferences": {
+            "header": {
+                "eyebrow": "Settings",
+                "title": "Preferences",
+                "description": "Fine-tune the behavior of the workspace UI."
+            },
+            "panel": {
+                "title": "User preferences",
+                "description": "Personal display and workflow settings."
+            },
+            "table": {
+                "preference": "Preference",
+                "value": "Value"
+            }
+        }
+    },
+    "appLanding": {
+        "header": {
+            "eyebrow": "App",
+            "title": "Application home",
+            "description": "This route is a simple entry point into the dashboard experience.",
+            "openDashboard": "Open dashboard"
+        },
+        "panels": {
+            "continue": {
+                "title": "Continue",
+                "description": "Jump back into the main workspace."
+            },
+            "status": {
+                "title": "Status",
+                "description": "Current workspace summary."
+            }
+        },
+        "actions": {
+            "courses": "Courses",
+            "packages": "Packages"
+        }
+    },
+    "notFound": {
+        "header": {
+            "eyebrow": "Missing",
+            "title": "Page not found",
+            "description": "The requested route is not part of the current workspace map.",
+            "backToDashboard": "Back to dashboard"
+        },
+        "panel": {
+            "title": "Useful routes",
+            "description": "Common entry points for the workspace."
+        },
+        "actions": {
+            "dashboard": {
+                "title": "Dashboard",
+                "description": "Overview and signals"
+            },
+            "learning": {
+                "title": "Learning",
+                "description": "Courses and progress"
+            },
+            "content": {
+                "title": "Content",
+                "description": "Packages and library"
+            }
+        }
+    }
+}

@@ -1,8 +1,0 @@
-{
-  "schemaVersion": 1,
-  "tokenSource": "css.json",
-  "componentEvidenceIndex": "components/index.json",
-  "recommendedReadOrder": ["SKILL.md", "css.json", "components/index.json", "components/{slug}.json", "preview/component-{slug}.html"],
-  "coreComponents": ["button", "card", "input", "badge", "dialog", "select"],
-  "supportComponents": []
-}

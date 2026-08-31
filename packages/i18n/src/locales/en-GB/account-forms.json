@@ -1,0 +1,61 @@
+{
+    "login": {
+        "title": "Login to your account",
+        "description": "Enter your email below to login to your account",
+        "email": {
+            "label": "Email"
+        },
+        "password": {
+            "label": "Password",
+            "extra": {
+                "forgot": "Forgot your password?"
+            }
+        },
+        "action": "Login",
+        "oauth": {
+            "separator": "Or continue with",
+            "button": "Login with {{provider}}"
+        },
+        "jumps": {
+            "noAccount": "Don't have an account?"
+        }
+    },
+    "signup": {
+        "title": "Create your account",
+        "description": "Fill in the form below to create your account",
+        "fullname": {
+            "label": "Full Name"
+        },
+        "email": {
+            "label": "Email",
+            "description": " We'll use this to contact you. We will not share your email with anyone else."
+        },
+        "password": {
+            "label": "Password",
+            "description": "Must be at least 8 characters long."
+        },
+        "confirm-password": {
+            "label": "Confirm Password",
+            "description": "Please confirm your password."
+        },
+        "action": "Create Account",
+        "oauth": {
+            "separator": "Or continue with",
+            "button": "Sign up with {{provider}}"
+        },
+        "jumps": {
+            "hasAccount": "Already have an account?"
+        }
+    },
+    "forgot-password": {
+        "title": "Forgot your password?",
+        "description": "Enter your email below to reset your password",
+        "email": {
+            "label": "Email"
+        },
+        "action": "Reset Password",
+        "jumps": {
+            "remember": "Remember your password?"
+        }
+    }
+}
