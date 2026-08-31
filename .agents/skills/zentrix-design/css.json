@@ -1,0 +1,325 @@
+{
+  "color": {
+    "Color": {
+      "color-foreground": {
+        "hex": "#09090b",
+        "opacity": "1"
+      },
+      "color-card-foreground": {
+        "hex": "#09090b",
+        "opacity": "1"
+      },
+      "color-popover-foreground": {
+        "hex": "#09090b",
+        "opacity": "1"
+      },
+      "color-sidebar-foreground": {
+        "hex": "#09090b",
+        "opacity": "1"
+      },
+      "color-secondary-foreground": {
+        "hex": "#18181b",
+        "opacity": "1"
+      },
+      "color-accent-foreground": {
+        "hex": "#18181b",
+        "opacity": "1"
+      },
+      "color-sidebar-accent-foreground": {
+        "hex": "#18181b",
+        "opacity": "1"
+      },
+      "color-primary": {
+        "hex": "#008235",
+        "opacity": "1"
+      },
+      "color-muted-foreground": {
+        "hex": "#71717b",
+        "opacity": "1"
+      },
+      "color-destructive": {
+        "hex": "#e7000b",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "color-sidebar-primary": {
+        "hex": "#00a63e",
+        "opacity": "1"
+      },
+      "color-ring": {
+        "hex": "#9f9fa9",
+        "opacity": "1"
+      },
+      "color-sidebar-ring": {
+        "hex": "#9f9fa9",
+        "opacity": "1"
+      },
+      "color-border": {
+        "hex": "#e4e4e7",
+        "opacity": "1"
+      },
+      "color-input": {
+        "hex": "#e4e4e7",
+        "opacity": "1"
+      },
+      "color-sidebar-border": {
+        "hex": "#e4e4e7",
+        "opacity": "1"
+      },
+      "color-secondary": {
+        "hex": "#f4f4f5",
+        "opacity": "1"
+      },
+      "color-muted": {
+        "hex": "#f4f4f5",
+        "opacity": "1"
+      },
+      "color-accent": {
+        "hex": "#f4f4f5",
+        "opacity": "1"
+      },
+      "color-sidebar-accent": {
+        "hex": "#f4f4f5",
+        "opacity": "1"
+      },
+      "color-primary-foreground": {
+        "hex": "#f0fdf4",
+        "opacity": "1"
+      },
+      "color-sidebar-primary-foreground": {
+        "hex": "#f0fdf4",
+        "opacity": "1"
+      },
+      "color-sidebar": {
+        "hex": "#fafafa",
+        "opacity": "1"
+      },
+      "color-background": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      },
+      "color-card": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      },
+      "color-popover": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      }
+    },
+    "Sidebar": {
+      "sidebar-foreground": {
+        "hex": "#09090b",
+        "opacity": "1"
+      },
+      "sidebar-accent-foreground": {
+        "hex": "#18181b",
+        "opacity": "1"
+      },
+      "sidebar-primary": {
+        "hex": "#00a63e",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "sidebar-ring": {
+        "hex": "#9f9fa9",
+        "opacity": "1"
+      },
+      "sidebar-border": {
+        "hex": "#e4e4e7",
+        "opacity": "1"
+      },
+      "sidebar-accent": {
+        "hex": "#f4f4f5",
+        "opacity": "1"
+      },
+      "sidebar-primary-foreground": {
+        "hex": "#f0fdf4",
+        "opacity": "1"
+      },
+      "sidebar": {
+        "hex": "#fafafa",
+        "opacity": "1"
+      }
+    },
+    "Chart": {
+      "chart-5": {
+        "hex": "#026630",
+        "opacity": "1"
+      },
+      "chart-4": {
+        "hex": "#008235",
+        "opacity": "1"
+      },
+      "chart-3": {
+        "hex": "#00a63e",
+        "opacity": "1"
+      },
+      "chart-2": {
+        "hex": "#00c950",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "chart-1": {
+        "hex": "#7bf1a7",
+        "opacity": "1"
+      }
+    },
+    "color-chart": {
+      "color-chart-5": {
+        "hex": "#026630",
+        "opacity": "1"
+      },
+      "color-chart-4": {
+        "hex": "#008235",
+        "opacity": "1"
+      },
+      "color-chart-3": {
+        "hex": "#00a63e",
+        "opacity": "1"
+      },
+      "color-chart-2": {
+        "hex": "#00c950",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "color-chart-1": {
+        "hex": "#7bf1a7",
+        "opacity": "1"
+      }
+    },
+    "Card": {
+      "card-foreground": {
+        "hex": "#09090b",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "card": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      }
+    },
+    "Popover": {
+      "popover-foreground": {
+        "hex": "#09090b",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "popover": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      }
+    },
+    "Primary": {
+      "primary": {
+        "hex": "#008235",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "primary-foreground": {
+        "hex": "#f0fdf4",
+        "opacity": "1"
+      }
+    },
+    "Secondary": {
+      "secondary-foreground": {
+        "hex": "#18181b",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "secondary": {
+        "hex": "#f4f4f5",
+        "opacity": "1"
+      }
+    },
+    "Muted": {
+      "muted-foreground": {
+        "hex": "#71717b",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "muted": {
+        "hex": "#f4f4f5",
+        "opacity": "1"
+      }
+    },
+    "Accent": {
+      "accent-foreground": {
+        "hex": "#18181b",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "accent": {
+        "hex": "#f4f4f5",
+        "opacity": "1"
+      }
+    },
+    "Background": {
+      "background": {
+        "hex": "#ffffff",
+        "opacity": "1",
+        "isPrimary": true
+      }
+    },
+    "Foreground": {
+      "foreground": {
+        "hex": "#09090b",
+        "opacity": "1",
+        "isPrimary": true
+      }
+    },
+    "Destructive": {
+      "destructive": {
+        "hex": "#e7000b",
+        "opacity": "1",
+        "isPrimary": true
+      }
+    },
+    "Border": {
+      "border": {
+        "hex": "#e4e4e7",
+        "opacity": "1",
+        "isPrimary": true
+      }
+    },
+    "Input": {
+      "input": {
+        "hex": "#e4e4e7",
+        "opacity": "1",
+        "isPrimary": true
+      }
+    },
+    "Ring": {
+      "ring": {
+        "hex": "#9f9fa9",
+        "opacity": "1",
+        "isPrimary": true
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "font-sans": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "font-heading": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+    },
+    "size": {
+      "type-heading": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "type-sans": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+    },
+    "weight": {},
+    "lineHeight": {}
+  },
+  "shadow": {},
+  "radius": {
+    "radius": "7.2px",
+    "radius-sm": "4.3px",
+    "radius-md": "5.8px",
+    "radius-lg": "7.2px",
+    "radius-xl": "10.1px",
+    "radius-2xl": "13px",
+    "radius-3xl": "15.8px",
+    "radius-4xl": "18.7px"
+  },
+  "spacing": {},
+  "size": {}
+}
